@@ -121,7 +121,7 @@ const StudentProfile = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#" target="_blank">
+                <a className="nav-link" href="/studentProfile/print" target="_blank">
                   Print Form
                 </a>
               </li>
@@ -2756,13 +2756,11 @@ const StudentProfile = () => {
                         </div>
 
                         <div class="form-group">
-                          <div
-                            class="row"
-                            id="govtScholarship"
-                          >
+                          <div class="row" id="govtScholarship">
                             <div class="col-sm-3 topMargin">
                               <label>
-                                Amount received <span style={{color:"red"}}></span>
+                                Amount received{" "}
+                                <span style={{ color: "red" }}></span>
                               </label>
                               <input
                                 type="text"
@@ -2773,7 +2771,7 @@ const StudentProfile = () => {
                             </div>
                             <div class="col-sm-3 topMargin">
                               <label>
-                                Year <span style={{color:"red"}}></span>
+                                Year <span style={{ color: "red" }}></span>
                               </label>
                               <input
                                 type="text"
@@ -2785,7 +2783,7 @@ const StudentProfile = () => {
                             <div class="col-sm-3 topMargin">
                               <label>
                                 Name of the govt. scholarship{" "}
-                                <span style={{color:"red"}}></span>
+                                <span style={{ color: "red" }}></span>
                               </label>
                               <input
                                 type="text"
@@ -2796,7 +2794,8 @@ const StudentProfile = () => {
                             </div>
                             <div class="col-sm-3 topMargin">
                               <label>
-                                Application Id <span style={{color:"red"}}></span>
+                                Application Id{" "}
+                                <span style={{ color: "red" }}></span>
                               </label>
                               <input
                                 type="text"
@@ -2807,7 +2806,7 @@ const StudentProfile = () => {
                             </div>
                             <div class="col-sm-3 topMargin">
                               <label>
-                                Password <span style={{color:"red"}}></span>
+                                Password <span style={{ color: "red" }}></span>
                               </label>
                               <input
                                 type="text"
@@ -2820,6 +2819,1910 @@ const StudentProfile = () => {
                         </div>
                       </div>
                     )}
+
+      {/*  ====================== organisation support information ======================== */}
+                    {tab === "organisation_support_information" && (
+                      <div className="organization_support">
+                        <div class="row">
+                          <div class="col-sm-6 topMargin">
+                            <label>
+                              Support receiving / received by your sibling in
+                              past / current year from Nathani Charitable Trust.
+                            </label>
+                            <select
+                              class="form-control select2"
+                              id="received_sibling_orgo"
+                              style={{ width: "100%" }}
+                            >
+                              <option value="NA">--select--</option>
+                              <option value="No">No</option>
+                              <option value="Yes">Yes</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="row" id="txt9ReceivedsiblingYes">
+                          <div class="col-sm-12 topMargin">
+                            <table class="table table-bordered">
+                              <thead>
+                                <tr>
+                                  <th>Sr No</th>
+                                  <th>Name of Brother/Sister</th>
+                                  <th>ID No.</th>
+                                  <th>Course</th>
+                                  <th>Amount Received</th>
+                                  <th>Financial year</th>
+                                  <th>
+                                    Last how many years they have been receiving
+                                    support?
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>1</td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="txtx_bro_sis_name"
+                                      placeholder=""
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="txtx_id_no"
+                                      placeholder=""
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="txtx_coursename"
+                                      placeholder=""
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control amount allownumericwithdecimal"
+                                      id="txtx_amt_received"
+                                      placeholder=""
+                                    />
+                                  </td>
+                                  <td>
+                                    <select
+                                      class="form-control"
+                                      id="ddlFinancialYear1"
+                                      style={{ width: "100%" }}
+                                    >
+                                      <option value="NA">--select--</option>
+                                      <option value="2004-05">2004-05</option>
+                                      <option value="2005-06">2005-06</option>
+                                      <option value="2006-07">2006-07</option>
+                                      <option value="2007-08">2007-08</option>
+                                      <option value="2008-09">2008-09</option>
+                                      <option value="2009-10">2009-10</option>
+                                      <option value="2010-11">2010-11</option>
+                                      <option value="2011-12">2011-12</option>
+                                      <option value="2012-13">2012-13</option>
+                                      <option value="2013-14">2013-14</option>
+                                      <option value="2014-15">2014-15</option>
+                                      <option value="2015-16">2015-16</option>
+                                      <option value="2016-17">2016-17</option>
+                                      <option value="2017-18">2017-18</option>
+                                      <option value="2018-19">2018-19</option>
+                                      <option value="2019-20">2019-20</option>
+                                      <option value="2020-21">2020-21</option>
+                                      <option value="2021-22">2021-22</option>
+                                      <option value="2022-23">2022-23</option>
+                                      <option value="2023-24">2023-24</option>
+                                      <option value="2024-25">2024-25</option>
+                                    </select>
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="txtx_hw_mny_yr_receive"
+                                      placeholder=""
+                                    />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <div
+                            class="col-sm-12 topMargin"
+                            style={{ marginTop: "31px" }}
+                            id="newbtn2"
+                          >
+                            <input
+                              type="button"
+                              class="btn btn-primary"
+                              id="addorgoView2"
+                              value="Add More"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="col-sm-12" style={{ marginTop: "25px" }}>
+                          <div
+                            class="table-responsive"
+                            style={{ maxHeight: "350px" }}
+                          >
+                            <table
+                              id="fees_from_our_organization2"
+                              class="table no-margin table-condensed"
+                              // style={{}}
+                            >
+                              <thead>
+                                <tr>
+                                  <th>Sr.No.</th>
+                                  <th>Name of Brother/Sister</th>
+                                  <th>ID No.</th>
+                                  <th>Course</th>
+                                  <th>Amount Received </th>
+                                  <th>Financial year</th>
+                                  <th>
+                                    Last how many years have they been receiving
+                                    support
+                                  </th>
+                                  <th id="3rd">Delete </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr id="13442">
+                                  <td>1</td>
+                                  <td>Tareeq</td>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
+                                  <td>2018-19</td>
+                                  <td>2</td>
+                                  <td id="3rd">
+                                    <i
+                                      class="fa fa-trash-o removeorgoRole2"
+                                      id="btnEduorgoDeletes0"
+                                    ></i>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <hr style={{ borderColor: "red" }} />
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6 topMargin">
+                            <label>
+                              You/your family members have received help from
+                              Organisation under any other scheme other than
+                              education support
+                            </label>
+                            <select
+                              class="form-control select2"
+                              id="other_schem_support"
+                              style={{ width: "100%" }}
+                            >
+                              <option value="NA">--select--</option>
+                              <option value="No">No</option>
+                              <option value="Yes">Yes</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="row" id="txt9ReceivedEductionYes">
+                          <div class="col-sm-12 topMargin">
+                            <table class="table table-bordered">
+                              <thead>
+                                <tr>
+                                  <th>Sr No</th>
+                                  <th>Name of the family member</th>
+                                  <th>ID No.</th>
+                                  <th>scheme</th>
+                                  <th>Amount Received</th>
+                                  <th>Financial year</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>1</td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="txtxt_family_memb_name"
+                                      placeholder=""
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="txtxt_id_no"
+                                      placeholder=""
+                                    />
+                                  </td>
+                                  <td>
+                                    <div class="input-group">
+                                      <div
+                                        class="input-group-addon"
+                                        id="loadSchemeName"
+                                      >
+                                        <i class="icon ion-university"></i>
+                                      </div>
+                                      <select
+                                        id="ddlSchemeName"
+                                        class="form-control select2"
+                                      >
+                                        <option selected="selected" value="0">
+                                          --select--
+                                        </option>
+                                        <option value="4">Business Aid</option>
+                                        <option value="5">General Aid</option>
+                                        <option value="2">Housing</option>
+                                        <option value="3">Medical</option>
+                                        <option value="1">
+                                          Women Empowerment
+                                        </option>
+                                      </select>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control amount allownumericwithdecimal"
+                                      id="txtxt_amt_receveid"
+                                      placeholder=""
+                                    />
+                                  </td>
+                                  <td>
+                                    <select
+                                      class="form-control"
+                                      id="ddlFinancialYear2"
+                                      style={{ width: "100%" }}
+                                    >
+                                      <option value="NA">--select--</option>
+                                      <option value="2004-05">2004-05</option>
+                                      <option value="2005-06">2005-06</option>
+                                      <option value="2006-07">2006-07</option>
+                                      <option value="2007-08">2007-08</option>
+                                      <option value="2008-09">2008-09</option>
+                                      <option value="2009-10">2009-10</option>
+                                      <option value="2010-11">2010-11</option>
+                                      <option value="2011-12">2011-12</option>
+                                      <option value="2012-13">2012-13</option>
+                                      <option value="2013-14">2013-14</option>
+                                      <option value="2014-15">2014-15</option>
+                                      <option value="2015-16">2015-16</option>
+                                      <option value="2016-17">2016-17</option>
+                                      <option value="2017-18">2017-18</option>
+                                      <option value="2018-19">2018-19</option>
+                                      <option value="2019-20">2019-20</option>
+                                      <option value="2020-21">2020-21</option>
+                                      <option value="2021-22">2021-22</option>
+                                      <option value="2022-23">2022-23</option>
+                                      <option value="2023-24">2023-24</option>
+                                      <option value="2024-25">2024-25</option>
+                                    </select>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <div
+                            class="col-sm-12 topMargin"
+                            style={{ marginTop: "31px", display: "none" }}
+                            id="newbtn3"
+                          >
+                            <input
+                              type="button"
+                              class="btn btn-primary"
+                              id="addorgoView3"
+                              value="Add More"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="col-sm-12" style={{ marginTop: "25px" }}>
+                          <div
+                            class="table-responsive"
+                            style={{ maxHeight: "350px" }}
+                          >
+                            <table
+                              id="fees_from_our_organization3"
+                              class="table no-margin table-condensed"
+                            >
+                              <thead>
+                                <tr>
+                                  <th>Sr.No. </th>
+                                  <th>Name of the family member </th>
+                                  <th>ID No. </th>
+                                  <th>scheme </th>
+                                  <th>Amount Received </th>
+                                  <th>Financial year </th>
+                                  <th id="4rth">Delete </th>
+                                </tr>
+                              </thead>
+                              <tbody></tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <hr />
+                      </div>
+                    )}
+
+                    {/*  ====================== parent declaration ======================== */}
+                    {tab === "parent_declaration" && (
+                      <div className="parent_declaration">
+                        <div class="row">
+                          <div class="col-sm-12 topMargin">
+                            <p style={{ textAlign: "center" }}>
+                              <b>Declaration of parents / guardian / student</b>
+                            </p>
+                            <p style={{ textAlign: "center" }}>
+                              <b>
+                                Form will not be considered in absence of
+                                declaration of parents / guardian for minor
+                                student
+                              </b>
+                            </p>
+                            <p>Dear Sir / Madam</p>
+                            <p>Assalamu-Alaikum,</p>
+                            <p>
+                              I / We hereby solemnly affirm that the details
+                              mentioned in this form are true to the best of my
+                              / our knowledge. I / We am / are responsible for
+                              the authenticity of the details and the documents
+                              provided along with this form. If any information
+                              contained in my application form is found false or
+                              improper, your organization has full right to take
+                              disciplinary / legal action against me / us.
+                            </p>
+                            <p>
+                              I / We hereby declare that I / We will ensure my
+                              ward will complete the
+                              <input
+                                type="text"
+                                readonly=""
+                                class="form-control"
+                                id="txt11dpHereby"
+                                placeholder="Course Name"
+                              />
+                              course for which we have applied for scholarship.
+                            </p>
+                            <p>
+                              I / We realize that this assistance is provided to
+                              me / for my child from zakat / non-zakat fund and
+                              I / we have not taken any surplus loan or aid from
+                              any other organization / trust / jamat for the
+                              same purpose without informing organisation.
+                            </p>
+                            <p>
+                              I also declare that I / we will not pay the fees
+                              in emergency without written approval from
+                              organisation.{" "}
+                              <b>
+                                And if paid, organization will not be
+                                responsible.
+                              </b>
+                            </p>
+                            <p>
+                              I also declare that the given funds will be
+                              exclusively only for education purpose or any
+                              other purpose specified in the application only.
+                            </p>
+                            <p>
+                              I also give permission to your institute to
+                              collect zakat for fees of my son / daughter / ward
+                              / myself on our / my behalf.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-sm-3 topMargin">
+                            <label>
+                              Name of applicant
+                              <span style={{ color: "red" }}>*</span>
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="txt11dpNameOfApplicant"
+                              placeholder="Name of applicant"
+                              readonly=""
+                            />
+                          </div>
+                          <div class="col-sm-3 topMargin">
+                            <label>
+                              Name of Parent/Guardian
+                              <span style={{ color: "red" }}>*</span>
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="txt11dpNameOfParent"
+                              placeholder="Name of Parent/Guardian"
+                              readonly=""
+                            />
+                          </div>
+
+                          <div class="col-sm-3 topMargin">
+                            <label>
+                              Place<span style={{ color: "red" }}>*</span>
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="txt11dpPlace"
+                              placeholder="Place"
+                              readonly=""
+                            />
+                          </div>
+
+                          <div class="col-sm-3 topMargin">
+                            <label>
+                              Date <span style={{ color: "red" }}>*</span>
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="txt11dpDate"
+                              placeholder="Date"
+                              readonly=""
+                            />
+                          </div>
+                        </div>
+
+                        {/* <!-- image section start --> */}
+                        <div class="row" style={{ marginTop: "25px" }}>
+                          <div class="col-md-6 topMargin">
+                            <div class="box box-widget widget-user">
+                              <div class="widget-user-header bg-aqua-active">
+                                <h3 class="widget-user-username">
+                                  Upload Student Photo
+                                </h3>
+                              </div>
+                              <div class="widget-user-image">
+                                <img
+                                  mandatory="Yes"
+                                  class="img-circle"
+                                  style={{ height: "120px", width: "120px" }}
+                                  id="imgPhoto"
+                                  src="../admission/applicantImg/202026_photo.jpg"
+                                  alt="Photo"
+                                />
+                              </div>
+                              <div class="box-footer">
+                                <div class="row">
+                                  <div class="col-sm-4 border-right">
+                                    <div
+                                      class="description-block"
+                                      style={{ marginTop: "30px" }}
+                                    >
+                                      <div class="form-group">
+                                        <div class="pull-left">
+                                          <input
+                                            type="file"
+                                            id="txt11dpStudentPhotoPath"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <br />
+                          </div>
+
+                          <div class="col-md-6 topMargin">
+                            <div class="box box-widget widget-user">
+                              <div class="widget-user-header bg-blue-active">
+                                <h3 class="widget-user-username">
+                                  Upload Student Sign
+                                </h3>
+                              </div>
+                              <div class="widget-user-image">
+                                <img
+                                  mandatory="Yes"
+                                  class="img-bordered-sm"
+                                  style={{ height: "120px", width: "120px" }}
+                                  id="imgSign"
+                                  src="../admission/applicantImg/202026_sign.jpg"
+                                  alt="Sign"
+                                />
+                              </div>
+                              <div class="box-footer">
+                                <div class="row">
+                                  <div class="col-sm-4 border-right">
+                                    <div
+                                      class="description-block"
+                                      style={{ marginTop: "30px" }}
+                                    >
+                                      <div class="form-group">
+                                        <div class="pull-left">
+                                          <input
+                                            type="file"
+                                            id="txt11dpStudentSignPath"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <br />
+                          </div>
+                        </div>
+                        <div class="row">
+                          <input
+                            type="file"
+                            id="txt11dpGuardianPhotoPath"
+                            style={{ visibility: "hidden" }}
+                          />
+
+                          <div class="col-md-6 topMargin">
+                            <div class="box box-widget widget-user">
+                              <div class="widget-user-header bg-blue-active">
+                                <h3 class="widget-user-username">
+                                  Upload Guardian Sign
+                                </h3>
+                              </div>
+                              <div class="widget-user-image">
+                                <img
+                                  mandatory="Yes"
+                                  class="img-bordered-sm"
+                                  style={{ height: "120px", width: "120px" }}
+                                  id="parentSign"
+                                  src="../admission/applicantImg/202026_Mother.jpg"
+                                  alt="Sign"
+                                />
+                              </div>
+                              <div class="box-footer">
+                                <div class="row">
+                                  <div class="col-sm-4 border-right">
+                                    <div
+                                      class="description-block"
+                                      style={{ marginTop: "30px" }}
+                                    >
+                                      <div class="form-group">
+                                        <div class="pull-left">
+                                          <input
+                                            type="file"
+                                            id="txt11dpGuardianSignPath"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <br />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/*  ====================== all documents ======================== */}
+                    {tab === "all_documents" && (
+                      <div className="allDocument">
+                        <div class="col-sm-12">
+                          <div class="row">
+                            <div class="col-sm-12 col-lg-12 col-md-12 topMargin">
+                              <div
+                                class="table-responsive"
+                                style={{ overflowX: "inherit" }}
+                              >
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    Sr.No.{" "}
+                                  </div>
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Scan List Of Documents
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="passport_size_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      1.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Passport size photograph.
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="passportsize_oneView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgpassportsize_oneView"
+                                        src="../admission/applicantImg/202026_photo.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="passportsize_twoView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgpassportsize_twoView"
+                                        src="../admission/applicantImg/202026_sign.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="passportsize_threeView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgpassportsize_threeView"
+                                        src="../admission/applicantImg/202026_Mother.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="attested_copies_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      2.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Original copy of past three annual
+                                    examination mark sheet / result copies for
+                                    school level and for college level SSC and
+                                    HSC ( compulsary for new student ).
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="marksheet_step_5_11View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgmarksheet_step_5_11View"
+                                        src="../admission/AcademicInformation/Sem1File/202026_Sem1FileOne.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="marksheet_step_5_12View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgmarksheet_step_5_12View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="marksheet_step_5_13View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgmarksheet_step_5_13View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="marksheet_step_5_21View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgmarksheet_step_5_21View"
+                                        src="../admission/AcademicInformation/Sem1File/202026_Sem1FileTwo.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="marksheet_step_5_22View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgmarksheet_step_5_22View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="marksheet_step_5_23View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgmarksheet_step_5_23View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="marksheet_step_5_31View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgmarksheet_step_5_31View"
+                                        src="../admission/AcademicInformation/Sem1File/202026_Sem1FileThree.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="marksheet_step_5_32View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgmarksheet_step_5_32View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="marksheet_step_5_33View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgmarksheet_step_5_33View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="address_first_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      3.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Proof of address first &amp; last page of
+                                    ration card, or telephone bill, or voting
+                                    identity card or leave &amp; license
+                                    agreement or recent receipt / bill or rent
+                                    receipt / bill or aadhaarcard.
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="address_first_oneView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgaddress_first_oneView"
+                                        src="../admission/AadharCardFile/202026_AadharCardFile.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="address_first_twoView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgaddress_first_twoView"
+                                        src="../admission/AadharCardBackside/202026_AadharCardBackside.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="electricity_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      4.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Latest electricity bill.
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="electricity_billView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                          marginLeft: "0",
+                                        }}
+                                        id="imgelectricity_billView"
+                                        src="../admission/ElectricBillFile/202026_ElectricBillFile.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="electricity_billViewBackside"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                          marginLeft: "0",
+                                        }}
+                                        id="imgelectricity_billViewBackside"
+                                        src="../admission/ElectricBillFile/202026_ElectricBillFileBackside.jpeg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    &nbsp;
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="divorce_certificatcate_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      5.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Divorce certificate / Divorce deed in case
+                                    of divorced, death certificate of husband in
+                                    case of widow is compulsory. Medical
+                                    certificate if husband is medically ill e.g.
+                                    dialysis, heart problem, paralysis, cancer
+                                    or any other threatening diseases.
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input
+                                      type="file"
+                                      id="divorce_certificatcate_one"
+                                    />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="divorce_certificatcate_oneView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgdivorce_certificatcate_oneView"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input
+                                      type="file"
+                                      id="divorce_certificatcate_two"
+                                      style={{ paddingleft: "20px" }}
+                                    />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="divorce_certificatcate_twoView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgdivorce_certificatcate_twoView"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="income_salary_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      6.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Proof of income - salary certificate,
+                                    goverment approved income certificate or pay
+                                    slip or certificate from family doctor or
+                                    local medical social worker ( MSW ) or
+                                    medical officers of primary health center (
+                                    PHC ) or community health center ( CHC )
+                                    regarding the family income ( compulsary
+                                    applicable according to their nature of work
+                                    ).
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="income_salary_oneView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                          marginLeft: "0",
+                                        }}
+                                        id="imgincome_salary_oneView"
+                                        src="../admission/IncomeFileAttech/202026_IncomeFileAttech.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="income_salary_twoView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                          marginLeft: "0",
+                                        }}
+                                        id="imgincome_salary_twoView"
+                                        src="../admission/IncomeFileAttech/202026_IncomeFileAttechBackside.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    &nbsp;
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="letter_School_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      7.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Letter from school / college / institute
+                                    with break-up of fees ( In original ).
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input type="file" id="letter_School_one" />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="letter_School_oneView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgletter_School_oneView"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input
+                                      type="file"
+                                      id="letter_School_two"
+                                      style={{ paddingleft: "20px" }}
+                                    />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="letter_School_twoView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgletter_School_twoView"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="Letter_Coach_cls_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      8.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Letter from coaching classes / tution with
+                                    break - up of fees ( in original ). Tuition
+                                    fees will only be paid for std X and XII
+                                    coaching classes. Tuition fees from std VIII
+                                    - IX will be paid only towards maths and
+                                    science subject. Additional english subject
+                                    tuition fees will be provided to vernacular
+                                    medium students only. Original fees
+                                    structure of tuition / coaching classes
+                                    should be given on the original letterhead
+                                    of the classes. In additional we require
+                                    coaching class's head / in-charge name with
+                                    landline number / contact number / mobile
+                                    number, address of tution / coaching
+                                    classes, stamp of tution classes / e-mail
+                                    address. NCT HAS FULL RIGHT TO CANCEL THE
+                                    COMPLETE SCHOLARSHIP GRANT IF THE
+                                    INFORMATION PROVIDED BY THE APPLICATION /
+                                    COACHING CLASSES IS FOUND TO BE
+                                    FALSE/INCORRECT.
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input
+                                      type="file"
+                                      id="Letter_Coach_cls_one"
+                                    />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="Letter_Coach_cls_oneView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgLetter_Coach_cls_oneView"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input
+                                      type="file"
+                                      id="Letter_Coach_cls_two"
+                                      style={{ paddingleft: "20px" }}
+                                    />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="Letter_Coach_cls_twoView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgLetter_Coach_cls_twoView"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="bonafied_certificate_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      9.
+                                    </span>
+                                  </div>
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Proof of admission / selection in course for
+                                    which scholarship is applied for / bonafied
+                                    certificate.
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="bonafied_certificate_oneView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                          marginLeft: "0",
+                                        }}
+                                        id="imgbonafied_certificate_oneView"
+                                        src="../admission/BonafideCertificate/202026_BonafideCertificate.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="bonafied_certificate_oneViewBackside"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                          marginLeft: "0",
+                                        }}
+                                        id="imgbonafied_certificate_oneViewBackside"
+                                        src="../admission/BonafideCertificate/202026_BonafideCertificateBackside.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    &nbsp;
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="academic_certificate_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      10.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Copies of certificate of academic,
+                                    co-curricular &amp; extracurricular
+                                    activities.
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input
+                                      type="file"
+                                      id="academic_certificate_one"
+                                    />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="academic_certificate_oneView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgacademic_certificate_oneView"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input
+                                      type="file"
+                                      id="academic_certificate_two"
+                                      style={{ paddingleft: "20px" }}
+                                    />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="academic_certificate_twoView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgacademic_certificate_twoView"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="pass_book_stud"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      11.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Copy of bank pass book - first page ( name,
+                                    bank a/c no, &amp; address details ).
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="pass_book_oneView"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                          marginLeft: "0",
+                                        }}
+                                        id="imgpass_book_oneView"
+                                        src="../admission/PassbookFile/202026_PassbookFile.jpg"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="pass_book_oneViewBackside"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                          marginLeft: "0",
+                                        }}
+                                        id="imgpass_book_oneViewBackside"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    &nbsp;
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    &nbsp;
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="OtherDocumentCheck1"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      12.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Other Document 1.
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input type="file" id="OtherDocument1" />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="OtherDocument1View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgOtherDocument1View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input
+                                      type="file"
+                                      id="OtherDocument2"
+                                      style={{ paddingleft: "20px" }}
+                                    />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="OtherDocument2View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgOtherDocument2View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <input
+                                      type="checkbox"
+                                      id="OtherDocumentCheck2"
+                                      value="check"
+                                      disabled="disabled"
+                                    />
+                                    <span style={{ paddingLeft: "10px" }}>
+                                      13.
+                                    </span>
+                                  </div>
+
+                                  <div class="col-lg-10 col-md-10 col-sm-10">
+                                    Other Document 2.
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2">
+                                    &nbsp;
+                                  </div>
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input type="file" id="OtherDocument3" />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="OtherDocument3View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgOtherDocument3View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+
+                                  <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input
+                                      type="file"
+                                      id="OtherDocument4"
+                                      style={{ paddingleft: "20px" }}
+                                    />
+                                  </div>
+
+                                  <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <a
+                                      id="OtherDocument4View"
+                                      style={{ marginleft: "0" }}
+                                    >
+                                      <img
+                                        mandatory="No"
+                                        class="img-rounded"
+                                        style={{
+                                          height: "36px",
+                                          width: "40px",
+                                        }}
+                                        id="imgOtherDocument4View"
+                                        src="../dist/img/edu_profile_blank.png"
+                                        alt="Photo"
+                                      />
+                                    </a>
+                                    <i
+                                      class="fa fa-close form-control clearFile"
+                                      style={{
+                                        padding: "0px",
+                                        height: "2px",
+                                        width: "2px",
+                                        fontWeight: "bold",
+                                        marginLeft: "0px",
+                                        marginTop: "0px",
+                                        color: "red",
+                                      }}
+                                    ></i>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/*  ====================== confirmation tab ======================== */}
+                    {tab === "confirmation" && (
+                      <div className="confirmation">
+                        <div class="col-sm-12">
+                          <div class="row">
+                            <div class="col-sm-12 topMargin">
+                              <div
+                                class="table-responsive"
+                                style={{ overflowX: "inherit" }}
+                              >
+                                <p style={{fontSize: "16px"}}>
+                                  <input type="checkbox" id="lockform" />
+                                  &nbsp;&nbsp; I, hereby confirm that I have
+                                  read all the instructions carefully before
+                                  applying and I do understand that I will not
+                                  be able to change it later.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                   </form>
                   <div className="center">
                     <button
