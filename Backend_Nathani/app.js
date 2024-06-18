@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
 require('dotenv').config()
+const port = process.env.PORT
 
 var indexRouter = require('./routes/index');
 
@@ -55,7 +56,10 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-// var usersRouter = require('./routes/users');  
- // oo
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
 
 module.exports = app;

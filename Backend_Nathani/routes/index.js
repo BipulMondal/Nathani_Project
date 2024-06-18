@@ -3,7 +3,7 @@ const axios = require('axios');
 
 
 var router = express.Router();
-// const v1 = require('./v1');
+const v1 = require("./v1/index");
 
 // GET home page. 
 router.get('/', function (req, res, next) {
@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
 });
 
 
-// router.use('/api/v1', v1);
+router.use('/api/v1', v1);
 
 
 module.exports = router;
