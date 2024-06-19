@@ -6,13 +6,12 @@ const { Validator } = require("node-input-validator");
 
 
 // create JWT token
-function createToken(data) {
-  return jwt.sign(data, "user@1234567890");
-}
+// function createToken(data) {
+//   return jwt.sign(data, "user@1234567890");
+// }
 
 // User registration function
 const register = async (req, res) => {
-  console.log("sssssss", req.body)
   const v = new Validator(req.body, {
     email: "required|email",
     mobile: "required|integer",
@@ -52,7 +51,7 @@ const register = async (req, res) => {
     const userData = {
       ...req.body,
       password: hashedPassword,
-      token: createToken({ email: req.body.email })
+      // token: createToken({ email: req.body.email })
     };
 
     // Save the user
@@ -64,7 +63,7 @@ const register = async (req, res) => {
           message: "User registered successfully",
           data: {
             _id: data._id,
-            token: data.token
+            // token: data.token
           }
         });
       })
@@ -78,4 +77,44 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { register };
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if the user exists
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // If credentials are correct, generate JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    
+    res.status(200).json({
+      success: true,
+      message: "Login Successfully",
+      token,
+      data: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+      userType: user.userType
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Server error, please try again" });
+  }
+};
+
+module.exports = { register, login };

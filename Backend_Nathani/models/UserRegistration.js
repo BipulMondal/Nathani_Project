@@ -5,6 +5,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    userType:{
+        type:String,
+    },
     aadharNo:{
         type: String,
         required: true

@@ -4,6 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router } from 'react-router-dom'; // Import BrowserRouter
 import AppRoutes from './routes/AppRoutes';
+import Axios from "axios"
 
 function App() {
   return (

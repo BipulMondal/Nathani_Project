@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import logo from "../images/NATHANI_LOGO.png";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const initial = {
@@ -10,8 +11,9 @@ const Login = () => {
   };
 
   const [loginData, setLoginData] = useState(initial);
+  const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -47,21 +49,36 @@ const Login = () => {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = {
-      email: loginData.email,
-      password: loginData.password,
-    };
-    const ress = data;
+    const data = loginData;
+
+    setLoading(true)
     try {
       if (handleValidation()) {
-        console.log("kokkkokookoko", ress);
-        localStorage.setItem("Authorization","bipulauthorizetoken");
-        localStorage.setItem("userType", "user");
-        navigate('/studentProfile')
+        let res = await axios.post(
+          "http://localhost:8025/api/v1/user/login",
+          data
+        );
+        if(res && res.status){
+          console.log("resdssdfsd", res)
+          toast.success(res.message)
+          localStorage.setItem("Authorization", res?.data?.token);
+          localStorage.setItem("userType", res?.data?.userType);
+          setLoading(false)
+          setLoginData(initial)
+          navigate("/studentProfile");
+        }
+        else{
+          setLoading(false)
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(error)
+      setLoading(false)
+      // Handle error response
+    }
   };
 
   return (
@@ -102,9 +119,15 @@ const Login = () => {
                       />
                       <div className="eye_div">
                         {!show ? (
-                          <i class="fa-solid fa-eye-slash" onClick={()=>setShow(!show)}></i>
+                          <i
+                            class="fa-solid fa-eye-slash"
+                            onClick={() => setShow(!show)}
+                          ></i>
                         ) : (
-                          <i class="fa-solid fa-eye" onClick={()=>setShow(!show)}></i>
+                          <i
+                            class="fa-solid fa-eye"
+                            onClick={() => setShow(!show)}
+                          ></i>
                         )}
                       </div>
                     </div>
@@ -117,7 +140,7 @@ const Login = () => {
                     Sign in
                   </button>
                   <p style={{ marginLeft: "160px", marginTop: "10px" }}>
-                    Click <a href="register.php">here</a> To Register
+                    Click <Link to="/register">here</Link> To Register
                   </p>
                   <div className="forgot-password">
                     <a href="forgot-password.php">Forgot Password?</a>

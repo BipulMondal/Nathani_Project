@@ -12,8 +12,14 @@ var indexRouter = require('./routes/index');
 
 var app = express();
 
+// app.use(cors({
+//   origin: "*"
+// }));
+
 app.use(cors({
-  origin: "*"
+  origin: '*', // Adjust to the frontend's URL
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());

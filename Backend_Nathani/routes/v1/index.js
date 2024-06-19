@@ -3,7 +3,7 @@ var router = express.Router();
 var path = require('path');
 const multer = require('multer');
 const User = require('./user')
-const userAuthController = require("../../controllers/Auth/UserRegistration")
+const userAuthController = require("../../controllers/Auth/UserAuthentication")
 
 var multistorage = multer.diskStorage({
   destination: (req, file, cb) => {

@@ -1,18 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../images/NATHANI_LOGO.png";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 const Registar = () => {
   const initial = {
     registeredBy: "",
     aadharNo: "",
-    aadharLinkMobile: "",
-    otp: "",
+    AadharLinkedMobileNo: null,
+    otp: null,
     firstName: "",
     middleName: "",
     lastName: "",
     dob: "",
-    mobile: "",
+    mobile: null,
     email: "",
     gender: "",
     state: "",
@@ -20,116 +22,143 @@ const Registar = () => {
     loginId: "",
     password: "",
     confirmpassword: "",
+    userType:"user"
   };
-
+  const navigate = useNavigate()
   const [registerData, setRegisterData] = useState(initial);
-  console.log("asdasd", registerData)
+  const [loading, setLoading] = useState(false)
+  console.log("asdasd", registerData);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+  
     setRegisterData((prev) => ({
-        ...prev,
-        [e.target.name] : e.target.value
-    }))
-  }
+      ...prev,
+      [name]: name === "AadharLinkedMobileNo" || name === "otp" || name === "mobile" ? Number(value) : value,
+    }));
+  };
 
   const handleValidation = () => {
-    if(!registerData.registeredBy){
-        toast.error("Registered by is required")
-        return false
+    if (!registerData.registeredBy) {
+      toast.error("Registered by is required");
+      return false;
     }
-    if(!registerData.aadharNo){
-        toast.error("Aadhar No is required")
-        return false
-    }
-    if(registerData.aadharNo.length > 16 || registerData.aadharNo.length < 16){
-        toast.error("please select 16 digit Aadhar No")
-        return false
-    }
-    if(!registerData.aadharLinkMobile){
-        toast.error("Aadhar link mobile No is required")
-        return false
-    }
-    if(registerData.aadharLinkMobile.length > 10 || registerData.aadharLinkMobile.length < 10){
-        toast.error("please select 16 digit Aadhar No")
-        return false
-    }
-    if(!registerData.otp){
-        toast.error("otp is required")
-        return false
-    }
-    if(!registerData.firstName){
-        toast.error("first name is required")
-        return false
-    }
-    if(!registerData.lastName){
-        toast.error("last name is required")
-        return false
-    }
-    if(!registerData.dob){
-        toast.error("date of birth is required")
-        return false
-    }
-    if(!registerData.mobile){
-        toast.error("mobile no is required")
-        return false
-    }
-    if(!registerData.email){
-        toast.error("email id is required")
-        return false
+    if (!registerData.aadharNo) {
+      toast.error("Aadhar No is required");
+      return false;
     }
     if (
-        new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}").test(registerData.email) === false
-      ) {
-        toast.error("please enter a valid email");
-        return false;
-      }
-    if(!registerData.gender){
-        toast.error("gender is required")
-        return false
+      registerData.aadharNo.length > 16 ||
+      registerData.aadharNo.length < 16
+    ) {
+      toast.error("please select 16 digit Aadhar No");
+      return false;
     }
-    if(!registerData.state){
-        toast.error("state is required")
-        return false
+    if (!registerData.AadharLinkedMobileNo) {
+      toast.error("Aadhar link mobile No is required");
+      return false;
     }
-    if(!registerData.city){
-        toast.error("state is required")
-        return false
+    if (
+      registerData.AadharLinkedMobileNo.length > 10 ||
+      registerData.AadharLinkedMobileNo.length < 10
+    ) {
+      toast.error("please select 16 digit Aadhar No");
+      return false;
     }
-    if(!registerData.loginId){
-        toast.error("login id is required")
-        return false
+    if (!registerData.otp) {
+      toast.error("otp is required");
+      return false;
     }
-    if(!registerData.password){
-        toast.error("password is required")
-        return false
+    if (!registerData.firstName) {
+      toast.error("first name is required");
+      return false;
+    }
+    if (!registerData.lastName) {
+      toast.error("last name is required");
+      return false;
+    }
+    if (!registerData.dob) {
+      toast.error("date of birth is required");
+      return false;
+    }
+    if (!registerData.mobile) {
+      toast.error("mobile no is required");
+      return false;
+    }
+    if (!registerData.email) {
+      toast.error("email id is required");
+      return false;
+    }
+    if (
+      new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}").test(registerData.email) ===
+      false
+    ) {
+      toast.error("please enter a valid email");
+      return false;
+    }
+    if (!registerData.gender) {
+      toast.error("gender is required");
+      return false;
+    }
+    if (!registerData.state) {
+      toast.error("state is required");
+      return false;
+    }
+    if (!registerData.city) {
+      toast.error("state is required");
+      return false;
+    }
+    if (!registerData.loginId) {
+      toast.error("login id is required");
+      return false;
+    }
+    if (!registerData.password) {
+      toast.error("password is required");
+      return false;
     }
     if (registerData.password.length < 8) {
-        toast.error("password must be 8 character long");
-        return false;
+      toast.error("password must be 8 character long");
+      return false;
     }
     if (!registerData.confirmpassword) {
-        toast.error("confirm password is required")
-        return false;
+      toast.error("confirm password is required");
+      return false;
     }
     if (registerData.password !== registerData.confirmpassword) {
-        toast.error("password and confirm password does not matched")
-        return false;
+      toast.error("password and confirm password does not matched");
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const data = registerData
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = registerData;
+
+    setLoading(true)
     try {
-        if(handleValidation()){
-            console.log("koikoi", data)
+      if (handleValidation()) {
+        let res = await axios.post(
+          "http://localhost:8025/api/v1/user/registration",
+          data
+        );
+        if(res && res.status){
+          toast.success(res.message)
+          setLoading(false)
+          setRegisterData(initial)
+          navigate("/studentProfile");
         }
+        else{
+          setLoading(false)
+        }
+      }
     } catch (error) {
-        
+      console.error("Error:", error);
+      toast.error(error)
+      setLoading(false)
+      // Handle error response
     }
-
-  }
+  };
 
   return (
     <div style={{ backgroundColor: "#f5f5f5" }}>
@@ -295,15 +324,15 @@ const Registar = () => {
                     />
                   </div>
                   <div class="col-md-6">
-                    <label for="aadharLinkMobile" class="form-label">
+                    <label for="AadharLinkedMobileNo" class="form-label">
                       Aadhar linked Mobile No<span className="astric">*</span>
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       class="form-control"
-                      id="aadharLinkMobile"
-                      name="aadharLinkMobile"
-                      value={registerData.aadharLinkMobile}
+                      id="AadharLinkedMobileNo"
+                      name="AadharLinkedMobileNo"
+                      value={registerData.AadharLinkedMobileNo}
                       onChange={(e) => handleChange(e)}
                       required
                     />
@@ -315,7 +344,7 @@ const Registar = () => {
                     OTP<span className="astric">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     class="form-control"
                     id="otp"
                     name="otp"
@@ -393,7 +422,7 @@ const Registar = () => {
                       Mobile Number<span className="astric">*</span>
                     </label>
                     <input
-                      type="tel"
+                      type="number"
                       class="form-control"
                       id="mobile"
                       name="mobile"
@@ -509,7 +538,7 @@ const Registar = () => {
                     id="loginId"
                     name="loginId"
                     value={registerData.loginId}
-                      onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleChange(e)}
                     required
                   />
                 </div>
@@ -546,7 +575,11 @@ const Registar = () => {
                 </div>
 
                 <div class="mb-3">
-                  <button type="submit" class="btn btn-primary" onClick={(e) => handleSubmit(e)}>
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    onClick={(e) => handleSubmit(e)}
+                  >
                     Submit
                   </button>
                 </div>
@@ -556,9 +589,10 @@ const Registar = () => {
                   communication.
                 </div>
                 <div class="mt-2">
-                  <a href="index.php" class="text-primary">
-                    Already Registered? Click Here to Login
-                  </a>
+                  <p>
+                    Already Registered? Click <Link to="/login"> Here </Link>
+                    to Login
+                  </p>
                 </div>
               </form>
             </div>
