@@ -3,6 +3,7 @@ import logo from "../images/NATHANI_LOGO.png";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import AllStatedata from "../constant/config.json";
 
 const Registar = () => {
   const initial = {
@@ -22,21 +23,42 @@ const Registar = () => {
     loginId: "",
     password: "",
     confirmpassword: "",
-    userType:"user"
+    userType: "user",
   };
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [registerData, setRegisterData] = useState(initial);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const stateNames = Object.keys(AllStatedata);
+  const [filteredCities, setFilteredCities] = useState([]);
   console.log("asdasd", registerData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
+
     setRegisterData((prev) => ({
       ...prev,
-      [name]: name === "AadharLinkedMobileNo" || name === "otp" || name === "mobile" ? Number(value) : value,
+      [name]:
+        name === "AadharLinkedMobileNo" || name === "otp" || name === "mobile"
+          ? Number(value)
+          : value,
     }));
   };
+
+  const filterCity = (state) => {
+    return AllStatedata[state] || [];
+  };
+
+  const handleStateChange = (e) => {
+    handleChange(e);
+    const cities = filterCity(e.target.value);
+    setFilteredCities(cities);
+    // setRegisterData((prevData) => ({
+    //   ...prevData,
+    //   city: "", 
+    // }));
+  };
+
+  console.log("cityname", AllStatedata);
 
   const handleValidation = () => {
     if (!registerData.registeredBy) {
@@ -135,27 +157,26 @@ const Registar = () => {
     e.preventDefault();
     const data = registerData;
 
-    setLoading(true)
+    setLoading(true);
     try {
       if (handleValidation()) {
         let res = await axios.post(
           "http://localhost:8025/api/v1/user/registration",
           data
         );
-        if(res && res.status){
-          toast.success(res.message)
-          setLoading(false)
-          setRegisterData(initial)
+        if (res && res.status) {
+          toast.success(res.message);
+          setLoading(false);
+          setRegisterData(initial);
           navigate("/studentProfile");
-        }
-        else{
-          setLoading(false)
+        } else {
+          setLoading(false);
         }
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error(error)
-      setLoading(false)
+      toast.error(error);
+      setLoading(false);
       // Handle error response
     }
   };
@@ -494,36 +515,46 @@ const Registar = () => {
                 </div>
 
                 <div class="row mb-3">
-                  <div class="col-md-6">
-                    <label for="state" class="form-label">
+                  <div className="col-md-6">
+                    <label htmlFor="state" className="form-label">
                       State<span className="astric">*</span>
                     </label>
                     <select
-                      class="form-select"
+                      className="form-select"
                       id="state"
                       name="state"
                       value={registerData.state}
-                      onChange={(e) => handleChange(e)}
+                      onChange={(e) => {
+                        handleStateChange(e);
+                      }}
                       required
                     >
                       <option value="">--select--</option>
-                      <option value="State">State One</option>
+                      {stateNames.map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
                     </select>
                   </div>
-                  <div class="col-md-6">
-                    <label for="city" class="form-label">
+                  <div className="col-md-6">
+                    <label htmlFor="city" className="form-label">
                       City<span className="astric">*</span>
                     </label>
                     <select
-                      class="form-select"
+                      className="form-select"
                       id="city"
                       name="city"
-                      required
                       value={registerData.city}
                       onChange={(e) => handleChange(e)}
+                      required
                     >
                       <option value="">--select--</option>
-                      <option value="City">City One</option>
+                      {filteredCities.map((city) => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
