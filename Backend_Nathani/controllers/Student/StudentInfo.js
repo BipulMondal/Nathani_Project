@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const studentModal = require("../Student/StudentInfo");
+const studentModal = require("../../models/StudentInfo");
 
 const addStudent = async (req, res) => {
     try {

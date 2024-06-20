@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import queryString from "query-string";
 
@@ -7,7 +7,52 @@ const StudentProfile = () => {
   const query = queryString.parse(location.search);
   const tab = query.tab || "student_info";
 
-  console.log("kol", tab, tab);
+  const initialStudentInfo = {
+    aadharNo: "",
+    lastName: "",
+    firstName: "",
+    fatherName: "",
+    motherName: "",
+    guardianName: "",
+    dob: null,
+    birthPlace: "",
+    gender: "",
+    maritalStatus: "",
+    spouseName: "",
+    StudentMobileNo: "",
+    StudentEmail: "",
+    permanentAddress: "",
+    currentAddress: "",
+    landMark: "",
+    city: "",
+    pin: "",
+    district: "",
+    state: "",
+    country: "",
+    physicalChallange: "",
+    physicalChallangeImg: "",
+    orphan: "",
+    parentDeathCertificateImg: "",
+    addaharFrontImg: "",
+    aadharBackImg: "",
+    rationFrontImg: "",
+    rationBackImg: "",
+    electricityBillImg: "",
+    category: "",
+    zakatFund: "",
+    refferedBy: "",
+    refMobileNo: "",
+  };
+
+  const [studentInformation, setStudentInformation] =useState(initialStudentInfo);
+  console.log("studentInformation", studentInformation)
+
+  const handleStudentDataChange = (e) => {
+    setStudentInformation((prev) => ({
+      ...prev,
+      [e.target.name] : e.target.value
+    }))
+  }
 
   return (
     <>
@@ -121,7 +166,11 @@ const StudentProfile = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/studentProfile/print" target="_blank">
+                <a
+                  className="nav-link"
+                  href="/studentProfile/print"
+                  target="_blank"
+                >
                   Print Form
                 </a>
               </li>
@@ -146,6 +195,7 @@ const StudentProfile = () => {
                         <h3>
                           <u>Basic Information</u>
                         </h3>
+                        {/* Aadhar */}
                         <div className="form-group">
                           <div className="row">
                             <div className="col-lg-3">
@@ -153,16 +203,20 @@ const StudentProfile = () => {
                                 Enter Aadhar No <span>*</span>
                               </label>
                               <input
-                                type="text"
+                                type="numbers"
+                                name="aadharNo"
+                                value={studentInformation.aadharNo}
                                 className="form-control"
-                                name="aadhar_no"
                                 placeholder="Enter Aadhar No"
+                                onChange={(e) => handleStudentDataChange(e)}
                               />
                             </div>
                           </div>
                         </div>
+
                         <div className="form-group">
                           <div className="row">
+                            {/* last name */}
                             <div className="col-lg-3">
                               <label>
                                 Enter Last Name <span>*</span>
@@ -170,11 +224,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="last_name"
+                                name="lastName"
+                                value={studentInformation.lastName}
                                 placeholder="Enter Last Name"
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
+                            {/* first name */}
                             <div className="col-lg-3">
                               <label>
                                 Enter First Name <span>*</span>
@@ -182,11 +239,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="first_name"
+                                name="firstName"
+                                value={studentInformation.firstName}
                                 placeholder="Enter First Name"
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
+                            {/* father name */}
                             <div className="col-lg-3">
                               <label>
                                 Enter Father's Name <span>*</span>
@@ -194,11 +254,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="father_name"
+                                name="fatherName"
+                                value={studentInformation.fatherName}
                                 placeholder="Enter Father's Name"
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
+                            {/* mother name */}
                             <div className="col-lg-3">
                               <label>
                                 Enter Mother's Name <span>*</span>
@@ -206,8 +269,10 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="mother_name"
+                                name="motherName"
+                                value={studentInformation.motherName}
                                 placeholder="Enter Mother's Name"
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
@@ -215,6 +280,7 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* guardian name */}
                             <div className="col-lg-3">
                               <label>
                                 Enter Guardian Name <span>*</span>
@@ -222,11 +288,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="guardian_name"
+                                name="guardianName"
+                                value={studentInformation.guardianName}
                                 placeholder="Enter Guardian Name"
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
+                            {/* dob */}
                             <div className="col-lg-3">
                               <label>
                                 Enter Date Of Birth <span>*</span>
@@ -235,10 +304,13 @@ const StudentProfile = () => {
                                 type="date"
                                 className="form-control"
                                 name="dob"
+                                value={studentInformation.dob}
                                 placeholder="Enter Date Of Birth"
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
+                            {/* birth place */}
                             <div className="col-lg-3">
                               <label>
                                 Enter Birth Place <span>*</span>
@@ -246,11 +318,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="birth_place"
+                                name="birthPlace"
+                                value={studentInformation.birthPlace}
                                 placeholder="Enter Birth Place"
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
+                            {/* gender */}
                             <div className="col-lg-3">
                               <label>
                                 Gender <span>*</span>
@@ -259,24 +334,27 @@ const StudentProfile = () => {
                                 <label className="radio-inline">
                                   <input
                                     type="radio"
-                                    name="gender_radio"
+                                    name="gender"
                                     value="Male"
+                                    onChange={(e) => handleStudentDataChange(e)}
                                   />{" "}
                                   Male
                                 </label>
                                 <label className="radio-inline">
                                   <input
                                     type="radio"
-                                    name="gender_radio"
+                                    name="gender"
                                     value="Female"
+                                    onChange={(e) => handleStudentDataChange(e)}
                                   />{" "}
                                   Female
                                 </label>
                                 <label className="radio-inline">
                                   <input
                                     type="radio"
-                                    name="gender_radio"
+                                    name="gender"
                                     value="Transgender"
+                                    onChange={(e) => handleStudentDataChange(e)}
                                   />{" "}
                                   Transgender
                                 </label>
@@ -286,13 +364,16 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* marital status */}
                             <div className="col-lg-3">
                               <label>
                                 Marital Status <span>*</span>
                               </label>
                               <select
                                 className="form-control"
-                                name="marital_status"
+                                name="maritalStatus"
+                                value={studentInformation.maritalStatus}
+                                onChange={(e) => handleStudentDataChange(e)}
                               >
                                 <option value="">
                                   --Select Marital Status--
@@ -301,6 +382,7 @@ const StudentProfile = () => {
                                 <option value="No">No</option>
                               </select>
                             </div>
+                            {/* spouse name */}
                             <div className="col-lg-3">
                               <label>
                                 Enter Spouse Name <span>*</span>
@@ -308,7 +390,9 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="spouse_name"
+                                name="spouseName"
+                                value={studentInformation.spouseName}
+                                onChange={(e) => handleStudentDataChange(e)}
                                 placeholder="Enter Spouse Name"
                                 required
                               />
@@ -323,6 +407,7 @@ const StudentProfile = () => {
 
                         <div className="form-group">
                           <div className="row">
+                            {/* student mobile */}
                             <div className="col-lg-3">
                               <label className="form-label">
                                 Enter Student's Mobile <span>*</span>
@@ -330,11 +415,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="student_mobile"
+                                name="StudentMobileNo"
+                                value={studentInformation.StudentMobileNo}
+                                onChange={(e) => handleStudentDataChange(e)}
                                 placeholder="Enter Student's Mobile"
                                 required
                               />
                             </div>
+                            {/* student email */}
                             <div className="col-lg-3">
                               <label className="form-label">
                                 Enter Student's Email <span>*</span>
@@ -342,8 +430,10 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="student_mail"
+                                name="StudentEmail"
+                                value={studentInformation.StudentEmail}
                                 placeholder="Enter Student's Email"
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
@@ -351,6 +441,7 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* prmant address */}
                             <div className="col-lg-5">
                               <label className="form-label">
                                 Permanent Address
@@ -358,10 +449,13 @@ const StudentProfile = () => {
                               <textarea
                                 className="form-control"
                                 rows="3"
-                                name="permanent_address"
+                                name="permanentAddress"
+                                value={studentInformation.permanentAddress}
+                                onChange={(e) => handleStudentDataChange(e)}
                                 placeholder="Enter Permanent Address"
                               ></textarea>
                             </div>
+                            {/* permanent checkbox */}
                             <div className="col-lg-1 d-flex align-items-center">
                               <div className="form-check">
                                 <input
@@ -372,6 +466,7 @@ const StudentProfile = () => {
                                 <label className="form-check-label"></label>
                               </div>
                             </div>
+                            {/* current address */}
                             <div className="col-lg-6">
                               <label className="form-label">
                                 Current Address
@@ -379,7 +474,9 @@ const StudentProfile = () => {
                               <textarea
                                 className="form-control"
                                 rows="3"
-                                name="current_address"
+                                name="currentAddress"
+                                value={studentInformation.currentAddress}
+                                onChange={(e) => handleStudentDataChange(e)}
                                 placeholder="Enter Current Address"
                               ></textarea>
                             </div>
@@ -387,6 +484,7 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* enter landmar */}
                             <div className="col-lg-3">
                               <label className="form-label">
                                 Enter Landmark <span>*</span>
@@ -394,11 +492,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="landmark"
+                                name="landMark"
                                 placeholder="Enter Landmark"
+                                value={studentInformation.landMark}
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
+                            {/* student city */}
                             <div className="col-lg-3">
                               <label className="form-label">
                                 City <span>*</span>
@@ -407,9 +508,12 @@ const StudentProfile = () => {
                                 type="text"
                                 className="form-control"
                                 name="city"
+                                value={studentInformation.city}
+                                onChange={(e) => handleStudentDataChange(e)}
                                 placeholder="Enter City"
                               />
                             </div>
+                            {/* {pin code} */}
                             <div className="col-lg-3">
                               <label className="form-label">
                                 Enter Pincode <span>*</span>
@@ -417,11 +521,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="pincode"
+                                name="pin"
                                 placeholder="Enter Pincode"
+                                value={studentInformation.pin}
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
+                            {/* district */}
                             <div className="col-lg-3">
                               <label className="form-label">
                                 District <span>*</span>
@@ -431,27 +538,39 @@ const StudentProfile = () => {
                                 className="form-control"
                                 name="district"
                                 placeholder="Enter District"
+                                value={studentInformation.district}
+                                onChange={(e) => handleStudentDataChange(e)}
                               />
                             </div>
                           </div>
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* state */}
                             <div className="col-lg-3">
                               <label className="form-label">
                                 State <span>*</span>
                               </label>
-                              <select className="form-select" name="state_id">
+                              <select
+                                className="form-select"
+                                name="state"
+                                value={studentInformation.state}
+                                onChange={(e) => handleStudentDataChange(e)}
+                              >
                                 <option value="">--Select State--</option>
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
                               </select>
                             </div>
+                            {/* country */}
                             <div className="col-lg-3">
                               <label className="form-label">
                                 Country <span>*</span>
                               </label>
-                              <select className="form-select" name="country_id">
+                              <select className="form-select" name="country"
+                                     value={studentInformation.country}
+                                     onChange={(e) => handleStudentDataChange(e)}
+                              >
                                 <option value="">--Select Country--</option>
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
@@ -467,13 +586,16 @@ const StudentProfile = () => {
                         </h4>
                         <div className="form-group">
                           <div className="row">
+                            {/* physically_challanged */}
                             <div className="col-lg-2">
                               <label>
                                 Physically Challanged <span>*</span>
                               </label>
                               <select
                                 className="form-control"
-                                name="physically_challanged"
+                                name="physicalChallange"
+                                value={studentInformation.physicalChallange}
+                                onChange={(e) => handleStudentDataChange(e)}
                               >
                                 <option value="">
                                   --Select Physically Challanged Status--
@@ -482,6 +604,7 @@ const StudentProfile = () => {
                                 <option value="No">No</option>
                               </select>
                             </div>
+                            {/* physically challanged img upload */}
                             <div className="col-lg-2">
                               <label>
                                 Upload Certificate <span>*</span>
@@ -493,6 +616,7 @@ const StudentProfile = () => {
                                 id="physically_challanged_chacertificate"
                               />
                             </div>
+                            {/* physically challanged img show */}
                             <div className="col-lg-2">
                               <img
                                 id="physically_challanged_chacertificate_prev"
@@ -501,13 +625,16 @@ const StudentProfile = () => {
                                 style={{ height: "100px", width: "100px" }}
                               />
                             </div>
+                            {/* student orphan */}
                             <div className="col-lg-2">
                               <label>
                                 Student Orphan <span>*</span>
                               </label>
                               <select
                                 className="form-control"
-                                name="student_orphan"
+                                name="orphan"
+                                value={studentInformation.orphan}
+                                onChange={(e) => handleStudentDataChange(e)}
                               >
                                 <option value="">
                                   --Select Student Orphan Status--
@@ -516,6 +643,7 @@ const StudentProfile = () => {
                                 <option value="No">No</option>
                               </select>
                             </div>
+                            {/* parent death certificate img */}
                             <div className="col-lg-2">
                               <label>
                                 Parent Death Certificate <span>*</span>
@@ -527,6 +655,7 @@ const StudentProfile = () => {
                                 id="parent_death_chacertificate"
                               />
                             </div>
+                            {/* death certificate img */}
                             <div className="col-lg-2">
                               <img
                                 id="parent_death_chacertificate_prev"
@@ -539,6 +668,7 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* aadhar front img */}
                             <div className="col-lg-3">
                               <label>
                                 Upload Aadhar Card Front Photo <span>*</span>
@@ -550,6 +680,7 @@ const StudentProfile = () => {
                                 id="aadhar_card_front"
                               />
                             </div>
+                            {/* show aadhar fromt */}
                             <div className="col-lg-3">
                               <img
                                 id="aadhar_card_front_prev"
@@ -558,6 +689,7 @@ const StudentProfile = () => {
                                 style={{ height: "100px", width: "100px" }}
                               />
                             </div>
+                            {/* aadhar back img */}
                             <div className="col-lg-3">
                               <label>
                                 Upload Aadhar Card Back Photo <span>*</span>
@@ -569,6 +701,7 @@ const StudentProfile = () => {
                                 id="aadhar_card_back"
                               />
                             </div>
+                            {/* show aadhar back */}
                             <div className="col-lg-3">
                               <img
                                 id="aadhar_card_back_prev"
@@ -581,6 +714,7 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* ration card front img */}
                             <div className="col-lg-3">
                               <label>
                                 Upload Ration Card First Page Photo{" "}
@@ -593,6 +727,7 @@ const StudentProfile = () => {
                                 id="ration_card_first"
                               />
                             </div>
+                            {/* show ration front img */}
                             <div className="col-lg-3">
                               <img
                                 id="ration_card_first_prev"
@@ -601,6 +736,7 @@ const StudentProfile = () => {
                                 style={{ height: "100px", width: "100px" }}
                               />
                             </div>
+                            {/* ration card back img */}
                             <div className="col-lg-3">
                               <label>
                                 Upload Ration Card Last Page Photo{" "}
@@ -613,6 +749,7 @@ const StudentProfile = () => {
                                 id="ration_card_last"
                               />
                             </div>
+                            {/* show ration back img */}
                             <div className="col-lg-3">
                               <img
                                 id="ration_card_last_prev"
@@ -625,6 +762,7 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* electric bill */}
                             <div className="col-lg-3">
                               <label>
                                 Upload Electricity Bill Photo <span>*</span>
@@ -636,6 +774,7 @@ const StudentProfile = () => {
                                 id="electricity_bill"
                               />
                             </div>
+                            {/* show bill */}
                             <div className="col-lg-3">
                               <img
                                 id="electricity_bill_prev"
@@ -648,13 +787,16 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* religion category */}
                             <div className="col-lg-3">
                               <label>
                                 Category <span>*</span>
                               </label>
                               <select
                                 className="form-control"
-                                name="category_name"
+                                name="category"
+                                value={studentInformation.category}
+                                onChange={(e) => handleStudentDataChange(e)}
                               >
                                 <option value="">--Select Category--</option>
                                 <option value="Yes">Memon</option>
@@ -662,6 +804,7 @@ const StudentProfile = () => {
                                 <option value="No">Non-Muslim</option>
                               </select>
                             </div>
+                            {/* zakat fund */}
                             <div className="col-lg-3">
                               <label>
                                 Application for Zakat Fund <span>*</span>
@@ -669,13 +812,16 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="applicable_zakat_fund"
+                                name="zakatFund"
+                                value={studentInformation.zakatFund}
+                                onChange={(e) => handleStudentDataChange(e)}
                               />
                             </div>
                           </div>
                         </div>
                         <div className="form-group">
                           <div className="row">
+                            {/* refered by */}
                             <div className="col-lg-3">
                               <label>
                                 Referred By <span>*</span>
@@ -683,11 +829,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="referred_by"
+                                name="refferedBy"
                                 placeholder="Enter Referred By Name"
+                                value={studentInformation.refferedBy}
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
+                            {/* refered mobile */}
                             <div className="col-lg-3">
                               <label>
                                 Referrer Mobile No <span>*</span>
@@ -695,8 +844,10 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="referrer_mobile"
+                                name="refMobileNo"
                                 placeholder="Enter Referrer Mobile No"
+                                value={studentInformation.refMobileNo}
+                                onChange={(e) => handleStudentDataChange(e)}
                                 required
                               />
                             </div>
@@ -2820,7 +2971,7 @@ const StudentProfile = () => {
                       </div>
                     )}
 
-      {/*  ====================== organisation support information ======================== */}
+                    {/*  ====================== organisation support information ======================== */}
                     {tab === "organisation_support_information" && (
                       <div className="organization_support">
                         <div class="row">
@@ -4709,7 +4860,7 @@ const StudentProfile = () => {
                                 class="table-responsive"
                                 style={{ overflowX: "inherit" }}
                               >
-                                <p style={{fontSize: "16px"}}>
+                                <p style={{ fontSize: "16px" }}>
                                   <input type="checkbox" id="lockform" />
                                   &nbsp;&nbsp; I, hereby confirm that I have
                                   read all the instructions carefully before
@@ -4722,7 +4873,6 @@ const StudentProfile = () => {
                         </div>
                       </div>
                     )}
-
                   </form>
                   <div className="center">
                     <button

@@ -57,11 +57,10 @@ const Login = () => {
     try {
       if (handleValidation()) {
         let res = await axios.post(
-          "http://localhost:8025/api/v1/user/login",
+          "http://localhost:8088/api/v1/user/login",
           data
         );
         if(res && res.status){
-          console.log("resdssdfsd", res)
           toast.success(res.message)
           localStorage.setItem("Authorization", res?.data?.token);
           localStorage.setItem("userType", res?.data?.userType);
@@ -70,11 +69,12 @@ const Login = () => {
           navigate("/studentProfile");
         }
         else{
+          toast.error(res.message)
           setLoading(false)
         }
       }
     } catch (error) {
-      console.error("Error:", error);
+      // console.error("Error_sdfds", error);
       toast.error(error)
       setLoading(false)
       // Handle error response

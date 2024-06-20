@@ -161,7 +161,7 @@ const Registar = () => {
     try {
       if (handleValidation()) {
         let res = await axios.post(
-          "http://localhost:8025/api/v1/user/registration",
+          "http://localhost:8088/api/v1/user/registration",
           data
         );
         if (res && res.status) {
