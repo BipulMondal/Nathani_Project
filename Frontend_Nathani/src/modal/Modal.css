@@ -1,0 +1,23 @@
+.main_modal {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    /* background: antiquewhite; */
+    padding: 9px 24px;
+    /* border: 1px solid gray; */
+    position: absolute;
+    margin-top: -26px;
+}
+.inner{
+    width: 11%;
+    border: 1px solid rgb(143, 142, 142);
+    z-index: 12;
+    background: #fff;
+    border-radius: 10px;
+}
+.inner div {
+    padding: 5px 12px;
+}
+.inner hr {
+    margin: 0;
+}

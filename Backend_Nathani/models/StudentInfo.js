@@ -120,11 +120,11 @@ const studentSchema = new mongoose.Schema({
     bonafideCertificateBackImg: { type: Number },
   },
   othertrustSupport: {
-    othertrustSupport: { type: String },
-    truseDetails: [
+    otherTrustSupport: { type: String },
+    trustDetails: [
       {
         trustName: { type: String },
-        currentyearAmount: { type: Number },
+        currentYearAmount: { type: Number },
         lastYearAmount: { type: Number },
         trustState: { type: String },
         trustCity: { type: String },
@@ -153,7 +153,7 @@ const studentSchema = new mongoose.Schema({
         memberName: { type: String },
         memberId: { type: String },
         course: { type: String },
-        amountreceived: { type: Number },
+        amountReceived: { type: Number },
         financialYear: { type: Date },
         howManyYearsGet: { type: Number },
       },
@@ -170,7 +170,7 @@ const studentSchema = new mongoose.Schema({
   },
   familyDeclaration: {
     courseName: { type: String },
-    applicantname: { type: String },
+    applicantName: { type: String },
     parentName: { type: String },
     place: { type: String },
     date: { type: Date },
@@ -178,10 +178,11 @@ const studentSchema = new mongoose.Schema({
     studentSign: { type: String },
     parentSign: { type: String },
   },
-  isConfirm: { type: String, default: false },
-  isSaved: { type: String, default: false },
+  isConfirm: {type: Boolean, default: false},
+  saveAsDraft: {type: Boolean, default: false},
   isDeleted: { type: Boolean, default: false },
-  formAcceptStatus: { type: String , default: false},
+  formAcceptStatus: {type: Boolean, default: false},
+  updatedStatus: {type: Boolean, default: false},
   createdOn: { type: Date, default: Date.now },
   updatedOn: { type: Date, default: Date.now }
 });

@@ -1,12 +1,17 @@
-import React from "react";
+import React, {useContext} from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../images/NATHANI_LOGO.png"
 import "./Header.css"
+import "../../modal/Modal.css"
+import Modal from "../../modal/Modal";
+import { GlobalContext } from "../../GlobalContext/GlobalContext";
 
 const Header = () => {
   const location = useLocation();
+  const {openModal, setOpenModal} = useContext(GlobalContext);
 
   return (
+    <>
     <div className="header_main">
       <nav
         className="navbar-default navbar-static-top"
@@ -43,15 +48,14 @@ const Header = () => {
         </ul>
           <ul className="nav navbar-top-links navbar-right">
             <li className="dropdown nav-item">
-              <a
+              <p style={{cursor:"pointer"}}
                 className="nav-link "
-                data-toggle="dropdown"
-                href="#"
+                onClick={() => setOpenModal(!openModal)}                
               >
                 <i className="fa fa-user fa-fw"></i>{" "}
                 <i className="fa fa-caret-down"></i>
-              </a>
-              <div className="dropdown-menu dropdown-user">
+              </p>
+              {/* <div className="dropdown-menu dropdown-user">
                 <Link className="dropdown-item" to="#">
                   <i className="fa fa-user fa-fw"></i> User Profile
                 </Link>
@@ -62,12 +66,14 @@ const Header = () => {
                 <Link className="dropdown-item" to="/login">
                   <i className="fa fa-sign-out fa-fw"></i> Logout
                 </Link>
-              </div>
+              </div> */}
             </li>
           </ul>
         </div>
       </nav>
     </div>
+    {openModal && < Modal />}
+    </>
   );
 };
 

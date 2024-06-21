@@ -54,6 +54,10 @@ const StudentProfile = () => {
     }))
   }
 
+  const handleValidation = () => {
+    
+  }
+
   return (
     <>
       <div id="page-wrapper">

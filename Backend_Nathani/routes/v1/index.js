@@ -3,7 +3,6 @@ var router = express.Router();
 var path = require('path');
 const multer = require('multer');
 const User = require('./user')
-const userAuthController = require("../../controllers/Auth/UserAuthentication")
 
 var multistorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -26,8 +25,6 @@ const uploadNew = multer({
   dest: path.resolve('./malter'),
   limits: limitsMulter,
 });
-
-router.post("/registration", userAuthController.register)
 
 router.use('/user', User)
 

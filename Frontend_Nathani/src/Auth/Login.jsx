@@ -11,7 +11,7 @@ const Login = () => {
   };
 
   const [loginData, setLoginData] = useState(initial);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
@@ -51,35 +51,44 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = loginData;
-
-    setLoading(true)
+    setLoading(true);
     try {
       if (handleValidation()) {
-        let res = await axios.post(
-          "http://localhost:8088/api/v1/user/login",
-          data
-        );
-        if(res && res.status){
-          toast.success(res.message)
-          localStorage.setItem("Authorization", res?.data?.token);
-          localStorage.setItem("userType", res?.data?.userType);
-          setLoading(false)
-          setLoginData(initial)
+        const data = loginData;
+        const res = await axios.post("http://localhost:8025/api/v1/user/login", data);
+  
+        console.log("response", res);
+  
+        if (res.data.status) {
+          toast.success(res.data.message);
+          localStorage.setItem("Authorization", res.data.token);
+          localStorage.setItem("userType", res.data.userType);
+          setLoading(false);
+          setLoginData(initial);
           navigate("/studentProfile");
-        }
-        else{
-          toast.error(res.message)
-          setLoading(false)
+        } else {
+          toast.error(res.data.message);
+          setLoading(false);
         }
       }
     } catch (error) {
-      // console.error("Error_sdfds", error);
-      toast.error(error)
-      setLoading(false)
-      // Handle error response
+      if (error.response) {
+        // Server responded with a status other than 2xx
+        console.error("Error Response:", error.response.data);
+        toast.error(error.response.data.message || "Login failed. Please try again.");
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error("Error Request:", error.request);
+        toast.error("No response from the server. Please try again later.");
+      } else {
+        // Something else caused the error
+        console.error("Error:", error.message);
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+      setLoading(false);
     }
   };
+  
 
   return (
     <div className="container login_container">
