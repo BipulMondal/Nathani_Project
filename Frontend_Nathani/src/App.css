@@ -227,3 +227,13 @@ table {
   vertical-align: middle;
   cursor: pointer;
 }
+
+/* ================   previous  next button ===========*/
+.prev_nxt_btn {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+.prev_nxt_btn button {
+ cursor: pointer;
+}

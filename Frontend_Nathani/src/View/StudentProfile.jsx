@@ -1,70 +1,292 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import queryString from "query-string";
 
 const StudentProfile = () => {
   const location = useLocation();
   const query = queryString.parse(location.search);
   const tab = query.tab || "student_info";
+  const navigate = useNavigate();
 
-  const initialStudentInfo = {
-    aadharNo: "",
-    lastName: "",
-    firstName: "",
-    fatherName: "",
-    motherName: "",
-    guardianName: "",
-    dob: null,
-    birthPlace: "",
-    gender: "",
-    maritalStatus: "",
-    spouseName: "",
-    StudentMobileNo: "",
-    StudentEmail: "",
-    permanentAddress: "",
-    currentAddress: "",
-    landMark: "",
-    city: "",
-    pin: "",
-    district: "",
-    state: "",
-    country: "",
-    physicalChallange: "",
-    physicalChallangeImg: "",
-    orphan: "",
-    parentDeathCertificateImg: "",
-    addaharFrontImg: "",
-    aadharBackImg: "",
-    rationFrontImg: "",
-    rationBackImg: "",
-    electricityBillImg: "",
-    category: "",
-    zakatFund: "",
-    refferedBy: "",
-    refMobileNo: "",
+  const initialState = {
+    studentInfo: {
+      aadharNo: "",
+      lastName: "",
+      firstName: "",
+      fatherName: "",
+      motherName: "",
+      guardianName: "",
+      dob: "",
+      birthPlace: "",
+      gender: "",
+      maritalStatus: "",
+      spouseName: "",
+      StudentMobileNo: 0,
+      StudentEmail: "",
+      parmanentAddress: "",
+      currentAddress: "",
+      landMark: "",
+      city: "",
+      pin: "",
+      district: "",
+      state: "",
+      country: "",
+      physicalChallange: "",
+      physicalChallangeImg: "",
+      orphan: "",
+      parentDeathCertificateImg: "",
+      addaharFrontImg: "",
+      aadharBackImg: "",
+      rationFrontImg: "",
+      rationBackImg: "",
+      electricityBillImg: "",
+      category: "",
+      zakatFund: 0,
+      refferedBy: "",
+      refMobileNo: "",
+    },
+    familyDetails: {
+      parentStatus: "",
+      parentStatusOneImg: "",
+      parentStatusTwoImg: "",
+      relationWithStudent: "",
+      relationPersonName: "",
+      relationPersonMaritalStatus: "",
+      relationPersonDOB: "",
+      relationPersongender: "",
+      relationPersonAadhar: "",
+      relationPersonEducation: "",
+      relationPersonOccupation: "",
+      relationPersonOccupationDetails: "",
+      relationPersonMonthlyIncome: 0,
+      incomeFileFrontImg: "",
+      incomeFileBackImg: "",
+      handiCapped: "",
+      handiCapFileOneImg: "",
+      handiCapFileTwoImg: "",
+      personCity: "",
+      personStudying: "",
+    },
+    jamatInfo: {
+      ifMemon: "",
+      ifMotherMomen: "",
+      memonJamatLetterOne: "",
+      memonJamatLetterTwo: "",
+      jamatDetails: "",
+      belongingJamat: "",
+      jamatSecretaryName: "",
+      secretaryMobile: 0,
+      secretaryEmail: "",
+      memonAddress: "",
+      memonCity: "",
+      memonPin: "",
+      memonState: "",
+      helpFromJamat: "",
+      jamatReceiveAmount: 0,
+      amountReceivePurpose: "",
+      amountType: "",
+      deeniyatCourse: "",
+      courseName: "",
+      madrashaName: "",
+      anyOtherCourse: "",
+    },
+    prevAcademicInfo: {
+      prevYearResult: "",
+      lastYearResultImg: "",
+      lastTwoYearResult: "",
+      TwoYearBackResult: "",
+      currentStudy: "",
+      specialCase: "",
+      courseName: "",
+      levelOfCourse: "",
+      otherCourseOne: "",
+      otherLevelOfCourse: "",
+      otherField: "",
+      field: "",
+      duration: "",
+      instructionMedium: "",
+      coursePattern: "",
+      otherDurationCourse: "",
+      otherCourseTwo: "",
+      otherMedium: "",
+      instituteName: "",
+      boardName: "",
+      instituteType: "",
+      ifPrivate: "",
+      instituteAddress: "",
+      instituteCity: "",
+      institutePin: "",
+      instituteDistrict: "",
+      instituteState: "",
+      instituteCountry: "",
+      instituteEmail: "",
+      instituteWebsite: "",
+      instituteLandLineNo: 0,
+      instituteContactNo: 0,
+      instituteMobileNo: 0,
+      bonafideCertificateFrontImg: 0,
+      bonafideCertificateBackImg: 0,
+    },
+    othertrustSupport: {
+      otherTrustSupport: "",
+      trustDetails: [
+        {
+          trustName: "",
+          currentYearAmount: 0,
+          lastYearAmount: 0,
+          trustState: "",
+          trustCity: "",
+        },
+      ],
+      otherContribution: [
+        {
+          contributionSource: "",
+          contributionCurrentyearAmunt: 0,
+          contributionLastyearAmunt: 0,
+          contributionState: "",
+          contributionCity: "",
+        },
+      ],
+      govtScholarshipApply: "",
+      scholarAmount: 0,
+      scholarYear: "",
+      scholarName: "",
+      applicationId: "",
+      applicationPass: "",
+    },
+    organizationSupportFamily: {
+      receivedSupport: false,
+      supportFamilyDetails: [
+        {
+          memberName: "",
+          memberId: "",
+          course: "",
+          amountReceived: 0,
+          financialYear: "",
+          howManyYearsGet: 0,
+        },
+      ],
+      otherSupport: [
+        {
+          memberName: "",
+          memberId: "",
+          scheme: "",
+          amountreceived: 0,
+          financialYear: "",
+        },
+      ],
+    },
+    familyDeclaration: {
+      courseName: "",
+      applicantName: "",
+      parentName: "",
+      place: "",
+      date: "",
+      studentPhoto: "",
+      studentSign: "",
+      parentSign: "",
+    },
+    studentCode: "",
+    isConfirm: false,
   };
 
-  const [studentInformation, setStudentInformation] =useState(initialStudentInfo);
-  console.log("studentInformation", studentInformation)
+  const [studentInformation, setStudentInformation] = useState(initialState);
+  console.log("studentInformation", studentInformation.familyDetails);
+  const [currentTab, setCurrentTab] = useState("student_info");
 
-  const handleStudentDataChange = (e) => {
-    setStudentInformation((prev) => ({
-      ...prev,
-      [e.target.name] : e.target.value
-    }))
-  }
+  const tabs = [
+    "student_info",
+    "family_details",
+    "memon_information",
+    "previous_academic_information",
+    "other_trust_support_information",
+    "organisation_support_information",
+    "parent_declaration",
+    "all_documents",
+    "confirmation",
+    "printForm",
+  ];
+  const tabNames = {
+    student_info: "Student Information",
+    family_details: "Family Details",
+    memon_information: "Memon Jamat Information",
+    previous_academic_information: "Previous Academic Information",
+    other_trust_support_information: "Details Of Other Trust Support",
+    organisation_support_information: "Organisation Support To Family Member",
+    parent_declaration: "Declaration Of Parents",
+    all_documents: "Documentation",
+    confirmation: "Confirmation",
+    printForm: "Print Form",
+  };
 
-  const handleValidation = () => {
-    
-  }
+  const handlePrev = () => {
+    const currentIndex = tabs.indexOf(currentTab);
+    if (currentIndex > 0) {
+      setCurrentTab(tabs[currentIndex - 1]);
+      navigate(`/studentProfile?tab=${tabs[currentIndex - 1]}`);
+    }
+  };
+
+  const handleNext = () => {
+    const currentIndex = tabs.indexOf(currentTab);
+    if (currentIndex < tabs.length - 1) {
+      const nextTab = tabs[currentIndex + 1];
+      setCurrentTab(nextTab);
+      console.log("nextTab", nextTab);
+      navigate(`/studentProfile?tab=${nextTab}`);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    console.log("fuck", e.target.name, e.target.value);
+    const keys = name.split(".");
+    if (keys.length === 1) {
+      setStudentInformation((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    } else {
+      setStudentInformation((prevState) => {
+        const nestedObject = { ...prevState[keys[0]], [keys[1]]: value };
+        return { ...prevState, [keys[0]]: nestedObject };
+      });
+    }
+  };
+
+  const handleValidation = () => {};
 
   return (
     <>
       <div id="page-wrapper">
         <div className="row infoHead">
           <div className="col-lg-12 topic_div">
+            <div>
+              <ul className="nav nav-pills navinfo">
+                {tabs.map((tab) => (
+                  <li
+                    key={tab}
+                    className={`nav-item ${currentTab === tab ? "active" : ""}`}
+                  >
+                    <Link
+                      className="nav-link"
+                      to={`/studentProfile?tab=${tab}`}
+                      onClick={() => setCurrentTab(tab)}
+                    >
+                      {/* {tab
+                        .split("_")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")} */}
+                      {tabNames[tab]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
             {/* <h1 className="page-header">Students Information</h1> */}
-            <ul className="nav nav-pills navinfo">
+            {/* <ul className="nav nav-pills navinfo">
               <li
                 className={`nav-item ${tab === "student_info" ? "active" : ""}`}
               >
@@ -178,7 +400,7 @@ const StudentProfile = () => {
                   Print Form
                 </a>
               </li>
-            </ul>
+            </ul> */}
           </div>
         </div>
       </div>
@@ -208,11 +430,11 @@ const StudentProfile = () => {
                               </label>
                               <input
                                 type="numbers"
-                                name="aadharNo"
-                                value={studentInformation.aadharNo}
+                                name="studentInfo.aadharNo"
                                 className="form-control"
                                 placeholder="Enter Aadhar No"
-                                onChange={(e) => handleStudentDataChange(e)}
+                                value={studentInformation.studentInfo.aadharNo}
+                                onChange={(e) => handleChange(e)}
                               />
                             </div>
                           </div>
@@ -228,10 +450,10 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="lastName"
-                                value={studentInformation.lastName}
+                                name="studentInfo.lastName"
+                                value={studentInformation.studentInfo.lastName}
                                 placeholder="Enter Last Name"
-                                onChange={(e) => handleStudentDataChange(e)}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -243,10 +465,10 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="firstName"
-                                value={studentInformation.firstName}
+                                name="studentInfo.firstName"
+                                value={studentInformation.studentInfo.firstName}
                                 placeholder="Enter First Name"
-                                onChange={(e) => handleStudentDataChange(e)}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -258,10 +480,12 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="fatherName"
-                                value={studentInformation.fatherName}
+                                name="studentInfo.fatherName"
+                                value={
+                                  studentInformation.studentInfo.fatherName
+                                }
                                 placeholder="Enter Father's Name"
-                                onChange={(e) => handleStudentDataChange(e)}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -273,10 +497,12 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="motherName"
-                                value={studentInformation.motherName}
+                                name="studentInfo.motherName"
+                                value={
+                                  studentInformation.studentInfo.motherName
+                                }
                                 placeholder="Enter Mother's Name"
-                                onChange={(e) => handleStudentDataChange(e)}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -292,10 +518,12 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="guardianName"
-                                value={studentInformation.guardianName}
+                                name="studentInfo.guardianName"
+                                value={
+                                  studentInformation.studentInfo.guardianName
+                                }
                                 placeholder="Enter Guardian Name"
-                                onChange={(e) => handleStudentDataChange(e)}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -307,10 +535,10 @@ const StudentProfile = () => {
                               <input
                                 type="date"
                                 className="form-control"
-                                name="dob"
-                                value={studentInformation.dob}
+                                name="studentInfo.dob"
+                                value={studentInformation.studentInfo.dob}
                                 placeholder="Enter Date Of Birth"
-                                onChange={(e) => handleStudentDataChange(e)}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -322,10 +550,12 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="birthPlace"
-                                value={studentInformation.birthPlace}
+                                name="studentInfo.birthPlace"
+                                value={
+                                  studentInformation.studentInfo.birthPlace
+                                }
                                 placeholder="Enter Birth Place"
-                                onChange={(e) => handleStudentDataChange(e)}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -338,27 +568,27 @@ const StudentProfile = () => {
                                 <label className="radio-inline">
                                   <input
                                     type="radio"
-                                    name="gender"
+                                    name="studentInfo.gender"
                                     value="Male"
-                                    onChange={(e) => handleStudentDataChange(e)}
+                                    onChange={(e) => handleChange(e)}
                                   />{" "}
                                   Male
                                 </label>
                                 <label className="radio-inline">
                                   <input
                                     type="radio"
-                                    name="gender"
+                                    name="studentInfo.gender"
                                     value="Female"
-                                    onChange={(e) => handleStudentDataChange(e)}
+                                    onChange={(e) => handleChange(e)}
                                   />{" "}
                                   Female
                                 </label>
                                 <label className="radio-inline">
                                   <input
                                     type="radio"
-                                    name="gender"
+                                    name="studentInfo.gender"
                                     value="Transgender"
-                                    onChange={(e) => handleStudentDataChange(e)}
+                                    onChange={(e) => handleChange(e)}
                                   />{" "}
                                   Transgender
                                 </label>
@@ -375,9 +605,11 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 className="form-control"
-                                name="maritalStatus"
-                                value={studentInformation.maritalStatus}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.maritalStatus"
+                                value={
+                                  studentInformation.studentInfo.maritalStatus
+                                }
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="">
                                   --Select Marital Status--
@@ -394,9 +626,11 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="spouseName"
-                                value={studentInformation.spouseName}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.spouseName"
+                                value={
+                                  studentInformation.studentInfo.spouseName
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Spouse Name"
                                 required
                               />
@@ -419,9 +653,11 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="StudentMobileNo"
-                                value={studentInformation.StudentMobileNo}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.StudentMobileNo"
+                                value={
+                                  studentInformation.studentInfo.StudentMobileNo
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Student's Mobile"
                                 required
                               />
@@ -434,10 +670,12 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="StudentEmail"
-                                value={studentInformation.StudentEmail}
+                                name="studentInfo.StudentEmail"
+                                value={
+                                  studentInformation.studentInfo.StudentEmail
+                                }
                                 placeholder="Enter Student's Email"
-                                onChange={(e) => handleStudentDataChange(e)}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -453,9 +691,12 @@ const StudentProfile = () => {
                               <textarea
                                 className="form-control"
                                 rows="3"
-                                name="permanentAddress"
-                                value={studentInformation.permanentAddress}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.parmanentAddress"
+                                value={
+                                  studentInformation.studentInfo
+                                    .parmanentAddress
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Permanent Address"
                               ></textarea>
                             </div>
@@ -478,9 +719,11 @@ const StudentProfile = () => {
                               <textarea
                                 className="form-control"
                                 rows="3"
-                                name="currentAddress"
-                                value={studentInformation.currentAddress}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.currentAddress"
+                                value={
+                                  studentInformation.studentInfo.currentAddress
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Current Address"
                               ></textarea>
                             </div>
@@ -496,10 +739,10 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="landMark"
+                                name="studentInfo.landMark"
                                 placeholder="Enter Landmark"
-                                value={studentInformation.landMark}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                value={studentInformation.studentInfo.landMark}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -511,9 +754,9 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="city"
-                                value={studentInformation.city}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.city"
+                                value={studentInformation.studentInfo.city}
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter City"
                               />
                             </div>
@@ -525,10 +768,10 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="pin"
+                                name="studentInfo.pin"
                                 placeholder="Enter Pincode"
-                                value={studentInformation.pin}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                value={studentInformation.studentInfo.pin}
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -540,10 +783,10 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="district"
+                                name="studentInfo.district"
                                 placeholder="Enter District"
-                                value={studentInformation.district}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                value={studentInformation.studentInfo.district}
+                                onChange={(e) => handleChange(e)}
                               />
                             </div>
                           </div>
@@ -557,9 +800,9 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 className="form-select"
-                                name="state"
-                                value={studentInformation.state}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.state"
+                                value={studentInformation.studentInfo.state}
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="">--Select State--</option>
                                 <option value="Yes">Yes</option>
@@ -571,9 +814,11 @@ const StudentProfile = () => {
                               <label className="form-label">
                                 Country <span>*</span>
                               </label>
-                              <select className="form-select" name="country"
-                                     value={studentInformation.country}
-                                     onChange={(e) => handleStudentDataChange(e)}
+                              <select
+                                className="form-select"
+                                name="studentInfo.country"
+                                value={studentInformation.studentInfo.country}
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="">--Select Country--</option>
                                 <option value="Yes">Yes</option>
@@ -597,9 +842,12 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 className="form-control"
-                                name="physicalChallange"
-                                value={studentInformation.physicalChallange}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.physicalChallange"
+                                value={
+                                  studentInformation.studentInfo
+                                    .physicalChallange
+                                }
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="">
                                   --Select Physically Challanged Status--
@@ -615,8 +863,12 @@ const StudentProfile = () => {
                               </label>
                               <input
                                 type="file"
+                                name="studentInfo.physicalChallangeImg"
+                                value={
+                                  studentInformation.studentInfo
+                                    .physicalChallangeImg
+                                }
                                 className="form-control"
-                                name="physically_challanged_chacertificate"
                                 id="physically_challanged_chacertificate"
                               />
                             </div>
@@ -636,9 +888,9 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 className="form-control"
-                                name="orphan"
-                                value={studentInformation.orphan}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.orphan"
+                                value={studentInformation.studentInfo.orphan}
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="">
                                   --Select Student Orphan Status--
@@ -659,7 +911,7 @@ const StudentProfile = () => {
                                 id="parent_death_chacertificate"
                               />
                             </div>
-                            {/* death certificate img */}
+                            {/* death certificate img show */}
                             <div className="col-lg-2">
                               <img
                                 id="parent_death_chacertificate_prev"
@@ -684,7 +936,7 @@ const StudentProfile = () => {
                                 id="aadhar_card_front"
                               />
                             </div>
-                            {/* show aadhar fromt */}
+                            {/* show aadhar front */}
                             <div className="col-lg-3">
                               <img
                                 id="aadhar_card_front_prev"
@@ -705,7 +957,7 @@ const StudentProfile = () => {
                                 id="aadhar_card_back"
                               />
                             </div>
-                            {/* show aadhar back */}
+                            {/* show aadhar back img */}
                             <div className="col-lg-3">
                               <img
                                 id="aadhar_card_back_prev"
@@ -766,7 +1018,7 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
-                            {/* electric bill */}
+                            {/* electric bill img */}
                             <div className="col-lg-3">
                               <label>
                                 Upload Electricity Bill Photo <span>*</span>
@@ -798,9 +1050,9 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 className="form-control"
-                                name="category"
-                                value={studentInformation.category}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.category"
+                                value={studentInformation.studentInfo.category}
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="">--Select Category--</option>
                                 <option value="Yes">Memon</option>
@@ -816,9 +1068,9 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="zakatFund"
-                                value={studentInformation.zakatFund}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                name="studentInfo.zakatFund"
+                                value={studentInformation.studentInfo.zakatFund}
+                                onChange={(e) => handleChange(e)}
                               />
                             </div>
                           </div>
@@ -833,10 +1085,12 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="refferedBy"
+                                name="studentInfo.refferedBy"
                                 placeholder="Enter Referred By Name"
-                                value={studentInformation.refferedBy}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                value={
+                                  studentInformation.studentInfo.refferedBy
+                                }
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -848,10 +1102,12 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="refMobileNo"
+                                name="studentInfo.refMobileNo"
                                 placeholder="Enter Referrer Mobile No"
-                                value={studentInformation.refMobileNo}
-                                onChange={(e) => handleStudentDataChange(e)}
+                                value={
+                                  studentInformation.studentInfo.refMobileNo
+                                }
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -865,27 +1121,38 @@ const StudentProfile = () => {
                       <div className="family_details">
                         <div class="form-group">
                           <div class="row">
+                            {/* parent status */}
                             <div class="col-lg-3">
                               <label>
                                 Parent Status <span>*</span>
                               </label>
-                              <select class="form-control" name="parent_status">
+                              <select
+                                class="form-control"
+                                name="familyDetails.parentStatus"
+                                value={
+                                  studentInformation.familyDetails.parentStatus
+                                }
+                                onChange={(e) => handleChange(e)}
+                              >
                                 <option selected="selected" value="NA">
                                   --select--
                                 </option>
-                                <option value="DVC">Divorcee</option>
+                                <option value="Divorcee">Divorcee</option>
                                 <option value="General">General</option>
-                                <option value="SDD">Separated/Destitute</option>
-                                <option value="Single-father">
+                                <option value="Separated">
+                                  Separated/Destitute
+                                </option>
+                                <option value="Single Father">
                                   Single Father
                                 </option>
-                                <option value="WID">Widow</option>
+                                <option value="Widow">Widow</option>
                               </select>
                             </div>
                           </div>
                         </div>
                         <div class="form-group">
                           <div class="row">
+                            {/* parent status img 1 */}
                             <div class="col-lg-3">
                               <label>
                                 Parent Status File One <span>*</span>
@@ -893,11 +1160,17 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 class="form-control"
-                                name="parent_stauts_file_one"
+                                name="familyDetails.parentStatusOneImg"
+                                value={
+                                  studentInformation.familyDetails
+                                    .parentStatusOneImg
+                                }
+                                onChange={(e) => handleChange(e)}
                                 id="parent_stauts_file_one"
                                 required
                               />
                             </div>
+                            {/* shoe status img one */}
                             <div class="col-lg-3">
                               <img
                                 id="parent_stauts_file_one_prev"
@@ -906,6 +1179,7 @@ const StudentProfile = () => {
                                 style={{ height: "100px", width: "100px" }}
                               />
                             </div>
+                            {/* Parent Status File Two img */}
                             <div class="col-lg-3">
                               <label>
                                 Parent Status File Two <span>*</span>
@@ -913,11 +1187,17 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 class="form-control"
-                                name="parent_stauts_file_two"
+                                name="familyDetails.parentStatusTwoImg"
+                                value={
+                                  studentInformation.familyDetails
+                                    .parentStatusTwoImg
+                                }
+                                onChange={(e) => handleChange(e)}
                                 id="parent_stauts_file_two"
                                 required
                               />
                             </div>
+                            {/* shoe status img two */}
                             <div class="col-lg-3">
                               <img
                                 id="parent_stauts_file_two_prev"
@@ -930,15 +1210,21 @@ const StudentProfile = () => {
                         </div>
                         <div class="form-group">
                           <div class="row">
+                            {/* Relation With Student */}
                             <div class="col-lg-3">
                               <label>
                                 Relation With Student <span>*</span>
                               </label>
                               <select
                                 class="form-control"
-                                name="student_relation"
+                                name=".familyDetails.relationWithStudent"
+                                value={
+                                  studentInformation.familyDetails
+                                    .relationWithStudent
+                                }
+                                onChange={(e) => handleChange(e)}
                               >
-                                <option value="NA">--select--</option>
+                                <option value="">--select--</option>
                                 <option value="Aunty">Aunty</option>
                                 <option value="Brother">Brother</option>
                                 <option value="Cousin Brother">
@@ -959,6 +1245,7 @@ const StudentProfile = () => {
                                 <option value="Uncle">Uncle</option>
                               </select>
                             </div>
+                            {/* relation person name */}
                             <div class="col-lg-3">
                               <label>
                                 Enter Person Name <span>*</span>
@@ -966,20 +1253,31 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="person_name"
+                                name="familyDetails.relationPersonName"
                                 placeholder="Enter Person Name"
+                                value={
+                                  studentInformation.familyDetails
+                                    .relationPersonName
+                                }
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
+                            {/* Marital Status */}
                             <div class="col-lg-3">
                               <label>
                                 Marital Status <span>*</span>
                               </label>
                               <select
                                 class="form-control"
-                                name="student_relation"
+                                name="familyDetails.relationPersonMaritalStatus"
+                                value={
+                                  studentInformation.familyDetails
+                                    .relationPersonMaritalStatus
+                                }
+                                onChange={(e) => handleChange(e)}
                               >
-                                <option value="NA">--select--</option>
+                                <option value="">--select--</option>
                                 <option value="Divorce">Divorce</option>
                                 <option value="Married">Married</option>
                                 <option value="Separated">Separated</option>
@@ -987,6 +1285,7 @@ const StudentProfile = () => {
                                 <option value="Widow">Widow</option>
                               </select>
                             </div>
+                            {/* relation Person DOB */}
                             <div class="col-lg-3">
                               <label>
                                 DOB <span>*</span>
@@ -994,8 +1293,13 @@ const StudentProfile = () => {
                               <input
                                 type="date"
                                 class="form-control"
-                                name="dob"
                                 placeholder="Enter DOB"
+                                name="familyDetails.relationPersonDOB☻"
+                                value={
+                                  studentInformation.familyDetails
+                                    .relationPersonDOB
+                                }
+                                onChange={(e) => handleChange(e)}
                                 required
                               />
                             </div>
@@ -1003,6 +1307,7 @@ const StudentProfile = () => {
                         </div>
                         <div class="form-group">
                           <div class="row">
+                            {/* relation Person gender */}
                             <div class="col-lg-3">
                               <label>
                                 Gender <span>*</span>
@@ -1010,7 +1315,8 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="gender_radio"
+                                  name=".familyDetails.relationPersongender"
+                                  onChange={(e) => handleChange(e)}
                                   id="gender_radio"
                                   value="Male"
                                 />
@@ -1019,7 +1325,8 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="gender_radio"
+                                  name="familyDetails.relationPersongender"
+                                  onChange={(e) => handleChange(e)}
                                   id="gender_radio2"
                                   value="Female"
                                 />
@@ -1028,13 +1335,15 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="gender_radio"
+                                  name="familyDetails.relationPersongender"
                                   id="gender_radio3"
                                   value="Transgender"
                                 />
                                 Transgender
                               </label>
                             </div>
+
+                            {/* relation personaadhar card no */}
                             <div class="col-lg-3">
                               <label>
                                 Aadhar Card No <span>*</span>
@@ -1042,7 +1351,12 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="aadhar_card"
+                                name="familyDetails.relationPersonAadhar"
+                                value={
+                                  studentInformation.familyDetails
+                                    .relationPersonAadhar
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Aadhar Card No"
                                 required
                               />
@@ -1052,6 +1366,7 @@ const StudentProfile = () => {
 
                         <div className="form-group">
                           <div className="row">
+                            {/* relation person education  */}
                             <div className="col-lg-3">
                               <label>
                                 Education <span>*</span>
@@ -1059,18 +1374,29 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="education"
+                                name="familyDetails.relationPersonEducation"
+                                value={
+                                  studentInformation.familyDetails
+                                    .relationPersonEducation
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Education"
                                 required
                               />
                             </div>
+                            {/* relation Person Occupation */}
                             <div className="col-lg-3">
                               <label>
                                 Occupation <span>*</span>
                               </label>
                               <select
                                 className="form-control"
-                                name="occupation"
+                                name="familyDetails.relationPersonOccupation"
+                                value={
+                                  studentInformation.familyDetails
+                                    .relationPersonOccupation
+                                }
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="NA" selected="selected">
                                   --select--
@@ -1087,17 +1413,24 @@ const StudentProfile = () => {
                                 <option value="Unemployed">Unemployed</option>
                               </select>
                             </div>
+                            {/* relation Person Occupation Details */}
                             <div className="col-lg-3">
                               <label>
                                 Occupation Details <span>*</span>
                               </label>
                               <textarea
                                 className="form-control"
-                                name="occupation_details"
+                                name="familyDetails.relationPersonOccupationDetails"
+                                value={
+                                  studentInformation.familyDetails
+                                    .relationPersonOccupationDetails
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Occupation Details"
                                 required
                               ></textarea>
                             </div>
+                            {/* relation person monthly income */}
                             <div className="col-lg-3">
                               <label>
                                 Monthly Income/Fees <span>*</span>
@@ -1105,7 +1438,12 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="monthly_income"
+                                name="familyDetails.relationPersonMonthlyIncome"
+                                value={
+                                  studentInformation.familyDetails
+                                    .relationPersonMonthlyIncome
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Monthly Income/Fees"
                                 required
                               />
@@ -1157,6 +1495,7 @@ const StudentProfile = () => {
                           </div>
                         </div>
                         <div className="form-group">
+                          {/* relition person disabled */}
                           <div className="row">
                             <div className="col-lg-3">
                               <label>
@@ -1165,13 +1504,18 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 className="form-control"
-                                name="handicapped"
+                                name="familyDetails.handiCapped"
+                                value={
+                                  studentInformation.familyDetails.handiCapped
+                                }
+                                onChange={(e) => handleChange(e)}
                               >
-                                <option value="NA">--select--</option>
+                                <option value="">--select--</option>
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
                               </select>
                             </div>
+                            {/* handicaped img one */}
                             <div className="col-lg-3">
                               <label>
                                 Handicapped File One <span>*</span>
@@ -1184,6 +1528,7 @@ const StudentProfile = () => {
                                 required
                               />
                             </div>
+                            {/* handicapped img one show */}
                             <div className="col-lg-2">
                               <img
                                 id="handicapped_file_one_prev"
@@ -1192,6 +1537,7 @@ const StudentProfile = () => {
                                 style={{ height: "100px", width: "100px" }}
                               />
                             </div>
+                            {/* handicaped img two */}
                             <div className="col-lg-2">
                               <label>
                                 Handicapped File Two <span>*</span>
@@ -1204,6 +1550,7 @@ const StudentProfile = () => {
                                 required
                               />
                             </div>
+                            {/* handicaped img two show */}
                             <div className="col-lg-2">
                               <img
                                 id="handicapped_file_two_prev"
@@ -1223,7 +1570,11 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="city_name"
+                                name="familyDetails.personCity"
+                                value={
+                                  studentInformation.familyDetails.personCity
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Name of the city (If any)"
                                 required
                               />
@@ -1232,8 +1583,16 @@ const StudentProfile = () => {
                               <label>
                                 Studying <span>*</span>
                               </label>
-                              <select className="form-control" name="studying">
-                                <option value="NA">--select--</option>
+                              <select
+                                className="form-control"
+                                name="familyDetails.personStudying"
+                                value={
+                                  studentInformation.familyDetails
+                                    .personStudying
+                                }
+                                onChange={(e) => handleChange(e)}
+                              >
+                                <option value="">--select--</option>
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
                               </select>
@@ -1251,6 +1610,7 @@ const StudentProfile = () => {
                         </h3>
                         <div class="form-group">
                           <div class="row">
+                            {/* if momen  */}
                             <div class="col-lg-3">
                               <label>
                                 If memon (Yes or No) <span>*</span>
@@ -1258,7 +1618,8 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="if_memon"
+                                  name="jamatInfo.ifMemon"
+                                  onChange={(e) => handleChange(e)}
                                   id="if_memon_yes"
                                   value="Yes"
                                 />{" "}
@@ -1267,7 +1628,8 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="if_memon"
+                                  name="jamatInfo.ifMemon"
+                                  onChange={(e) => handleChange(e)}
                                   id="if_memon_no"
                                   value="no"
                                 />{" "}
@@ -1278,6 +1640,7 @@ const StudentProfile = () => {
                         </div>
                         <div class="form-group">
                           <div class="row">
+                            {/* if mother momen */}
                             <div class="col-lg-3">
                               <label>
                                 If mother memon (Yes or No) <span>*</span>
@@ -1285,18 +1648,20 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="mother_memon"
+                                  name=".jamatInfo.ifMotherMomen"
                                   id="mother_memon_yes"
                                   value="Yes"
+                                  onChange={() => handleChange()}
                                 />{" "}
                                 Yes
                               </label>
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="mother_memon"
+                                  name=".jamatInfo.ifMotherMomen"
                                   id="mother_memon_no"
                                   value="no"
+                                  onChange={() => handleChange()}
                                 />{" "}
                                 no
                               </label>
@@ -1305,6 +1670,7 @@ const StudentProfile = () => {
                         </div>
                         <div class="form-group">
                           <div class="row">
+                            {/* momen upload img one */}
                             <div class="col-lg-3">
                               <label>
                                 Upload Memon Jamat Letter One <span>*</span>
@@ -1317,6 +1683,7 @@ const StudentProfile = () => {
                                 required
                               />
                             </div>
+                            {/* momen img one show */}
                             <div class="col-lg-3">
                               <img
                                 id="jamat_letter_one_prev"
@@ -1325,6 +1692,7 @@ const StudentProfile = () => {
                                 style={{ height: "100px", width: "100px" }}
                               />
                             </div>
+                              {/* momen upload img two */}
                             <div class="col-lg-3">
                               <label>
                                 Upload Memon Jamat Letter Two <span>*</span>
@@ -1337,6 +1705,7 @@ const StudentProfile = () => {
                                 required
                               />
                             </div>
+                            {/* momen img two show */}
                             <div class="col-lg-3">
                               <img
                                 id="jamat_letter_two_prev"
@@ -1353,6 +1722,7 @@ const StudentProfile = () => {
                         </h3>
                         <div class="form-group">
                           <div class="row">
+                          {/* Belonging Jamat */}
                             <div class="col-lg-3">
                               <label>
                                 Belonging Jamat<span>*</span>
@@ -1360,11 +1730,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="belonging_jamat"
+                                name="jamatInfo.belongingJamat"
+                                value={studentInformation.jamatInfo.belongingJamat}
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Belonging Jamat"
                                 required
                               />
                             </div>
+                            {/* jamat secretary name */}
                             <div class="col-lg-3">
                               <label>
                                 Name of President/Secretary<span>*</span>
@@ -1372,7 +1745,9 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="jamat_president"
+                                name="jamatInfo.jamatSecretaryName"
+                                value={studentInformation.jamatInfo.jamatSecretaryName}
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Name of President/Secretary"
                                 required
                               />
@@ -5067,11 +5442,11 @@ const StudentProfile = () => {
             </div>
           )}
 
-          <Link
+          {/* <Link
             to="/studentProfile?tab=family_details"
             className="save_prev_btn"
           >
-            <button type="button" className="btn btn-primary">
+            <button type="button" className="btn btn-primary" onClick={() => handlePrev()}>
               <i className="fa fa-caret-square-o-right margin-r-5"></i>
               Previous
             </button>
@@ -5080,11 +5455,29 @@ const StudentProfile = () => {
             to="/studentProfile?tab=family_details"
             className="save_nxt_btn"
           >
-            <button type="button" className="btn btn-primary">
+            <button type="button" className="btn btn-primary" onClick={() => handleNext()}>
               <i className="fa fa-caret-square-o-right margin-r-5"></i> Save &
               Next
             </button>
-          </Link>
+          </Link> */}
+
+          <div className="prev_nxt_btn">
+            <button
+              //  className={`btn btn-primary ${tabs.indexOf(currentTab) === 0 ? 'd-none' : 'd-block'}`}
+              className={"btn btn-primary"}
+              onClick={handlePrev}
+              disabled={tabs.indexOf(currentTab) === 0}
+            >
+              Previous
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={handleNext}
+              disabled={tabs.indexOf(currentTab) === tabs.length - 1}
+            >
+              save_nxt_btn
+            </button>
+          </div>
         </div>
       </div>
     </>
