@@ -1692,7 +1692,7 @@ const StudentProfile = () => {
                                 style={{ height: "100px", width: "100px" }}
                               />
                             </div>
-                              {/* momen upload img two */}
+                            {/* momen upload img two */}
                             <div class="col-lg-3">
                               <label>
                                 Upload Memon Jamat Letter Two <span>*</span>
@@ -1722,7 +1722,7 @@ const StudentProfile = () => {
                         </h3>
                         <div class="form-group">
                           <div class="row">
-                          {/* Belonging Jamat */}
+                            {/* Belonging Jamat */}
                             <div class="col-lg-3">
                               <label>
                                 Belonging Jamat<span>*</span>
@@ -1731,7 +1731,9 @@ const StudentProfile = () => {
                                 type="text"
                                 class="form-control"
                                 name="jamatInfo.belongingJamat"
-                                value={studentInformation.jamatInfo.belongingJamat}
+                                value={
+                                  studentInformation.jamatInfo.belongingJamat
+                                }
                                 onChange={(e) => handleChange(e)}
                                 placeholder="Belonging Jamat"
                                 required
@@ -1746,12 +1748,16 @@ const StudentProfile = () => {
                                 type="text"
                                 class="form-control"
                                 name="jamatInfo.jamatSecretaryName"
-                                value={studentInformation.jamatInfo.jamatSecretaryName}
+                                value={
+                                  studentInformation.jamatInfo
+                                    .jamatSecretaryName
+                                }
                                 onChange={(e) => handleChange(e)}
                                 placeholder="Name of President/Secretary"
                                 required
                               />
                             </div>
+                            {/* jamat secretary mobile */}
                             <div class="col-lg-3">
                               <label>
                                 Mobile No of President/Secretary<span>*</span>
@@ -1759,11 +1765,16 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="president_mobile"
+                                name="secretaryMobile"
+                                value={
+                                  studentInformation.jamatInfo.secretaryMobile
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Mobile No of President/Secretary"
                                 required
                               />
                             </div>
+                            {/* jamat secretary email */}
                             <div class="col-lg-3">
                               <label>
                                 Email of President/Secretary<span>*</span>
@@ -1771,7 +1782,11 @@ const StudentProfile = () => {
                               <input
                                 type="email"
                                 class="form-control"
-                                name="president_email"
+                                name="secretaryEmail"
+                                value={
+                                  studentInformation.jamatInfo.secretaryEmail
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Memon/President Email"
                                 required
                               />
@@ -1780,17 +1795,23 @@ const StudentProfile = () => {
                         </div>
                         <div class="form-group">
                           <div class="row">
+                            {/* memon address */}
                             <div class="col-lg-3">
                               <label>
                                 Memon Address <span>*</span>
                               </label>
                               <textarea
                                 class="form-control"
-                                name="memon_address"
+                                name="memonAddress"
+                                value={
+                                  studentInformation.jamatInfo.memonAddress
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Memon Address"
                                 required
                               ></textarea>
                             </div>
+                            {/* memon City */}
                             <div class="col-lg-3">
                               <label>
                                 City<span>*</span>
@@ -1798,11 +1819,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="city"
+                                name="memonCity"
+                                value={studentInformation.jamatInfo.memonCity}
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter City Name"
                                 required
                               />
                             </div>
+                            {/* memon pin code */}
                             <div class="col-lg-3">
                               <label>
                                 Pincode<span>*</span>
@@ -1810,19 +1834,24 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="memon_pincode"
+                                name="memonPin"
+                                value={studentInformation.jamatInfo.memonPin}
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Pincode"
                                 required
                               />
                             </div>
+                            {/* memon state */}
                             <div class="col-lg-3">
                               <label>
                                 State<span>*</span>
                               </label>
                               <select
                                 class="form-control"
-                                name="state"
+                                name="memonState"
                                 required
+                                value={studentInformation.jamatInfo.memonState}
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="" selected="selected">
                                   --select--
@@ -1836,6 +1865,7 @@ const StudentProfile = () => {
                         <hr />
                         <div class="form-group">
                           <div class="row">
+                            {/* Received any help from Jamat */}
                             <div class="col-lg-3">
                               <label>
                                 Received any help from Jamat? <span>*</span>
@@ -1843,7 +1873,8 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="jamat_help"
+                                  name="helpFromJamat"
+                                  onChange={(e) => handleChange(e)}
                                   id="jamat_help_yes"
                                   value="Yes"
                                   required
@@ -1853,7 +1884,8 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="jamat_help"
+                                  name="helpFromJamat"
+                                  onChange={(e) => handleChange(e)}
                                   id="jamat_help_no"
                                   value="no"
                                 />
@@ -1864,6 +1896,7 @@ const StudentProfile = () => {
                         </div>
                         <div class="form-group">
                           <div class="row">
+                            {/* jamat amount receive */}
                             <div class="col-lg-3">
                               <label>
                                 Amount Received<span>*</span>
@@ -1871,11 +1904,17 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="amount_received_from_jamat"
+                                name="jamatReceiveAmount"
+                                value={
+                                  studentInformation.jamatInfo
+                                    .jamatReceiveAmount
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Amount Received"
                                 required
                               />
                             </div>
+                            {/* amount Receive Purpose */}
                             <div class="col-lg-3">
                               <label>
                                 Purpose<span>*</span>
@@ -1883,19 +1922,27 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="jamat_amount_purpose"
+                                name="amountReceivePurpose"
+                                value={
+                                  studentInformation.jamatInfo
+                                    .amountReceivePurpose
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Purpose"
                                 required
                               />
                             </div>
+                            {/* amount type */}
                             <div class="col-lg-3">
                               <label>
                                 Amount Type <span>*</span>
                               </label>
                               <select
                                 class="form-control"
-                                name="amount_type"
+                                name="amountType"
                                 required
+                                value={studentInformation.jamatInfo.amountType}
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="NA">--select--</option>
                                 <option value="duringRamandan">
@@ -1911,6 +1958,7 @@ const StudentProfile = () => {
                         <hr />
                         <div class="form-group">
                           <div class="row">
+                            {/* deniyat course */}
                             <div class="col-lg-4">
                               <label>
                                 Deeniyat Course. Have you attended any basic
@@ -1919,7 +1967,8 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="deeniyat_course"
+                                  name="deeniyatCourse"
+                                  onChange={(e) => handleChange(e)}
                                   id="deeniyat_course_yes"
                                   value="Yes"
                                   required
@@ -1929,8 +1978,9 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="deeniyat_course"
+                                  name="deeniyatCourse"
                                   id="deeniyat_course_no"
+                                  onChange={(e) => handleChange(e)}
                                   value="no"
                                 />
                                 no
@@ -1940,6 +1990,7 @@ const StudentProfile = () => {
                         </div>
                         <div class="form-group">
                           <div class="row">
+                            {/* course name */}
                             <div class="col-lg-3">
                               <label>
                                 Course Name<span>*</span>
@@ -1947,11 +1998,14 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="course_name"
+                                name="courseName"
+                                value={studentInformation.jamatInfo.courseName}
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Course Name"
                                 required
                               />
                             </div>
+                            {/* madrasha name */}
                             <div class="col-lg-3">
                               <label>
                                 Madrasa Name<span>*</span>
@@ -1959,11 +2013,16 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="madrasa_name"
+                                name="madrashaName"
+                                value={
+                                  studentInformation.jamatInfo.madrashaName
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Madrasa Name"
                                 required
                               />
                             </div>
+                            {/* any other course */}
                             <div class="col-lg-3">
                               <label>
                                 Any Other Course Name<span>*</span>
@@ -1971,7 +2030,11 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="other_course_name"
+                                name="anyOtherCourse"
+                                value={
+                                  studentInformation.jamatInfo.anyOtherCourse
+                                }
+                                onChange={(e) => handleChange(e)}
                                 placeholder="Enter Other Course Name"
                                 required
                               />
@@ -1986,6 +2049,7 @@ const StudentProfile = () => {
                       <div className="prevAcademicDetails">
                         <div class="form-group">
                           <div class="row">
+                            {/* previous year result */}
                             <div
                               class="col-sm-3 topMargin"
                               id="txtDegree"
@@ -1995,7 +2059,13 @@ const StudentProfile = () => {
                                 Previous Year Results
                                 <span style={{ color: "red" }}></span>
                               </label>
-                              <select id="txt6scDegree" class="form-control">
+                              <select
+                                id="txt6scDegree"
+                                class="form-control"
+                                name="prevYearResult"
+                                value={studentInformation.prevAcademicInfo.prevYearResult}
+                                onChange={(e) => handleChange(e)}
+                              >
                                 <option selected="selected" value="select">
                                   --select--
                                 </option>
@@ -2012,7 +2082,7 @@ const StudentProfile = () => {
                             </div>
                           </div>
                         </div>
-                        <div class="panel-heading">
+                        {/* <div class="panel-heading">
                           <h4 class="panel-title">
                             <button
                               type="button"
@@ -2026,16 +2096,14 @@ const StudentProfile = () => {
                               Show Grid
                             </button>
                           </h4>
-                        </div>
+                        </div> */}
 
-                        <div
-                          id="collapseOne"
-                          class="panel-collapse collapse show"
-                        >
+                        <div id="collapseOne" class="panel-collapse collapse show">
                           <div class="panel-body">
                             <div class="col-sm-12">
                               <div class="form-group">
                                 <div class="row">
+                                  {/* last year result img */}
                                   <div class="col-lg-4">
                                     <label>
                                       Last Year Result{" "}
@@ -2044,10 +2112,12 @@ const StudentProfile = () => {
                                     <input
                                       type="file"
                                       class="form-control"
-                                      name="last_year_result"
+                                      name="lastYearResultImg"
+                      
                                       required
                                     />
                                   </div>
+                                  {/* last two year img  */}
                                   <div class="col-lg-4">
                                     <label>
                                       Last To Last Year Result{" "}
@@ -2060,6 +2130,7 @@ const StudentProfile = () => {
                                       required
                                     />
                                   </div>
+                                  {/* two year back result img */}
                                   <div class="col-lg-4">
                                     <label>
                                       2 Year Back Result{" "}
@@ -2076,6 +2147,7 @@ const StudentProfile = () => {
                               </div>
                               <div class="form-group">
                                 <div class="row">
+                                  {/* currently studing in  */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Currently studying in Std{" "}
@@ -2084,6 +2156,9 @@ const StudentProfile = () => {
                                     <select
                                       class="form-control step6Class"
                                       id="txt6scLevelOfCourse"
+                                      name="currentStudy"
+                                      value={studentInformation.prevAcademicInfo.currentStudy}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option selected="selected" value="0">
                                         --select--
@@ -2163,6 +2238,7 @@ const StudentProfile = () => {
                                       </option>
                                     </select>
                                   </div>
+                                  {/* special case */}
                                   <div
                                     class="col-sm-3 topMargin"
                                     id="Div_OtherStd_Step6"
@@ -2171,10 +2247,14 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
+                                      name="specialCase"
+                                      value={studentInformation.prevAcademicInfo.specialCase}
+                                      onChange={(e) => handleChange(e)}
                                       id="txtSpecialCase_Step6"
                                       placeholder="Special Case"
                                     />
                                   </div>
+                                  {/* course name */}
                                   <div
                                     class="col-sm-3 topMargin"
                                     id="txtDegree"
@@ -2186,6 +2266,9 @@ const StudentProfile = () => {
                                     <select
                                       id="txt6scDegree"
                                       class="form-control"
+                                      name="courseName"
+                                      value={studentInformation.prevAcademicInfo.courseName}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option
                                         selected="selected"
@@ -2196,6 +2279,7 @@ const StudentProfile = () => {
                                       <option value="0">Other</option>
                                     </select>
                                   </div>
+                                  {/* Level of course */}
                                   <div
                                     class="col-sm-3 topMargin"
                                     id="LevelOfCourse_Step6"
@@ -2208,6 +2292,9 @@ const StudentProfile = () => {
                                       class="form-control select2"
                                       id="txt5LevelOfCourse_Step6"
                                       style={{ width: "100%" }}
+                                      name="levelOfCourse"
+                                      value={studentInformation.prevAcademicInfo.levelOfCourse}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
                                       <option value="1st year">1st year</option>
@@ -2223,6 +2310,7 @@ const StudentProfile = () => {
                               </div>
                               <div class="form-group">
                                 <div class="row">
+                                  {/* other course one */}
                                   <div
                                     class="col-sm-3 topMargin"
                                     id="txtOtherCourse_Step6"
@@ -2234,13 +2322,16 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
+                                      name="otherCourseOne"
+                                      value={studentInformation.prevAcademicInfo.otherCourseOne}
+                                      onChange={(e) => handleChange(e)}
                                       id="txt6OtherCourse_Step6"
                                       placeholder="Other course"
                                     />
                                   </div>
+                                  {/* other level of course */}
                                   <div
                                     class="col-sm-3 topMargin"
-                                    id="txtOtherLevelOfCourse_Step6"
                                   >
                                     <label>
                                       Other Level Of Course
@@ -2249,13 +2340,16 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
-                                      id="txt6OtherLevelOfCourse_Step6"
+                                      id="otherLevelOfCourse"
                                       placeholder="Other Level of course"
+                                      name="otherLevelOfCourse"
+                                      value={studentInformation.prevAcademicInfo.otherLevelOfCourse}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* other field */}
                                   <div
                                     class="col-sm-3 topMargin"
-                                    id="Div_Field_Step6_other"
                                   >
                                     <label>
                                       Other Field{" "}
@@ -2264,17 +2358,19 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
-                                      id="txt5Field_Step6Other"
                                       placeholder="other Field"
+                                      name="otherField"
+                                      value={studentInformation.prevAcademicInfo.otherField}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
                                 </div>
                               </div>
                               <div class="form-group">
                                 <div class="row">
+                                  {/* field  */}
                                   <div
                                     class="col-sm-3 topMargin"
-                                    id="Div_Field_Step6"
                                   >
                                     <label>
                                       Field{" "}
@@ -2282,8 +2378,10 @@ const StudentProfile = () => {
                                     </label>
                                     <select
                                       class="form-control select2"
-                                      id="txt5Field_Step6"
                                       style={{ width: "100%" }}
+                                      name="field"
+                                      value={studentInformation.prevAcademicInfo.field}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option
                                         selected="selected"
@@ -2297,18 +2395,18 @@ const StudentProfile = () => {
                                       <option value="0">Other</option>
                                     </select>
                                   </div>
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                    id="Div_Duration_Step6"
-                                  >
+                                  {/* duration */}
+                                  <div class="col-sm-3 topMargin">
                                     <label>
                                       Duration{" "}
                                       <span style={{ color: "red" }}>*</span>
                                     </label>
                                     <select
                                       class="form-control select2"
-                                      id="txt6scDurationOfCourse"
                                       style={{ width: "100%" }}
+                                      name="duration"
+                                      value={studentInformation.prevAcademicInfo.duration}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
                                       <option value="1 year">1 year</option>
@@ -2325,6 +2423,7 @@ const StudentProfile = () => {
                                       <option value="other">Other</option>
                                     </select>
                                   </div>
+                                  {/* medium of instruction */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Medium Of Instruction
@@ -2332,8 +2431,10 @@ const StudentProfile = () => {
                                     </label>
                                     <select
                                       class="form-control select2"
-                                      id="txt6scMediumOfInstruction"
                                       style={{ width: "100%" }}
+                                      name="instructionMedium"
+                                      value={studentInformation.prevAcademicInfo.instructionMedium}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
                                       <option value="English">English</option>
@@ -2347,9 +2448,9 @@ const StudentProfile = () => {
                                       <option value="Other">Other</option>
                                     </select>
                                   </div>
+                                  {/* pattern of the course */}
                                   <div
                                     class="col-sm-3 topMargin"
-                                    id="Div_PatternOfCourse"
                                   >
                                     <label>
                                       Pattern Of The Course
@@ -2357,8 +2458,10 @@ const StudentProfile = () => {
                                     </label>
                                     <select
                                       class="form-control select2"
-                                      id="txt6scPatternOfCourse"
                                       style={{ width: "100%" }}
+                                      name="coursePattern"
+                                      value={studentInformation.prevAcademicInfo.coursePattern}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
                                       <option value="Annual">Annual</option>
@@ -2369,10 +2472,8 @@ const StudentProfile = () => {
                               </div>
                               <div class="form-group">
                                 <div class="row">
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                    id="txtOtherDurationOfCourse"
-                                  >
+                                {/* Other Duration of Course */}
+                                  <div class="col-sm-3 topMargin">
                                     <label>
                                       Other Duration of Course
                                       <span style={{ color: "red" }}></span>
@@ -2380,13 +2481,15 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
-                                      id="txt6OtherDurationOfCourse"
                                       placeholder="Other Duration of Course"
+                                      name="otherDurationCourse"
+                                      value={studentInformation.prevAcademicInfo.otherDurationCourse}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* other course two */}
                                   <div
                                     class="col-sm-3 topMargin"
-                                    id="txtOtherCourse"
                                   >
                                     <label>
                                       Other Course
@@ -2395,13 +2498,15 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
-                                      id="txt6OtherCourse"
                                       placeholder="Other Course"
+                                      name="otherCourseTwo"
+                                      value={studentInformation.prevAcademicInfo.otherCourseTwo}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* other medium */}
                                   <div
                                     class="col-sm-3 topMargin"
-                                    id="DivOtherOption_Step6"
                                   >
                                     <label>
                                       Other Medium
@@ -2410,14 +2515,17 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
-                                      id="txt6OtherMediumOption"
                                       placeholder="Other Medium"
+                                      name="otherMedium"
+                                      value={studentInformation.prevAcademicInfo.otherMedium}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
                                 </div>
                               </div>
                               <div class="form-group">
                                 <div class="row">
+                                {/* Name Of the School / College / Institutions */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Name Of the School / College /
@@ -2427,10 +2535,13 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
-                                      id="txt6scNameOfSchool"
                                       placeholder="Name Of the School/College/Institutions"
+                                      name="instituteName"
+                                      value={studentInformation.prevAcademicInfo.instituteName}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* Name Of the Board/University */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Name Of the Board/University
@@ -2446,11 +2557,14 @@ const StudentProfile = () => {
                                       <input
                                         type="text"
                                         class="form-control"
-                                        id="ddlscNameOfBoard"
                                         placeholder="Name Of the Board/University"
+                                        name="instituteName"
+                                        value={studentInformation.prevAcademicInfo.boardName}
+                                        onChange={(e) => handleChange(e)}
                                       />
                                     </div>
                                   </div>
+                                  {/* Type of school / college / institution */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Type of school / college / institution
@@ -2458,8 +2572,10 @@ const StudentProfile = () => {
                                     </label>
                                     <select
                                       class="form-control select2"
-                                      id="txt6scModeOfBoard"
                                       style={{ width: "100%" }}
+                                      name="instituteType"
+                                      value={studentInformation.prevAcademicInfo.instituteType}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
                                       <option value="Govt">Government</option>
@@ -2469,6 +2585,7 @@ const StudentProfile = () => {
                                       </option>
                                     </select>
                                   </div>
+                                  {/* if private */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       If Private
@@ -2476,8 +2593,10 @@ const StudentProfile = () => {
                                     </label>
                                     <select
                                       class="form-control select2"
-                                      id="txt6scIfPrivate"
                                       style={{ width: "100%" }}
+                                      name="ifPrivate"
+                                      value={studentInformation.prevAcademicInfo.ifPrivate}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
                                       <option value="Aided">Aided</option>
@@ -2489,6 +2608,7 @@ const StudentProfile = () => {
 
                               <div class="form-group">
                                 <div class="row">
+                                {/* School/ College / Institute Address */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       School/ College / Institute Address
@@ -2496,10 +2616,13 @@ const StudentProfile = () => {
                                     </label>
                                     <textarea
                                       class="form-control"
-                                      id="txt6scAddress"
                                       placeholder="School/ College / Institute Address"
-                                    ></textarea>
+                                      name="instituteAddress"
+                                      value={studentInformation.prevAcademicInfo.instituteAddress}
+                                      onChange={(e) => handleChange(e)}
+                                    />
                                   </div>
+                                  {/* institute city */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       City
@@ -2510,8 +2633,12 @@ const StudentProfile = () => {
                                       class="form-control"
                                       id="txt6scCity"
                                       placeholder="City"
+                                      name="instituteCity"
+                                      value={studentInformation.prevAcademicInfo.instituteCity}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* institute pic code */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Pincode
@@ -2520,12 +2647,15 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control number"
-                                      id="txt6PinCode"
                                       placeholder="Pincode"
                                       data-inputmask="'mask': ['999999']"
                                       data-mask=""
+                                      name="institutePin"
+                                      value={studentInformation.prevAcademicInfo.institutePin}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* institute district */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       District
@@ -2536,20 +2666,26 @@ const StudentProfile = () => {
                                       class="form-control"
                                       id="txt6scDistrict"
                                       placeholder="District"
+                                      name="instituteDistrict"
+                                      value={studentInformation.prevAcademicInfo.instituteDistrict}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
                                 </div>
                               </div>
                               <div class="form-group">
                                 <div class="row">
+                                  {/* institute state */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       State
                                       <span style={{ color: "red" }}>*</span>
                                     </label>
                                     <select
-                                      id="txt6scState"
                                       class="form-control"
+                                      name="prevAcademicInfo.instituteState"
+                                      value={studentInformation.prevAcademicInfo.instituteState}
+                                      onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
                                       <option value="Andhra Pradesh">
@@ -2615,6 +2751,7 @@ const StudentProfile = () => {
                                       </option>
                                     </select>
                                   </div>
+                                  {/* institute country */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Country
@@ -2624,11 +2761,13 @@ const StudentProfile = () => {
                                       type="text"
                                       class="form-control"
                                       id="txt6scCountry"
-                                      placeholder="Country"
-                                      value="India"
-                                      disabled="disabled"
+                                      placeholder="Country"                                     
+                                      name="prevAcademicInfo.instituteCountry"
+                                      value={studentInformation.prevAcademicInfo.instituteCountry}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* institute email */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Email
@@ -2639,8 +2778,12 @@ const StudentProfile = () => {
                                       class="form-control"
                                       id="txt6scEmail"
                                       placeholder="Email"
+                                      name="prevAcademicInfo.instituteEmail"
+                                      value={studentInformation.prevAcademicInfo.instituteEmail}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* institute website */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Website
@@ -2651,12 +2794,16 @@ const StudentProfile = () => {
                                       class="form-control"
                                       id="txt6scWebsite"
                                       placeholder="Website"
+                                      name="prevAcademicInfo.instituteWebsite"
+                                      value={studentInformation.prevAcademicInfo.instituteWebsite}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
                                 </div>
                               </div>
                               <div class="form-group">
                                 <div class="row">
+                                  {/* institute land line */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Landline Number
@@ -2667,8 +2814,12 @@ const StudentProfile = () => {
                                       class="form-control"
                                       id="txt6LandlineNumber"
                                       placeholder="Landline Number"
+                                      name="prevAcademicInfo.instituteLandLineNo"
+                                      value={studentInformation.prevAcademicInfo.instituteLandLineNo}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* institute contact no */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       School/ College / Institute Contact number
@@ -2679,8 +2830,12 @@ const StudentProfile = () => {
                                       class="form-control number"
                                       id="txt6scAlterNumber"
                                       placeholder="School/ College / Institute Contact number"
+                                      name="prevAcademicInfo.instituteContactNo"
+                                      value={studentInformation.prevAcademicInfo.instituteContactNo}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
+                                  {/* institute mobile no */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Mobile Number
@@ -2693,6 +2848,9 @@ const StudentProfile = () => {
                                       placeholder="Mobile Number"
                                       data-inputmask="'mask': ['9999999999']"
                                       data-mask=""
+                                      name="prevAcademicInfo.instituteMobileNo"
+                                      value={studentInformation.prevAcademicInfo.instituteMobileNo}
+                                      onChange={(e) => handleChange(e)}
                                     />
                                   </div>
                                 </div>
@@ -2709,6 +2867,7 @@ const StudentProfile = () => {
                                       class="form-control"
                                       name="bonafied_certificate"
                                       id="bonafied_certificate"
+                                      
                                     />
                                   </div>
                                   <div class="col-lg-3">
@@ -2754,6 +2913,7 @@ const StudentProfile = () => {
                       <div className="other_Trust_support">
                         <div class="form-group">
                           <div class="row">
+                          {/* Do you have other trust support ?(Yes/No) */}
                             <div class="col-sm-4 topMargin">
                               <label>
                                 Do you have other trust support ?(Yes/No)
@@ -2761,8 +2921,10 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 class="form-control select2"
-                                id="txt8trust_support"
                                 style={{ width: "100%" }}
+                                name="othertrustSupport.otherTrustSupport"
+                                value={studentInformation.othertrustSupport.otherTrustSupport}
+                                onChange={(e) => handleChange(e)}
                               >
                                 <option value="NA">--select--</option>
                                 <option value="No">No</option>
