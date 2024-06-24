@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import queryString from "query-string";
+import axios from "axios";
+import { toast } from "react-toastify";
+import Loader from "../Loader/Loader";
 
 const StudentProfile = () => {
   const location = useLocation();
@@ -21,7 +24,7 @@ const StudentProfile = () => {
       gender: "",
       maritalStatus: "",
       spouseName: "",
-      StudentMobileNo: 0,
+      StudentMobileNo: "",
       StudentEmail: "",
       parmanentAddress: "",
       currentAddress: "",
@@ -75,7 +78,7 @@ const StudentProfile = () => {
       jamatDetails: "",
       belongingJamat: "",
       jamatSecretaryName: "",
-      secretaryMobile: 0,
+      secretaryMobile: "",
       secretaryEmail: "",
       memonAddress: "",
       memonCity: "",
@@ -93,8 +96,8 @@ const StudentProfile = () => {
     prevAcademicInfo: {
       prevYearResult: "",
       lastYearResultImg: "",
-      lastTwoYearResult: "",
-      TwoYearBackResult: "",
+      lastTwoYearResultImg: "",
+      TwoYearBackResultImg: "",
       currentStudy: "",
       specialCase: "",
       courseName: "",
@@ -121,11 +124,11 @@ const StudentProfile = () => {
       instituteCountry: "",
       instituteEmail: "",
       instituteWebsite: "",
-      instituteLandLineNo: 0,
-      instituteContactNo: 0,
-      instituteMobileNo: 0,
-      bonafideCertificateFrontImg: 0,
-      bonafideCertificateBackImg: 0,
+      instituteLandLineNo: "",
+      instituteContactNo: "",
+      instituteMobileNo: "",
+      bonafideCertificateFrontImg: "",
+      bonafideCertificateBackImg: "",
     },
     othertrustSupport: {
       otherTrustSupport: "",
@@ -191,8 +194,10 @@ const StudentProfile = () => {
   };
 
   const [studentInformation, setStudentInformation] = useState(initialState);
-  console.log("studentInformation", studentInformation.familyDetails);
+  const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
+  console.log("studentInformation", studentInformation);
   const [currentTab, setCurrentTab] = useState("student_info");
+  const [loading, setLoading] = useState(false);
 
   const tabs = [
     "student_info",
@@ -237,10 +242,93 @@ const StudentProfile = () => {
     }
   };
 
+  const imageHandler = async (e, state) => {
+    if (e.target.files.length === 0) return;
+
+    const DATA = new FormData();
+    DATA.append("image", e.target.files[0]);
+
+    const stateToKeyMap = {
+      isPhysical: { section: "studentInfo", key: "physicalChallangeImg" },
+      parentDeath: { section: "studentInfo", key: "parentDeathCertificateImg" },
+      aadharFront: { section: "studentInfo", key: "addaharFrontImg" },
+      aadharBack: { section: "studentInfo", key: "aadharBackImg" },
+      rationFront: { section: "studentInfo", key: "rationFrontImg" },
+      rationBack: { section: "studentInfo", key: "rationBackImg" },
+      electricityBill: { section: "studentInfo", key: "electricityBillImg" },
+      /**================================================================== */
+
+      parentStatusOne: { section: "familyDetails", key: "parentStatusOneImg" },
+      parentStatusTwo: { section: "familyDetails", key: "parentStatusTwoImg" },
+      incomeFront: { section: "familyDetails", key: "incomeFileFrontImg" },
+      incomeBack: { section: "familyDetails", key: "incomeFileBackImg" },
+      handicapedFront: { section: "familyDetails", key: "handiCapFileOneImg" },
+      handicapedBack: { section: "familyDetails", key: "handiCapFileTwoImg" },
+      /**================================================================== */
+      jamatLetterOne: { section: "jamatInfo", key: "memonJamatLetterOne" },
+      jamatLetterTwo: { section: "jamatInfo", key: "memonJamatLetterTwo" },
+      /**================================================================== */
+
+      lastYearResultImg: {
+        section: "prevAcademicInfo",
+        key: "lastYearResultImg",
+      },
+      lastTwoYearResultImg: {
+        section: "prevAcademicInfo",
+        key: "lastTwoYearResultImg",
+      },
+      TwoYearBackResultImg: {
+        section: "prevAcademicInfo",
+        key: "TwoYearBackResultImg",
+      },
+      bonafideCertificateFrontImg: {
+        section: "prevAcademicInfo",
+        key: "bonafideCertificateFrontImg",
+      },
+      bonafideCertificateBackImg: {
+        section: "prevAcademicInfo",
+        key: "bonafideCertificateBackImg",
+      },
+        /**================================================================== */
+        studentPhoto: { section: "familyDeclaration", key: "studentPhoto" },
+        studentSign: { section: "familyDeclaration", key: "studentSign" },
+        studentGuardianSign: { section: "familyDeclaration", key: "parentSign" },
+
+      // 
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8088/api/v1/user/upload",
+        DATA,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response && response.data.status && stateToKeyMap[state]) {
+        const uploadedFilePath = response.data.file;
+        const { section, key } = stateToKeyMap[state];
+
+        setStudentInformation((prevInfo) => ({
+          ...prevInfo,
+          [section]: {
+            ...prevInfo[section],
+            [key]: uploadedFilePath,
+          },
+        }));
+      }
+    } catch (error) {
+      console.error("Error uploading file", error);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log("fuck", e.target.name, e.target.value);
     const keys = name.split(".");
+
     if (keys.length === 1) {
       setStudentInformation((prevState) => ({
         ...prevState,
@@ -248,16 +336,290 @@ const StudentProfile = () => {
       }));
     } else {
       setStudentInformation((prevState) => {
-        const nestedObject = { ...prevState[keys[0]], [keys[1]]: value };
-        return { ...prevState, [keys[0]]: nestedObject };
+        // Deep clone the previous state to prevent mutation
+        let nestedObject = { ...prevState };
+
+        // Traverse to the appropriate level in the nested object
+        for (let i = 0; i < keys.length - 1; i++) {
+          const key = keys[i];
+          if (Array.isArray(nestedObject[key])) {
+            const index = parseInt(keys[i + 1], 10);
+            nestedObject = nestedObject[key][index];
+            i++; // Skip the next key because it's an array index
+          } else {
+            nestedObject = nestedObject[key];
+          }
+        }
+
+        // Update the final key with the new value
+        const finalKey = keys[keys.length - 1];
+        nestedObject[finalKey] = value;
+
+        return { ...prevState };
       });
     }
   };
 
-  const handleValidation = () => {};
+  const handleAddressCopy = (e) => {
+    setCopyPermantAddress(e.target.checked);
+    if (e.target.checked) {
+      setStudentInformation((prevState) => ({
+        ...prevState,
+        studentInfo: {
+          ...prevState.studentInfo,
+          currentAddress: prevState.studentInfo.parmanentAddress,
+        },
+      }));
+    } else {
+      setStudentInformation((prevState) => ({
+        ...prevState,
+        studentInfo: {
+          ...prevState.studentInfo,
+          currentAddress: "",
+        },
+      }));
+    }
+  };
+
+  const handleValidation = () => {
+    if (!studentInformation.studentInfo.aadharNo) {
+      toast.error("Aadhar no is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.lastName) {
+      toast.error("Last name is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.firstName) {
+      toast.error("First name is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.fatherName) {
+      toast.error("Father name is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.motherName) {
+      toast.error("Mother name is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.guardianName) {
+      toast.error("Guardian name is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.lastName) {
+      toast.error("Last name is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.dob) {
+      toast.error("Date Of Birth is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.birthPlace) {
+      toast.error("Birth place is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.gender) {
+      toast.error("Gender is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.maritalStatus) {
+      toast.error("Marital status is required");
+      return false;
+    }
+    if (
+      studentInformation.studentInfo.maritalStatus &&
+      !studentInformation.studentInfo.spouseName
+    ) {
+      toast.error("Spouse name is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.StudentMobileNo) {
+      toast.error("Mobile No is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.StudentEmail) {
+      toast.error("Email is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.parmanentAddress) {
+      toast.error("Permanent address is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.currentAddress) {
+      toast.error("Current address is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.landMark) {
+      toast.error("Land mark is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.city) {
+      toast.error("City is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.pin) {
+      toast.error("Pin Code is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.district) {
+      toast.error("District is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.state) {
+      toast.error("State is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.country) {
+      toast.error("Country is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.physicalChallange) {
+      toast.error("Physically Challanged is required");
+      return false;
+    }
+    if (
+      studentInformation.studentInfo.physicalChallange &&
+      !studentInformation.studentInfo.physicalChallangeImg
+    ) {
+      toast.error("Physically Challange Certificate is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.orphan) {
+      toast.error("Orphan is required");
+      return false;
+    }
+    if (
+      studentInformation.studentInfo.orphan &&
+      !studentInformation.studentInfo.parentDeathCertificateImg
+    ) {
+      toast.error("Parent Death Certificate is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.addaharFrontImg) {
+      toast.error("Aadhar front Image is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.aadharBackImg) {
+      toast.error("Aadhar back image is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.rationFrontImg) {
+      toast.error("Ration card first page image is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.rationBackImg) {
+      toast.error("Ration card back page image is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.electricityBillImg) {
+      toast.error("Electricity bill image is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.category) {
+      toast.error("Category is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.zakatFund) {
+      toast.error("Application for zakat fund required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.refferedBy) {
+      toast.error("Referred by is required");
+      return false;
+    }
+    if (!studentInformation.studentInfo.refMobileNo) {
+      toast.error("Referred mobile no is required");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e, state) => {
+    e.preventDefault();
+    if (state === "saveAsDraft") {
+      try {
+        const data = {
+          ...studentInformation,
+           saveAsDraft: true
+        };
+        if (!studentInformation.studentInfo.aadharNo) {
+          toast.error("Aadhar no is required");
+          return false;
+        } else {
+          setLoading(true);
+          let result = await axios.post(
+            "http://localhost:8088/api/v1/user/add_Student_data",
+            data
+          );
+          console.log("result", result);
+          if (result && result.data.status) {
+            toast.success(result.data.message);
+            setLoading(false);
+            setStudentInformation(initialState);
+          }
+        }
+      } catch (error) {
+        toast.error(error.response.data.message);
+        setLoading(false);
+      }
+    } else {
+      if (handleValidation()) {
+        const data = studentInformation;
+        setLoading(true);
+        let res = await axios.post(
+          "http://localhost:8088/api/v1/user/add_Student_data",
+          data
+        );
+        if (res && res.data.status) {
+          toast.success(res.data.message);
+          setLoading(false);
+          setStudentInformation(initialState);
+        }
+      }
+    }
+  };
+
+  const getStudentData = async () => {
+    const aadharNo = localStorage.getItem("aadharNO");
+
+    const data = {
+      "aadharNo" : aadharNo
+    }
+    console.log("ddfaa", data)
+  
+    try {
+      const res = await axios.post("http://localhost:8088/api/v1/user/get_Student_data", data);
+      console.log("Response:", res?.data);
+      // console.log("Response:", res?.data?.existStudent);
+
+      if(res && res.data.status){
+        setStudentInformation(res?.data?.existStudent);
+      }
+
+    } catch (error) {
+      console.error("Error fetching student data:", error);
+    }
+  }
+  
+  useEffect(() => {
+    getStudentData();
+    if (localStorage.getItem("aadharNO")) {
+      const aadharNo = localStorage.getItem("aadharNO");
+      
+      setStudentInformation((prev) => ({
+        ...prev,
+        studentInfo: {
+          ...prev.studentInfo,
+          aadharNo: aadharNo
+        }
+      }));
+    }
+  }, []);
 
   return (
     <>
+      {loading && <Loader />}
       <div id="page-wrapper">
         <div className="row infoHead">
           <div className="col-lg-12 topic_div">
@@ -285,122 +647,6 @@ const StudentProfile = () => {
                 ))}
               </ul>
             </div>
-            {/* <h1 className="page-header">Students Information</h1> */}
-            {/* <ul className="nav nav-pills navinfo">
-              <li
-                className={`nav-item ${tab === "student_info" ? "active" : ""}`}
-              >
-                <Link
-                  className="nav-link"
-                  to="/studentProfile?tab=student_info"
-                >
-                  Students Information
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  tab === "family_details" ? "active" : ""
-                }`}
-              >
-                <Link
-                  className="nav-link"
-                  to="/studentProfile?tab=family_details"
-                >
-                  Family Details
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  tab === "memon_information" ? "active" : ""
-                }`}
-              >
-                <Link
-                  className="nav-link"
-                  to="/studentProfile?tab=memon_information"
-                >
-                  Memon Jamat Information
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  tab === "previous_academic_information" ? "active" : ""
-                }`}
-              >
-                <Link
-                  className="nav-link"
-                  to="/studentProfile?tab=previous_academic_information"
-                >
-                  Previous Academic Information
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  tab === "other_trust_support_information" ? "active" : ""
-                }`}
-              >
-                <Link
-                  className="nav-link"
-                  to="/studentProfile?tab=other_trust_support_information"
-                >
-                  Details Of Other Trust Support
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  tab === "organisation_support_information" ? "active" : ""
-                }`}
-              >
-                <Link
-                  className="nav-link"
-                  to="/studentProfile?tab=organisation_support_information"
-                >
-                  Organisation Support To Family Member
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  tab === "parent_declaration" ? "active" : ""
-                }`}
-              >
-                <Link
-                  className="nav-link"
-                  to="/studentProfile?tab=parent_declaration"
-                >
-                  Declaration Of Parents
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  tab === "all_documents" ? "active" : ""
-                }`}
-              >
-                <Link
-                  className="nav-link"
-                  to="/studentProfile?tab=all_documents"
-                >
-                  Documentation
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${tab === "confirmation" ? "active" : ""}`}
-              >
-                <Link
-                  className="nav-link"
-                  to="/studentProfile?tab=confirmation"
-                >
-                  Confirmation
-                </Link>
-              </li>
-              <li className="nav-item">
-                <a
-                  className="nav-link"
-                  href="/studentProfile/print"
-                  target="_blank"
-                >
-                  Print Form
-                </a>
-              </li>
-            </ul> */}
           </div>
         </div>
       </div>
@@ -434,6 +680,7 @@ const StudentProfile = () => {
                                 className="form-control"
                                 placeholder="Enter Aadhar No"
                                 value={studentInformation.studentInfo.aadharNo}
+                                disabled
                                 onChange={(e) => handleChange(e)}
                               />
                             </div>
@@ -619,22 +866,25 @@ const StudentProfile = () => {
                               </select>
                             </div>
                             {/* spouse name */}
-                            <div className="col-lg-3">
-                              <label>
-                                Enter Spouse Name <span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                name="studentInfo.spouseName"
-                                value={
-                                  studentInformation.studentInfo.spouseName
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Spouse Name"
-                                required
-                              />
-                            </div>
+                            {studentInformation.studentInfo.maritalStatus ===
+                              "Yes" && (
+                              <div className="col-lg-3">
+                                <label>
+                                  Enter Spouse Name <span>*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  name="studentInfo.spouseName"
+                                  value={
+                                    studentInformation.studentInfo.spouseName
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                  placeholder="Enter Spouse Name"
+                                  required
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
                         <hr />
@@ -683,7 +933,7 @@ const StudentProfile = () => {
                         </div>
                         <div className="form-group">
                           <div className="row">
-                            {/* prmant address */}
+                            {/* permanent address */}
                             <div className="col-lg-5">
                               <label className="form-label">
                                 Permanent Address
@@ -706,7 +956,9 @@ const StudentProfile = () => {
                                 <input
                                   type="checkbox"
                                   className="form-check-input"
-                                  value=""
+                                  name="copyParmanantAddress"
+                                  checked={copyParmanantAddress}
+                                  onChange={handleAddressCopy}
                                 />
                                 <label className="form-check-label"></label>
                               </div>
@@ -857,30 +1109,34 @@ const StudentProfile = () => {
                               </select>
                             </div>
                             {/* physically challanged img upload */}
-                            <div className="col-lg-2">
-                              <label>
-                                Upload Certificate <span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                name="studentInfo.physicalChallangeImg"
-                                value={
-                                  studentInformation.studentInfo
-                                    .physicalChallangeImg
-                                }
-                                className="form-control"
-                                id="physically_challanged_chacertificate"
-                              />
-                            </div>
-                            {/* physically challanged img show */}
-                            <div className="col-lg-2">
-                              <img
-                                id="physically_challanged_chacertificate_prev"
-                                src="#"
-                                alt="Your Certificate Preview"
-                                style={{ height: "100px", width: "100px" }}
-                              />
-                            </div>
+                            {studentInformation.studentInfo
+                              .physicalChallange === "Yes" && (
+                              <>
+                                <div className="col-lg-2">
+                                  <label>
+                                    Upload Certificate <span>*</span>
+                                  </label>
+                                  <input
+                                    type="file"
+                                    name="studentInfo.physicalChallangeImg"
+                                    className="form-control"
+                                    onChange={(e) =>
+                                      imageHandler(e, "isPhysical")
+                                    }
+                                  />
+                                </div>
+
+                                {/* physically challanged img show */}
+                                <div className="col-lg-2">
+                                  <img
+                                    id="physically_challanged_chacertificate_prev"
+                                    src={`http://localhost:8088${studentInformation.studentInfo.physicalChallangeImg}`}
+                                    alt="Your Certificate Preview"
+                                    style={{ height: "100px", width: "100px" }}
+                                  />
+                                </div>
+                              </>
+                            )}
                             {/* student orphan */}
                             <div className="col-lg-2">
                               <label>
@@ -900,26 +1156,34 @@ const StudentProfile = () => {
                               </select>
                             </div>
                             {/* parent death certificate img */}
-                            <div className="col-lg-2">
-                              <label>
-                                Parent Death Certificate <span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                className="form-control"
-                                name="parent_death_chacertificate"
-                                id="parent_death_chacertificate"
-                              />
-                            </div>
-                            {/* death certificate img show */}
-                            <div className="col-lg-2">
-                              <img
-                                id="parent_death_chacertificate_prev"
-                                src="#"
-                                alt="Parent Death Certificate"
-                                style={{ height: "100px", width: "100px" }}
-                              />
-                            </div>
+                            {studentInformation.studentInfo.orphan ===
+                              "Yes" && (
+                              <>
+                                <div className="col-lg-2">
+                                  <label>
+                                    Parent Death Certificate <span>*</span>
+                                  </label>
+                                  <input
+                                    type="file"
+                                    className="form-control"
+                                    name="parentDeathCertificateImg"
+                                    id="parent_death_chacertificate"
+                                    onChange={(e) =>
+                                      imageHandler(e, "parentDeath")
+                                    }
+                                  />
+                                </div>
+                                {/* death certificate img show */}
+                                <div className="col-lg-2">
+                                  <img
+                                    id="parent_death_chacertificate_prev"
+                                    src={`http://localhost:8088${studentInformation.studentInfo.parentDeathCertificateImg}`}
+                                    alt="Parent Death Certificate"
+                                    style={{ height: "100px", width: "100px" }}
+                                  />
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                         <div className="form-group">
@@ -932,15 +1196,16 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 className="form-control"
-                                name="aadhar_card_front"
+                                name="addaharFrontImg"
                                 id="aadhar_card_front"
+                                onChange={(e) => imageHandler(e, "aadharFront")}
                               />
                             </div>
                             {/* show aadhar front */}
                             <div className="col-lg-3">
                               <img
                                 id="aadhar_card_front_prev"
-                                src="#"
+                                src={`http://localhost:8088${studentInformation.studentInfo.addaharFrontImg}`}
                                 alt="Your Aadhar Card Front Photo Preview"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -953,15 +1218,16 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 className="form-control"
-                                name="aadhar_card_back"
+                                name="aadharBackImg"
                                 id="aadhar_card_back"
+                                onChange={(e) => imageHandler(e, "aadharBack")}
                               />
                             </div>
                             {/* show aadhar back img */}
                             <div className="col-lg-3">
                               <img
                                 id="aadhar_card_back_prev"
-                                src="#"
+                                src={`http://localhost:8088${studentInformation.studentInfo.aadharBackImg}`}
                                 alt="Your Aadhar Card Back Photo Preview"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -979,15 +1245,16 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 className="form-control"
-                                name="ration_card_first"
+                                name="rationFrontImg"
                                 id="ration_card_first"
+                                onChange={(e) => imageHandler(e, "rationFront")}
                               />
                             </div>
                             {/* show ration front img */}
                             <div className="col-lg-3">
                               <img
                                 id="ration_card_first_prev"
-                                src="#"
+                                src={`http://localhost:8088${studentInformation.studentInfo.rationFrontImg}`}
                                 alt="Upload Ration Card First Page Photo"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1001,15 +1268,16 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 className="form-control"
-                                name="ration_card_last"
+                                name="rationBackImg"
                                 id="ration_card_last"
+                                onChange={(e) => imageHandler(e, "rationBack")}
                               />
                             </div>
                             {/* show ration back img */}
                             <div className="col-lg-3">
                               <img
                                 id="ration_card_last_prev"
-                                src="#"
+                                src={`http://localhost:8088${studentInformation.studentInfo.rationBackImg}`}
                                 alt="Upload Ration Card Last Page Photo"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1026,15 +1294,18 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 className="form-control"
-                                name="electricity_bill"
+                                name="electricityBillImg"
                                 id="electricity_bill"
+                                onChange={(e) =>
+                                  imageHandler(e, "electricityBill")
+                                }
                               />
                             </div>
                             {/* show bill */}
                             <div className="col-lg-3">
                               <img
                                 id="electricity_bill_prev"
-                                src="#"
+                                src={`http://localhost:8088${studentInformation.studentInfo.electricityBillImg}`}
                                 alt="Upload Electricity Bill Photo"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1134,7 +1405,7 @@ const StudentProfile = () => {
                                 }
                                 onChange={(e) => handleChange(e)}
                               >
-                                <option selected="selected" value="NA">
+                                <option selected="selected" value="">
                                   --select--
                                 </option>
                                 <option value="Divorcee">Divorcee</option>
@@ -1150,64 +1421,66 @@ const StudentProfile = () => {
                             </div>
                           </div>
                         </div>
-                        <div class="form-group">
-                          <div class="row">
-                            {/* parent status img 1 */}
-                            <div class="col-lg-3">
-                              <label>
-                                Parent Status File One <span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                class="form-control"
-                                name="familyDetails.parentStatusOneImg"
-                                value={
-                                  studentInformation.familyDetails
-                                    .parentStatusOneImg
-                                }
-                                onChange={(e) => handleChange(e)}
-                                id="parent_stauts_file_one"
-                                required
-                              />
+                        {studentInformation.familyDetails.parentStatus !==
+                          "General" &&
+                          studentInformation.familyDetails.parentStatus !==
+                            "" && (
+                            <div class="form-group">
+                              <div class="row">
+                                {/* parent status img 1 */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Parent Status File One <span>*</span>
+                                  </label>
+                                  <input
+                                    type="file"
+                                    class="form-control"
+                                    name="parentStatusOneImg"
+                                    onChange={(e) =>
+                                      imageHandler(e, "parentStatusOne")
+                                    }
+                                    id="parent_stauts_file_one"
+                                    required
+                                  />
+                                </div>
+                                {/* shoe status img one */}
+                                <div class="col-lg-3">
+                                  <img
+                                    id="parent_stauts_file_one_prev"
+                                    src={`http://localhost:8088${studentInformation.familyDetails.parentStatusOneImg}`}
+                                    alt="Upload Parent Status File One"
+                                    style={{ height: "100px", width: "100px" }}
+                                  />
+                                </div>
+                                {/* Parent Status File Two img */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Parent Status File Two <span>*</span>
+                                  </label>
+                                  <input
+                                    type="file"
+                                    class="form-control"
+                                    name="parentStatusTwoImg"
+                                    onChange={(e) =>
+                                      imageHandler(e, "parentStatusTwo")
+                                    }
+                                    id="parent_stauts_file_two"
+                                    required
+                                  />
+                                </div>
+                                {/* shoe status img two */}
+                                <div class="col-lg-3">
+                                  <img
+                                    id="parent_stauts_file_two_prev"
+                                    src={`http://localhost:8088${studentInformation.familyDetails.parentStatusTwoImg}`}
+                                    alt="Upload Parent Status File Two"
+                                    style={{ height: "100px", width: "100px" }}
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            {/* shoe status img one */}
-                            <div class="col-lg-3">
-                              <img
-                                id="parent_stauts_file_one_prev"
-                                src="#"
-                                alt="Upload Parent Status File One"
-                                style={{ height: "100px", width: "100px" }}
-                              />
-                            </div>
-                            {/* Parent Status File Two img */}
-                            <div class="col-lg-3">
-                              <label>
-                                Parent Status File Two <span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                class="form-control"
-                                name="familyDetails.parentStatusTwoImg"
-                                value={
-                                  studentInformation.familyDetails
-                                    .parentStatusTwoImg
-                                }
-                                onChange={(e) => handleChange(e)}
-                                id="parent_stauts_file_two"
-                                required
-                              />
-                            </div>
-                            {/* shoe status img two */}
-                            <div class="col-lg-3">
-                              <img
-                                id="parent_stauts_file_two_prev"
-                                src="#"
-                                alt="Upload Parent Status File Two"
-                                style={{ height: "100px", width: "100px" }}
-                              />
-                            </div>
-                          </div>
-                        </div>
+                          )}
+
                         <div class="form-group">
                           <div class="row">
                             {/* Relation With Student */}
@@ -1459,15 +1732,16 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 className="form-control"
-                                name="income_file_front"
+                                name="incomeFileFrontImg"
                                 id="income_file_front"
+                                onChange={(e) => imageHandler(e, "incomeFront")}
                                 required
                               />
                             </div>
                             <div className="col-lg-3">
                               <img
                                 id="income_file_front_prev"
-                                src="#"
+                                src={`http://localhost:8088${studentInformation.familyDetails.incomeFileFrontImg}`}
                                 alt="Upload Income File Front"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1479,15 +1753,16 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 className="form-control"
-                                name="income_file_back"
+                                name="incomeFileBackImg"
                                 id="income_file_back"
+                                onChange={(e) => imageHandler(e, "incomeBack")}
                                 required
                               />
                             </div>
                             <div className="col-lg-3">
                               <img
                                 id="income_file_back_prev"
-                                src="#"
+                                src={`http://localhost:8088${studentInformation.familyDetails.incomeFileBackImg}`}
                                 alt="Upload Income File Back"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1515,50 +1790,61 @@ const StudentProfile = () => {
                                 <option value="No">No</option>
                               </select>
                             </div>
-                            {/* handicaped img one */}
-                            <div className="col-lg-3">
-                              <label>
-                                Handicapped File One <span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                className="form-control"
-                                name="handicapped_file_one"
-                                id="handicapped_file_one"
-                                required
-                              />
-                            </div>
-                            {/* handicapped img one show */}
-                            <div className="col-lg-2">
-                              <img
-                                id="handicapped_file_one_prev"
-                                src="#"
-                                alt="Handicapped File 1"
-                                style={{ height: "100px", width: "100px" }}
-                              />
-                            </div>
-                            {/* handicaped img two */}
-                            <div className="col-lg-2">
-                              <label>
-                                Handicapped File Two <span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                className="form-control"
-                                name="handicapped_file_two"
-                                id="handicapped_file_two"
-                                required
-                              />
-                            </div>
-                            {/* handicaped img two show */}
-                            <div className="col-lg-2">
-                              <img
-                                id="handicapped_file_two_prev"
-                                src="#"
-                                alt="Handicapped File 2"
-                                style={{ height: "100px", width: "100px" }}
-                              />
-                            </div>
+                            {studentInformation?.familyDetails.handiCapped ===
+                              "Yes" && (
+                              <>
+                                {/* handicaped img one */}
+                                <div className="col-lg-3">
+                                  <label>
+                                    Handicapped File One <span>*</span>
+                                  </label>
+                                  <input
+                                    type="file"
+                                    className="form-control"
+                                    name="handiCapFileOneImg"
+                                    id="handicapped_file_one"
+                                    onChange={(e) =>
+                                      imageHandler(e, "handicapedFront")
+                                    }
+                                    required
+                                  />
+                                </div>
+                                {/* handicapped img one show */}
+                                <div className="col-lg-2">
+                                  <img
+                                    id="handicapped_file_one_prev"
+                                    src={`http://localhost:8088${studentInformation.familyDetails.handiCapFileOneImg}`}
+                                    alt="Handicapped File 1"
+                                    style={{ height: "100px", width: "100px" }}
+                                  />
+                                </div>
+                                {/* handicaped img two */}
+                                <div className="col-lg-2">
+                                  <label>
+                                    Handicapped File Two <span>*</span>
+                                  </label>
+                                  <input
+                                    type="file"
+                                    className="form-control"
+                                    name="handiCapFileTwoImg"
+                                    id="handicapped_file_two"
+                                    onChange={(e) =>
+                                      imageHandler(e, "handicapedBack")
+                                    }
+                                    required
+                                  />
+                                </div>
+                                {/* handicaped img two show */}
+                                <div className="col-lg-2">
+                                  <img
+                                    id="handicapped_file_two_prev"
+                                    src={`http://localhost:8088${studentInformation.familyDetails.handiCapFileTwoImg}`}
+                                    alt="Handicapped File 2"
+                                    style={{ height: "100px", width: "100px" }}
+                                  />
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                         <div className="form-group">
@@ -1678,8 +1964,11 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 class="form-control"
-                                name="jamat_letter_one"
+                                name="memonJamatLetterOne"
                                 id="jamat_letter_one"
+                                onChange={(e) =>
+                                  imageHandler(e, "jamatLetterOne")
+                                }
                                 required
                               />
                             </div>
@@ -1687,7 +1976,7 @@ const StudentProfile = () => {
                             <div class="col-lg-3">
                               <img
                                 id="jamat_letter_one_prev"
-                                src="#"
+                                src={`http://localhost:8088${studentInformation.jamatInfo.memonJamatLetterOne}`}
                                 alt="Memon Jamat Letter 1"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1700,8 +1989,11 @@ const StudentProfile = () => {
                               <input
                                 type="file"
                                 class="form-control"
-                                name="jamat_letter_two"
+                                name="memonJamatLetterTwo"
                                 id="jamat_letter_two"
+                                onChange={(e) =>
+                                  imageHandler(e, "jamatLetterTwo")
+                                }
                                 required
                               />
                             </div>
@@ -1709,7 +2001,7 @@ const StudentProfile = () => {
                             <div class="col-lg-3">
                               <img
                                 id="jamat_letter_two_prev"
-                                src="#"
+                                src={`http://localhost:8088${studentInformation.jamatInfo.memonJamatLetterTwo}`}
                                 alt="Memon Jamat Letter 2"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1765,7 +2057,7 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="secretaryMobile"
+                                name="jamatInfo.secretaryMobile"
                                 value={
                                   studentInformation.jamatInfo.secretaryMobile
                                 }
@@ -1782,7 +2074,7 @@ const StudentProfile = () => {
                               <input
                                 type="email"
                                 class="form-control"
-                                name="secretaryEmail"
+                                name="jamatInfo.secretaryEmail"
                                 value={
                                   studentInformation.jamatInfo.secretaryEmail
                                 }
@@ -1802,7 +2094,7 @@ const StudentProfile = () => {
                               </label>
                               <textarea
                                 class="form-control"
-                                name="memonAddress"
+                                name="jamatInfo.memonAddress"
                                 value={
                                   studentInformation.jamatInfo.memonAddress
                                 }
@@ -1819,7 +2111,7 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="memonCity"
+                                name="jamatInfo.memonCity"
                                 value={studentInformation.jamatInfo.memonCity}
                                 onChange={(e) => handleChange(e)}
                                 placeholder="Enter City Name"
@@ -1834,7 +2126,7 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="memonPin"
+                                name="jamatInfo.memonPin"
                                 value={studentInformation.jamatInfo.memonPin}
                                 onChange={(e) => handleChange(e)}
                                 placeholder="Enter Pincode"
@@ -1848,7 +2140,7 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 class="form-control"
-                                name="memonState"
+                                name="jamatInfo.memonState"
                                 required
                                 value={studentInformation.jamatInfo.memonState}
                                 onChange={(e) => handleChange(e)}
@@ -1873,7 +2165,7 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="helpFromJamat"
+                                  name="jamatInfo.helpFromJamat"
                                   onChange={(e) => handleChange(e)}
                                   id="jamat_help_yes"
                                   value="Yes"
@@ -1884,7 +2176,7 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="helpFromJamat"
+                                  name="jamatInfo.helpFromJamat"
                                   onChange={(e) => handleChange(e)}
                                   id="jamat_help_no"
                                   value="no"
@@ -1904,7 +2196,7 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="jamatReceiveAmount"
+                                name="jamatInfo.jamatReceiveAmount"
                                 value={
                                   studentInformation.jamatInfo
                                     .jamatReceiveAmount
@@ -1922,7 +2214,7 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="amountReceivePurpose"
+                                name="jamatInfo.amountReceivePurpose"
                                 value={
                                   studentInformation.jamatInfo
                                     .amountReceivePurpose
@@ -1939,7 +2231,7 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 class="form-control"
-                                name="amountType"
+                                name="jamatInfo.amountType"
                                 required
                                 value={studentInformation.jamatInfo.amountType}
                                 onChange={(e) => handleChange(e)}
@@ -1967,7 +2259,7 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="deeniyatCourse"
+                                  name="jamatInfo.deeniyatCourse"
                                   onChange={(e) => handleChange(e)}
                                   id="deeniyat_course_yes"
                                   value="Yes"
@@ -1978,7 +2270,7 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name="deeniyatCourse"
+                                  name="jamatInfo.deeniyatCourse"
                                   id="deeniyat_course_no"
                                   onChange={(e) => handleChange(e)}
                                   value="no"
@@ -1998,7 +2290,7 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="courseName"
+                                name="jamatInfo.courseName"
                                 value={studentInformation.jamatInfo.courseName}
                                 onChange={(e) => handleChange(e)}
                                 placeholder="Enter Course Name"
@@ -2013,7 +2305,7 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="madrashaName"
+                                name="jamatInfo.madrashaName"
                                 value={
                                   studentInformation.jamatInfo.madrashaName
                                 }
@@ -2030,7 +2322,7 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                name="anyOtherCourse"
+                                name="jamatInfo.anyOtherCourse"
                                 value={
                                   studentInformation.jamatInfo.anyOtherCourse
                                 }
@@ -2062,8 +2354,11 @@ const StudentProfile = () => {
                               <select
                                 id="txt6scDegree"
                                 class="form-control"
-                                name="prevYearResult"
-                                value={studentInformation.prevAcademicInfo.prevYearResult}
+                                name="prevAcademicInfo.prevYearResult"
+                                value={
+                                  studentInformation.prevAcademicInfo
+                                    .prevYearResult
+                                }
                                 onChange={(e) => handleChange(e)}
                               >
                                 <option selected="selected" value="select">
@@ -2082,29 +2377,13 @@ const StudentProfile = () => {
                             </div>
                           </div>
                         </div>
-                        {/* <div class="panel-heading">
-                          <h4 class="panel-title">
-                            <button
-                              type="button"
-                              data-toggle="collapse"
-                              data-parent="#accordion"
-                              href="#collapseOne"
-                              id="grid_show_button"
-                              class="btn btn-default"
-                              style={{ display: "none" }}
-                            >
-                              Show Grid
-                            </button>
-                          </h4>
-                        </div> */}
-
-                        <div id="collapseOne" class="panel-collapse collapse show">
+                        <div class="panel-collapse collapse show">
                           <div class="panel-body">
                             <div class="col-sm-12">
                               <div class="form-group">
                                 <div class="row">
                                   {/* last year result img */}
-                                  <div class="col-lg-4">
+                                  <div class="col-lg-2">
                                     <label>
                                       Last Year Result{" "}
                                       <span style={{ color: "red" }}>*</span>
@@ -2113,12 +2392,25 @@ const StudentProfile = () => {
                                       type="file"
                                       class="form-control"
                                       name="lastYearResultImg"
-                      
+                                      onChange={(e) =>
+                                        imageHandler(e, "lastYearResultImg")
+                                      }
                                       required
                                     />
                                   </div>
+                                  <div class="col-lg-2">
+                                    <img
+                                      id="jamat_letter_two_prev"
+                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.lastYearResultImg}`}
+                                      alt="Memon Jamat Letter 2"
+                                      style={{
+                                        height: "100px",
+                                        width: "100px",
+                                      }}
+                                    />
+                                  </div>
                                   {/* last two year img  */}
-                                  <div class="col-lg-4">
+                                  <div class="col-lg-2">
                                     <label>
                                       Last To Last Year Result{" "}
                                       <span style={{ color: "red" }}>*</span>
@@ -2126,12 +2418,26 @@ const StudentProfile = () => {
                                     <input
                                       type="file"
                                       class="form-control"
-                                      name="last_to_last_year_result"
+                                      name="lastTwoYearResultImg"
+                                      onChange={(e) =>
+                                        imageHandler(e, "lastTwoYearResultImg")
+                                      }
                                       required
                                     />
                                   </div>
+                                  <div class="col-lg-2">
+                                    <img
+                                      id="jamat_letter_two_prev"
+                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.lastTwoYearResultImg}`}
+                                      alt="Memon Jamat Letter 2"
+                                      style={{
+                                        height: "100px",
+                                        width: "100px",
+                                      }}
+                                    />
+                                  </div>
                                   {/* two year back result img */}
-                                  <div class="col-lg-4">
+                                  <div class="col-lg-2">
                                     <label>
                                       2 Year Back Result{" "}
                                       <span style={{ color: "red" }}>*</span>
@@ -2139,8 +2445,22 @@ const StudentProfile = () => {
                                     <input
                                       type="file"
                                       class="form-control"
-                                      name="two_year_back_result"
+                                      name="TwoYearBackResultImg"
+                                      onChange={(e) =>
+                                        imageHandler(e, "TwoYearBackResultImg")
+                                      }
                                       required
+                                    />
+                                  </div>
+                                  <div class="col-lg-2">
+                                    <img
+                                      id="jamat_letter_two_prev"
+                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.TwoYearBackResultImg}`}
+                                      alt="Memon Jamat Letter 2"
+                                      style={{
+                                        height: "100px",
+                                        width: "100px",
+                                      }}
                                     />
                                   </div>
                                 </div>
@@ -2156,8 +2476,11 @@ const StudentProfile = () => {
                                     <select
                                       class="form-control step6Class"
                                       id="txt6scLevelOfCourse"
-                                      name="currentStudy"
-                                      value={studentInformation.prevAcademicInfo.currentStudy}
+                                      name="prevAcademicInfo.currentStudy"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .currentStudy
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option selected="selected" value="0">
@@ -2247,10 +2570,12 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
-                                      name="specialCase"
-                                      value={studentInformation.prevAcademicInfo.specialCase}
+                                      name="prevAcademicInfo.specialCase"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .specialCase
+                                      }
                                       onChange={(e) => handleChange(e)}
-                                      id="txtSpecialCase_Step6"
                                       placeholder="Special Case"
                                     />
                                   </div>
@@ -2266,8 +2591,11 @@ const StudentProfile = () => {
                                     <select
                                       id="txt6scDegree"
                                       class="form-control"
-                                      name="courseName"
-                                      value={studentInformation.prevAcademicInfo.courseName}
+                                      name="prevAcademicInfo.courseName"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .courseName
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option
@@ -2292,8 +2620,11 @@ const StudentProfile = () => {
                                       class="form-control select2"
                                       id="txt5LevelOfCourse_Step6"
                                       style={{ width: "100%" }}
-                                      name="levelOfCourse"
-                                      value={studentInformation.prevAcademicInfo.levelOfCourse}
+                                      name="prevAcademicInfo.levelOfCourse"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .levelOfCourse
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
@@ -2322,17 +2653,18 @@ const StudentProfile = () => {
                                     <input
                                       type="text"
                                       class="form-control"
-                                      name="otherCourseOne"
-                                      value={studentInformation.prevAcademicInfo.otherCourseOne}
+                                      name="prevAcademicInfo.otherCourseOne"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .otherCourseOne
+                                      }
                                       onChange={(e) => handleChange(e)}
                                       id="txt6OtherCourse_Step6"
                                       placeholder="Other course"
                                     />
                                   </div>
                                   {/* other level of course */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                  >
+                                  <div class="col-sm-3 topMargin">
                                     <label>
                                       Other Level Of Course
                                       <span style={{ color: "red" }}></span>
@@ -2342,15 +2674,16 @@ const StudentProfile = () => {
                                       class="form-control"
                                       id="otherLevelOfCourse"
                                       placeholder="Other Level of course"
-                                      name="otherLevelOfCourse"
-                                      value={studentInformation.prevAcademicInfo.otherLevelOfCourse}
+                                      name="prevAcademicInfo.otherLevelOfCourse"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .otherLevelOfCourse
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
                                   {/* other field */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                  >
+                                  <div class="col-sm-3 topMargin">
                                     <label>
                                       Other Field{" "}
                                       <span style={{ color: "red" }}>*</span>
@@ -2359,8 +2692,11 @@ const StudentProfile = () => {
                                       type="text"
                                       class="form-control"
                                       placeholder="other Field"
-                                      name="otherField"
-                                      value={studentInformation.prevAcademicInfo.otherField}
+                                      name="prevAcademicInfo.otherField"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .otherField
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2369,9 +2705,7 @@ const StudentProfile = () => {
                               <div class="form-group">
                                 <div class="row">
                                   {/* field  */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                  >
+                                  <div class="col-sm-3 topMargin">
                                     <label>
                                       Field{" "}
                                       <span style={{ color: "red" }}>*</span>
@@ -2379,8 +2713,11 @@ const StudentProfile = () => {
                                     <select
                                       class="form-control select2"
                                       style={{ width: "100%" }}
-                                      name="field"
-                                      value={studentInformation.prevAcademicInfo.field}
+                                      name="prevAcademicInfo.field"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .field
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option
@@ -2404,8 +2741,11 @@ const StudentProfile = () => {
                                     <select
                                       class="form-control select2"
                                       style={{ width: "100%" }}
-                                      name="duration"
-                                      value={studentInformation.prevAcademicInfo.duration}
+                                      name="prevAcademicInfo.duration"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .duration
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
@@ -2432,8 +2772,11 @@ const StudentProfile = () => {
                                     <select
                                       class="form-control select2"
                                       style={{ width: "100%" }}
-                                      name="instructionMedium"
-                                      value={studentInformation.prevAcademicInfo.instructionMedium}
+                                      name="prevAcademicInfo.instructionMedium"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instructionMedium
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
@@ -2449,9 +2792,7 @@ const StudentProfile = () => {
                                     </select>
                                   </div>
                                   {/* pattern of the course */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                  >
+                                  <div class="col-sm-3 topMargin">
                                     <label>
                                       Pattern Of The Course
                                       <span style={{ color: "red" }}></span>
@@ -2459,8 +2800,11 @@ const StudentProfile = () => {
                                     <select
                                       class="form-control select2"
                                       style={{ width: "100%" }}
-                                      name="coursePattern"
-                                      value={studentInformation.prevAcademicInfo.coursePattern}
+                                      name="prevAcademicInfo.coursePattern"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .coursePattern
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
@@ -2472,7 +2816,7 @@ const StudentProfile = () => {
                               </div>
                               <div class="form-group">
                                 <div class="row">
-                                {/* Other Duration of Course */}
+                                  {/* Other Duration of Course */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Other Duration of Course
@@ -2482,15 +2826,16 @@ const StudentProfile = () => {
                                       type="text"
                                       class="form-control"
                                       placeholder="Other Duration of Course"
-                                      name="otherDurationCourse"
-                                      value={studentInformation.prevAcademicInfo.otherDurationCourse}
+                                      name="prevAcademicInfo.otherDurationCourse"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .otherDurationCourse
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
                                   {/* other course two */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                  >
+                                  <div class="col-sm-3 topMargin">
                                     <label>
                                       Other Course
                                       <span style={{ color: "red" }}></span>
@@ -2499,15 +2844,16 @@ const StudentProfile = () => {
                                       type="text"
                                       class="form-control"
                                       placeholder="Other Course"
-                                      name="otherCourseTwo"
-                                      value={studentInformation.prevAcademicInfo.otherCourseTwo}
+                                      name="prevAcademicInfo.otherCourseTwo"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .otherCourseTwo
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
                                   {/* other medium */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                  >
+                                  <div class="col-sm-3 topMargin">
                                     <label>
                                       Other Medium
                                       <span style={{ color: "red" }}>*</span>
@@ -2516,8 +2862,11 @@ const StudentProfile = () => {
                                       type="text"
                                       class="form-control"
                                       placeholder="Other Medium"
-                                      name="otherMedium"
-                                      value={studentInformation.prevAcademicInfo.otherMedium}
+                                      name="prevAcademicInfo.otherMedium"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .otherMedium
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2525,7 +2874,7 @@ const StudentProfile = () => {
                               </div>
                               <div class="form-group">
                                 <div class="row">
-                                {/* Name Of the School / College / Institutions */}
+                                  {/* Name Of the School / College / Institutions */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Name Of the School / College /
@@ -2536,8 +2885,11 @@ const StudentProfile = () => {
                                       type="text"
                                       class="form-control"
                                       placeholder="Name Of the School/College/Institutions"
-                                      name="instituteName"
-                                      value={studentInformation.prevAcademicInfo.instituteName}
+                                      name="prevAcademicInfo.instituteName"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteName
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2548,18 +2900,18 @@ const StudentProfile = () => {
                                       <span style={{ color: "red" }}></span>
                                     </label>
                                     <div class="input-group">
-                                      <div
-                                        class="input-group-addon"
-                                        id="loadUniversity4"
-                                      >
+                                      <div class="input-group-addon">
                                         <i class="icon ion-university"></i>
                                       </div>
                                       <input
                                         type="text"
                                         class="form-control"
                                         placeholder="Name Of the Board/University"
-                                        name="instituteName"
-                                        value={studentInformation.prevAcademicInfo.boardName}
+                                        name="prevAcademicInfo.instituteName"
+                                        value={
+                                          studentInformation.prevAcademicInfo
+                                            .boardName
+                                        }
                                         onChange={(e) => handleChange(e)}
                                       />
                                     </div>
@@ -2573,8 +2925,11 @@ const StudentProfile = () => {
                                     <select
                                       class="form-control select2"
                                       style={{ width: "100%" }}
-                                      name="instituteType"
-                                      value={studentInformation.prevAcademicInfo.instituteType}
+                                      name="prevAcademicInfo.instituteType"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteType
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
@@ -2594,8 +2949,11 @@ const StudentProfile = () => {
                                     <select
                                       class="form-control select2"
                                       style={{ width: "100%" }}
-                                      name="ifPrivate"
-                                      value={studentInformation.prevAcademicInfo.ifPrivate}
+                                      name="prevAcademicInfo.ifPrivate"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .ifPrivate
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
@@ -2608,7 +2966,7 @@ const StudentProfile = () => {
 
                               <div class="form-group">
                                 <div class="row">
-                                {/* School/ College / Institute Address */}
+                                  {/* School/ College / Institute Address */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       School/ College / Institute Address
@@ -2617,8 +2975,11 @@ const StudentProfile = () => {
                                     <textarea
                                       class="form-control"
                                       placeholder="School/ College / Institute Address"
-                                      name="instituteAddress"
-                                      value={studentInformation.prevAcademicInfo.instituteAddress}
+                                      name="prevAcademicInfo.instituteAddress"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteAddress
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2633,8 +2994,11 @@ const StudentProfile = () => {
                                       class="form-control"
                                       id="txt6scCity"
                                       placeholder="City"
-                                      name="instituteCity"
-                                      value={studentInformation.prevAcademicInfo.instituteCity}
+                                      name="prevAcademicInfo.instituteCity"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteCity
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2650,8 +3014,11 @@ const StudentProfile = () => {
                                       placeholder="Pincode"
                                       data-inputmask="'mask': ['999999']"
                                       data-mask=""
-                                      name="institutePin"
-                                      value={studentInformation.prevAcademicInfo.institutePin}
+                                      name="prevAcademicInfo.institutePin"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .institutePin
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2666,8 +3033,11 @@ const StudentProfile = () => {
                                       class="form-control"
                                       id="txt6scDistrict"
                                       placeholder="District"
-                                      name="instituteDistrict"
-                                      value={studentInformation.prevAcademicInfo.instituteDistrict}
+                                      name="prevAcademicInfo.instituteDistrict"
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteDistrict
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2684,7 +3054,10 @@ const StudentProfile = () => {
                                     <select
                                       class="form-control"
                                       name="prevAcademicInfo.instituteState"
-                                      value={studentInformation.prevAcademicInfo.instituteState}
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteState
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       <option value="NA">--select--</option>
@@ -2761,9 +3134,12 @@ const StudentProfile = () => {
                                       type="text"
                                       class="form-control"
                                       id="txt6scCountry"
-                                      placeholder="Country"                                     
+                                      placeholder="Country"
                                       name="prevAcademicInfo.instituteCountry"
-                                      value={studentInformation.prevAcademicInfo.instituteCountry}
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteCountry
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2779,7 +3155,10 @@ const StudentProfile = () => {
                                       id="txt6scEmail"
                                       placeholder="Email"
                                       name="prevAcademicInfo.instituteEmail"
-                                      value={studentInformation.prevAcademicInfo.instituteEmail}
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteEmail
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2795,7 +3174,10 @@ const StudentProfile = () => {
                                       id="txt6scWebsite"
                                       placeholder="Website"
                                       name="prevAcademicInfo.instituteWebsite"
-                                      value={studentInformation.prevAcademicInfo.instituteWebsite}
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteWebsite
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2815,7 +3197,10 @@ const StudentProfile = () => {
                                       id="txt6LandlineNumber"
                                       placeholder="Landline Number"
                                       name="prevAcademicInfo.instituteLandLineNo"
-                                      value={studentInformation.prevAcademicInfo.instituteLandLineNo}
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteLandLineNo
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2831,7 +3216,10 @@ const StudentProfile = () => {
                                       id="txt6scAlterNumber"
                                       placeholder="School/ College / Institute Contact number"
                                       name="prevAcademicInfo.instituteContactNo"
-                                      value={studentInformation.prevAcademicInfo.instituteContactNo}
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteContactNo
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2849,7 +3237,10 @@ const StudentProfile = () => {
                                       data-inputmask="'mask': ['9999999999']"
                                       data-mask=""
                                       name="prevAcademicInfo.instituteMobileNo"
-                                      value={studentInformation.prevAcademicInfo.instituteMobileNo}
+                                      value={
+                                        studentInformation.prevAcademicInfo
+                                          .instituteMobileNo
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     />
                                   </div>
@@ -2857,6 +3248,7 @@ const StudentProfile = () => {
                               </div>
                               <div class="form-group">
                                 <div class="row">
+                                  {/* Bonafide Certificate Front img */}
                                   <div class="col-sm-3 topMargin">
                                     <label>
                                       Bonafide Certificate Front
@@ -2867,33 +3259,39 @@ const StudentProfile = () => {
                                       class="form-control"
                                       name="bonafied_certificate"
                                       id="bonafied_certificate"
-                                      
+                                      onChange={(e) => imageHandler(e, "bonafideCertificateFrontImg")}
                                     />
                                   </div>
-                                  <div class="col-lg-3">
+                                  {/* show Bonafide Certificate Front img  */}
+                                  <div class="col-lg-2">
                                     <img
-                                      id="bonafied_certificate_prev"
-                                      src="#"
-                                      alt="Bonafide Certificate Front"
+                                      id="jamat_letter_two_prev"
+                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.bonafideCertificateFrontImg}`}
+                                      alt="Memon Jamat Letter 2"
                                       style={{
                                         height: "100px",
                                         width: "100px",
                                       }}
                                     />
                                   </div>
+                                  {/* Bonafide Certificate Back side */}
                                   <div class="col-sm-3 topMargin">
-                                    <label>Bonafide Certificate Backside</label>
+                                    <label>
+                                      Bonafide Certificate Back side
+                                    </label>
                                     <input
                                       type="file"
                                       class="form-control"
-                                      name="bonafied_back"
+                                      name="bonafideCertificateBackImg"
                                       id="bonafied_back"
+                                      onChange={(e) => imageHandler(e, "bonafideCertificateBackImg")}
                                     />
                                   </div>
+                                  {/* show Bonafide Certificate back img */}
                                   <div class="col-lg-3">
                                     <img
                                       id="bonafied_back_prev"
-                                      src="#"
+                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.bonafideCertificateBackImg}`}
                                       alt="Bonafide Certificate Backside"
                                       style={{
                                         height: "100px",
@@ -2913,7 +3311,7 @@ const StudentProfile = () => {
                       <div className="other_Trust_support">
                         <div class="form-group">
                           <div class="row">
-                          {/* Do you have other trust support ?(Yes/No) */}
+                            {/* Do you have other trust support ?(Yes/No) */}
                             <div class="col-sm-4 topMargin">
                               <label>
                                 Do you have other trust support ?(Yes/No)
@@ -2923,7 +3321,10 @@ const StudentProfile = () => {
                                 class="form-control select2"
                                 style={{ width: "100%" }}
                                 name="othertrustSupport.otherTrustSupport"
-                                value={studentInformation.othertrustSupport.otherTrustSupport}
+                                value={
+                                  studentInformation.othertrustSupport
+                                    .otherTrustSupport
+                                }
                                 onChange={(e) => handleChange(e)}
                               >
                                 <option value="NA">--select--</option>
@@ -2934,11 +3335,7 @@ const StudentProfile = () => {
                           </div>
                         </div>
                         <div class="form-group">
-                          <div
-                            class="row"
-                            style={{ display: "block" }}
-                            id="txt8TrustSupports"
-                          >
+                          <div class="row" style={{ display: "block" }}>
                             <div class="col-sm-12 topMargin">
                               <table class="table table-bordered">
                                 <thead>
@@ -2964,113 +3361,150 @@ const StudentProfile = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  <tr>
-                                    <td>1</td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control"
-                                        id="txt8name_add_trust_1"
-                                        placeholder="Name Of The Trust"
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control amount allownumericwithdecimal"
-                                        id="txt8amt_cuur_yr_1"
-                                        placeholder="Amount received current year"
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control amount allownumericwithdecimal"
-                                        id="txt8amt_received_yr_1"
-                                        placeholder="Amount received last year"
-                                      />
-                                    </td>
-                                    <td>
-                                      <select
-                                        id="txt8State_1"
-                                        class="form-control"
-                                      >
-                                        <option value="NA">--select--</option>
-                                        <option value="Andhra Pradesh">
-                                          Andhra Pradesh
-                                        </option>
-                                        <option value="Arunachal Pradesh">
-                                          Arunachal Pradesh
-                                        </option>
-                                        <option value="Assam">Assam</option>
-                                        <option value="Bihar">Bihar</option>
-                                        <option value="Chhattisgarh">
-                                          Chhattisgarh
-                                        </option>
-                                        <option value="Goa">Goa</option>
-                                        <option value="Gujarat">Gujarat</option>
-                                        <option value="Haryana">Haryana</option>
-                                        <option value="Himachal Pradesh">
-                                          Himachal Pradesh
-                                        </option>
-                                        <option value="Jammu &amp; Kashmir">
-                                          Jammu &amp; Kashmir
-                                        </option>
-                                        <option value="Jharkhand">
-                                          Jharkhand
-                                        </option>
-                                        <option value="Karnataka">
-                                          Karnataka
-                                        </option>
-                                        <option value="Kerala">Kerala</option>
-                                        <option value="Madhya Pradesh">
-                                          Madhya Pradesh
-                                        </option>
-                                        <option value="Maharashtra">
-                                          Maharashtra
-                                        </option>
-                                        <option value="Manipur">Manipur</option>
-                                        <option value="Meghalaya">
-                                          Meghalaya
-                                        </option>
-                                        <option value="Mizoram">Mizoram</option>
-                                        <option value="Nagaland">
-                                          Nagaland
-                                        </option>
-                                        <option value="Odisha">Odisha</option>
-                                        <option value="Punjab">Punjab</option>
-                                        <option value="Rajasthan">
-                                          Rajasthan
-                                        </option>
-                                        <option value="Sikkim">Sikkim</option>
-                                        <option value="Tamil Nadu">
-                                          Tamil Nadu
-                                        </option>
-                                        <option value="Telangana">
-                                          Telangana
-                                        </option>
-                                        <option value="Tripura">Tripura</option>
-                                        <option value="Uttar Pradesh">
-                                          Uttar Pradesh
-                                        </option>
-                                        <option value="Uttarakhand">
-                                          Uttarakhand
-                                        </option>
-                                        <option value="West Bengal">
-                                          West Bengal
-                                        </option>
-                                      </select>
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control"
-                                        id="txt8City_1"
-                                        placeholder="City"
-                                      />
-                                    </td>
-                                  </tr>
-                                  <tr>
+                                  {studentInformation.othertrustSupport.trustDetails.map(
+                                    (trust, index) => (
+                                      <tr key={index}>
+                                        <td>1</td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Name Of The Trust"
+                                            name={`othertrustSupport.trustDetails.${index}.trustName`}
+                                            value={trust.trustName}
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control amount allownumericwithdecimal"
+                                            placeholder="Amount received current year"
+                                            name={`othertrustSupport.trustDetails.${index}.currentYearAmount`}
+                                            value={trust.currentYearAmount}
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control amount allownumericwithdecimal"
+                                            id="txt8amt_received_yr_1"
+                                            placeholder="Amount received last year"
+                                            name={`othertrustSupport.trustDetails.${index}.lastYearAmount`}
+                                            value={trust.lastYearAmount}
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                        <td>
+                                          <select
+                                            class="form-control"
+                                            name={`othertrustSupport.trustDetails.${index}.trustState`}
+                                            value={trust.trustState}
+                                            onChange={(e) => handleChange(e)}
+                                          >
+                                            <option value="NA">
+                                              --select--
+                                            </option>
+                                            <option value="Andhra Pradesh">
+                                              Andhra Pradesh
+                                            </option>
+                                            <option value="Arunachal Pradesh">
+                                              Arunachal Pradesh
+                                            </option>
+                                            <option value="Assam">Assam</option>
+                                            <option value="Bihar">Bihar</option>
+                                            <option value="Chhattisgarh">
+                                              Chhattisgarh
+                                            </option>
+                                            <option value="Goa">Goa</option>
+                                            <option value="Gujarat">
+                                              Gujarat
+                                            </option>
+                                            <option value="Haryana">
+                                              Haryana
+                                            </option>
+                                            <option value="Himachal Pradesh">
+                                              Himachal Pradesh
+                                            </option>
+                                            <option value="Jammu &amp; Kashmir">
+                                              Jammu &amp; Kashmir
+                                            </option>
+                                            <option value="Jharkhand">
+                                              Jharkhand
+                                            </option>
+                                            <option value="Karnataka">
+                                              Karnataka
+                                            </option>
+                                            <option value="Kerala">
+                                              Kerala
+                                            </option>
+                                            <option value="Madhya Pradesh">
+                                              Madhya Pradesh
+                                            </option>
+                                            <option value="Maharashtra">
+                                              Maharashtra
+                                            </option>
+                                            <option value="Manipur">
+                                              Manipur
+                                            </option>
+                                            <option value="Meghalaya">
+                                              Meghalaya
+                                            </option>
+                                            <option value="Mizoram">
+                                              Mizoram
+                                            </option>
+                                            <option value="Nagaland">
+                                              Nagaland
+                                            </option>
+                                            <option value="Odisha">
+                                              Odisha
+                                            </option>
+                                            <option value="Punjab">
+                                              Punjab
+                                            </option>
+                                            <option value="Rajasthan">
+                                              Rajasthan
+                                            </option>
+                                            <option value="Sikkim">
+                                              Sikkim
+                                            </option>
+                                            <option value="Tamil Nadu">
+                                              Tamil Nadu
+                                            </option>
+                                            <option value="Telangana">
+                                              Telangana
+                                            </option>
+                                            <option value="Tripura">
+                                              Tripura
+                                            </option>
+                                            <option value="Uttar Pradesh">
+                                              Uttar Pradesh
+                                            </option>
+                                            <option value="Uttarakhand">
+                                              Uttarakhand
+                                            </option>
+                                            <option value="West Bengal">
+                                              West Bengal
+                                            </option>
+                                          </select>
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            id="txt8City_1"
+                                            placeholder="City"
+                                            name={`othertrustSupport.trustDetails.${index}.trustCity`}
+                                            value={trust.trustCity}
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
+
+                                  {/* <tr>
                                     <td>2</td>
                                     <td>
                                       <input
@@ -3281,7 +3715,7 @@ const StudentProfile = () => {
                                         placeholder="City"
                                       />
                                     </td>
-                                  </tr>
+                                  </tr>*/}
                                   <tr>
                                     <th>Sr No</th>
                                     <th>
@@ -3305,112 +3739,158 @@ const StudentProfile = () => {
                                       <span style={{ color: "red" }}>*</span>
                                     </th>
                                   </tr>
-                                  <tr>
-                                    <td>4</td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control"
-                                        id="txt8contribution"
-                                        placeholder="Contribution from other sources"
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control amount allownumericwithdecimal"
-                                        id="txt8amt_contribution_rece"
-                                        placeholder="Amount received current year"
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control amount allownumericwithdecimal"
-                                        id="txt8amt_rece_contribution"
-                                        placeholder="Amount received last year"
-                                      />
-                                    </td>
-                                    <td>
-                                      <select
-                                        id="txt8State_4"
-                                        class="form-control"
-                                      >
-                                        <option value="NA">--select--</option>
-                                        <option value="Andhra Pradesh">
-                                          Andhra Pradesh
-                                        </option>
-                                        <option value="Arunachal Pradesh">
-                                          Arunachal Pradesh
-                                        </option>
-                                        <option value="Assam">Assam</option>
-                                        <option value="Bihar">Bihar</option>
-                                        <option value="Chhattisgarh">
-                                          Chhattisgarh
-                                        </option>
-                                        <option value="Goa">Goa</option>
-                                        <option value="Gujarat">Gujarat</option>
-                                        <option value="Haryana">Haryana</option>
-                                        <option value="Himachal Pradesh">
-                                          Himachal Pradesh
-                                        </option>
-                                        <option value="Jammu &amp; Kashmir">
-                                          Jammu &amp; Kashmir
-                                        </option>
-                                        <option value="Jharkhand">
-                                          Jharkhand
-                                        </option>
-                                        <option value="Karnataka">
-                                          Karnataka
-                                        </option>
-                                        <option value="Kerala">Kerala</option>
-                                        <option value="Madhya Pradesh">
-                                          Madhya Pradesh
-                                        </option>
-                                        <option value="Maharashtra">
-                                          Maharashtra
-                                        </option>
-                                        <option value="Manipur">Manipur</option>
-                                        <option value="Meghalaya">
-                                          Meghalaya
-                                        </option>
-                                        <option value="Mizoram">Mizoram</option>
-                                        <option value="Nagaland">
-                                          Nagaland
-                                        </option>
-                                        <option value="Odisha">Odisha</option>
-                                        <option value="Punjab">Punjab</option>
-                                        <option value="Rajasthan">
-                                          Rajasthan
-                                        </option>
-                                        <option value="Sikkim">Sikkim</option>
-                                        <option value="Tamil Nadu">
-                                          Tamil Nadu
-                                        </option>
-                                        <option value="Telangana">
-                                          Telangana
-                                        </option>
-                                        <option value="Tripura">Tripura</option>
-                                        <option value="Uttar Pradesh">
-                                          Uttar Pradesh
-                                        </option>
-                                        <option value="Uttarakhand">
-                                          Uttarakhand
-                                        </option>
-                                        <option value="West Bengal">
-                                          West Bengal
-                                        </option>
-                                      </select>
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control"
-                                        id="txt8City_4"
-                                        placeholder="City"
-                                      />
-                                    </td>
-                                  </tr>
+                                  {studentInformation.othertrustSupport.otherContribution.map(
+                                    (contribution, index) => (
+                                      <tr key={index}>
+                                        <td>1</td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Name Of The Trust"
+                                            name={`othertrustSupport.otherContribution.${index}.contributionSource`}
+                                            value={
+                                              contribution.contributionSource
+                                            }
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control amount allownumericwithdecimal"
+                                            placeholder="Amount received current year"
+                                            name={`othertrustSupport.otherContribution.${index}.contributionCurrentyearAmunt`}
+                                            value={
+                                              contribution.contributionCurrentyearAmunt
+                                            }
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control amount allownumericwithdecimal"
+                                            id="txt8amt_received_yr_1"
+                                            placeholder="Amount received last year"
+                                            name={`othertrustSupport.otherContribution.${index}.contributionLastyearAmunt`}
+                                            value={
+                                              contribution.contributionLastyearAmunt
+                                            }
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                        <td>
+                                          <select
+                                            class="form-control"
+                                            name={`othertrustSupport.otherContribution.${index}.contributionState`}
+                                            value={
+                                              contribution.contributionState
+                                            }
+                                            onChange={(e) => handleChange(e)}
+                                          >
+                                            <option value="NA">
+                                              --select--
+                                            </option>
+                                            <option value="Andhra Pradesh">
+                                              Andhra Pradesh
+                                            </option>
+                                            <option value="Arunachal Pradesh">
+                                              Arunachal Pradesh
+                                            </option>
+                                            <option value="Assam">Assam</option>
+                                            <option value="Bihar">Bihar</option>
+                                            <option value="Chhattisgarh">
+                                              Chhattisgarh
+                                            </option>
+                                            <option value="Goa">Goa</option>
+                                            <option value="Gujarat">
+                                              Gujarat
+                                            </option>
+                                            <option value="Haryana">
+                                              Haryana
+                                            </option>
+                                            <option value="Himachal Pradesh">
+                                              Himachal Pradesh
+                                            </option>
+                                            <option value="Jammu &amp; Kashmir">
+                                              Jammu &amp; Kashmir
+                                            </option>
+                                            <option value="Jharkhand">
+                                              Jharkhand
+                                            </option>
+                                            <option value="Karnataka">
+                                              Karnataka
+                                            </option>
+                                            <option value="Kerala">
+                                              Kerala
+                                            </option>
+                                            <option value="Madhya Pradesh">
+                                              Madhya Pradesh
+                                            </option>
+                                            <option value="Maharashtra">
+                                              Maharashtra
+                                            </option>
+                                            <option value="Manipur">
+                                              Manipur
+                                            </option>
+                                            <option value="Meghalaya">
+                                              Meghalaya
+                                            </option>
+                                            <option value="Mizoram">
+                                              Mizoram
+                                            </option>
+                                            <option value="Nagaland">
+                                              Nagaland
+                                            </option>
+                                            <option value="Odisha">
+                                              Odisha
+                                            </option>
+                                            <option value="Punjab">
+                                              Punjab
+                                            </option>
+                                            <option value="Rajasthan">
+                                              Rajasthan
+                                            </option>
+                                            <option value="Sikkim">
+                                              Sikkim
+                                            </option>
+                                            <option value="Tamil Nadu">
+                                              Tamil Nadu
+                                            </option>
+                                            <option value="Telangana">
+                                              Telangana
+                                            </option>
+                                            <option value="Tripura">
+                                              Tripura
+                                            </option>
+                                            <option value="Uttar Pradesh">
+                                              Uttar Pradesh
+                                            </option>
+                                            <option value="Uttarakhand">
+                                              Uttarakhand
+                                            </option>
+                                            <option value="West Bengal">
+                                              West Bengal
+                                            </option>
+                                          </select>
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            id="txt8City_1"
+                                            placeholder="City"
+                                            name={`othertrustSupport.otherContribution.${index}.contributionCity`}
+                                            value={
+                                              contribution.contributionCity
+                                            }
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
                                 </tbody>
                               </table>
                             </div>
@@ -3424,6 +3904,7 @@ const StudentProfile = () => {
                         </div>
                         <div class="form-group">
                           <div class="row">
+                            {/* Did you apply for scholarship last year?(Yes/No) */}
                             <div class="col-sm-4 topMargin">
                               <label>
                                 Did you apply for scholarship last year?
@@ -3431,16 +3912,16 @@ const StudentProfile = () => {
                               </label>
                               <input
                                 type="radio"
-                                id="txtLastYearYes"
-                                name="txt8applyforscholarship"
+                                name={`othertrustSupport.otherContribution.govtScholarshipApply`}
                                 value="Yes"
+                                onChange={(e) => handleChange(e)}
                               />
                               Yes &nbsp;&nbsp;
                               <input
                                 type="radio"
-                                id="txtLastYearNo"
-                                name="txt8applyforscholarship"
+                                name={`othertrustSupport.otherContribution.govtScholarshipApply`}
                                 value="No"
+                                onChange={(e) => handleChange(e)}
                               />
                               No
                             </div>
@@ -3449,6 +3930,7 @@ const StudentProfile = () => {
 
                         <div class="form-group">
                           <div class="row" id="govtScholarship">
+                            {/* scholarship amount receive */}
                             <div class="col-sm-3 topMargin">
                               <label>
                                 Amount received{" "}
@@ -3457,10 +3939,16 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control amount allownumericwithdecimal"
-                                id="txt8scholarship_amt"
                                 placeholder=""
+                                name="othertrustSupport.scholarAmount"
+                                value={
+                                  studentInformation.othertrustSupport
+                                    .scholarAmount
+                                }
+                                onChange={(e) => handleChange(e)}
                               />
                             </div>
+                            {/* scholar year */}
                             <div class="col-sm-3 topMargin">
                               <label>
                                 Year <span style={{ color: "red" }}></span>
@@ -3468,10 +3956,16 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                id="txt8scholarship_year"
                                 placeholder=""
+                                name="othertrustSupport.scholarYear"
+                                value={
+                                  studentInformation.othertrustSupport
+                                    .scholarYear
+                                }
+                                onChange={(e) => handleChange(e)}
                               />
                             </div>
+                            {/* scholarship name */}
                             <div class="col-sm-3 topMargin">
                               <label>
                                 Name of the govt. scholarship{" "}
@@ -3480,10 +3974,16 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                id="txt8scholarship_name"
                                 placeholder=""
+                                name="othertrustSupport.scholarName"
+                                value={
+                                  studentInformation.othertrustSupport
+                                    .scholarName
+                                }
+                                onChange={(e) => handleChange(e)}
                               />
                             </div>
+                            {/* application id */}
                             <div class="col-sm-3 topMargin">
                               <label>
                                 Application Id{" "}
@@ -3492,10 +3992,16 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                id="txt8application_id"
                                 placeholder=""
+                                name="othertrustSupport.applicationId"
+                                value={
+                                  studentInformation.othertrustSupport
+                                    .applicationId
+                                }
+                                onChange={(e) => handleChange(e)}
                               />
                             </div>
+                            {/* application password */}
                             <div class="col-sm-3 topMargin">
                               <label>
                                 Password <span style={{ color: "red" }}></span>
@@ -3503,8 +4009,13 @@ const StudentProfile = () => {
                               <input
                                 type="text"
                                 class="form-control"
-                                id="txt8applicationpass"
                                 placeholder=""
+                                name="othertrustSupport.applicationPass"
+                                value={
+                                  studentInformation.othertrustSupport
+                                    .applicationPass
+                                }
+                                onChange={(e) => handleChange(e)}
                               />
                             </div>
                           </div>
@@ -3512,7 +4023,7 @@ const StudentProfile = () => {
                       </div>
                     )}
 
-                    {/*  ====================== organisation support information ======================== */}
+                    {/*  ====================== organisation support family information ======================== */}
                     {tab === "organisation_support_information" && (
                       <div className="organization_support">
                         <div class="row">
@@ -3525,6 +4036,12 @@ const StudentProfile = () => {
                               class="form-control select2"
                               id="received_sibling_orgo"
                               style={{ width: "100%" }}
+                              name="organizationSupportFamily.receivedSupport"
+                              value={
+                                studentInformation.organizationSupportFamily
+                                  .receivedSupport
+                              }
+                              onChange={(e) => handleChange(e)}
                             >
                               <option value="NA">--select--</option>
                               <option value="No">No</option>
@@ -3550,82 +4067,148 @@ const StudentProfile = () => {
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr>
-                                  <td>1</td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txtx_bro_sis_name"
-                                      placeholder=""
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txtx_id_no"
-                                      placeholder=""
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txtx_coursename"
-                                      placeholder=""
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      class="form-control amount allownumericwithdecimal"
-                                      id="txtx_amt_received"
-                                      placeholder=""
-                                    />
-                                  </td>
-                                  <td>
-                                    <select
-                                      class="form-control"
-                                      id="ddlFinancialYear1"
-                                      style={{ width: "100%" }}
-                                    >
-                                      <option value="NA">--select--</option>
-                                      <option value="2004-05">2004-05</option>
-                                      <option value="2005-06">2005-06</option>
-                                      <option value="2006-07">2006-07</option>
-                                      <option value="2007-08">2007-08</option>
-                                      <option value="2008-09">2008-09</option>
-                                      <option value="2009-10">2009-10</option>
-                                      <option value="2010-11">2010-11</option>
-                                      <option value="2011-12">2011-12</option>
-                                      <option value="2012-13">2012-13</option>
-                                      <option value="2013-14">2013-14</option>
-                                      <option value="2014-15">2014-15</option>
-                                      <option value="2015-16">2015-16</option>
-                                      <option value="2016-17">2016-17</option>
-                                      <option value="2017-18">2017-18</option>
-                                      <option value="2018-19">2018-19</option>
-                                      <option value="2019-20">2019-20</option>
-                                      <option value="2020-21">2020-21</option>
-                                      <option value="2021-22">2021-22</option>
-                                      <option value="2022-23">2022-23</option>
-                                      <option value="2023-24">2023-24</option>
-                                      <option value="2024-25">2024-25</option>
-                                    </select>
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txtx_hw_mny_yr_receive"
-                                      placeholder=""
-                                    />
-                                  </td>
-                                </tr>
+                                {studentInformation.organizationSupportFamily.supportFamilyDetails.map(
+                                  (family, index) => {
+                                    console.log("fufu", family);
+                                    return (
+                                      <tr key={index}>
+                                        <td>1</td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            id="txtx_bro_sis_name"
+                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.memberName`}
+                                            value={family.memberName}
+                                            onChange={(e) => handleChange(e)}
+                                            placeholder=""
+                                          />
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder=""
+                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.memberId`}
+                                            value={family.memberId}
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder=""
+                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.course`}
+                                            value={family.course}
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control amount allownumericwithdecimal"
+                                            placeholder=""
+                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.amountReceived`}
+                                            value={family.amountReceived}
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                        <td>
+                                          <select
+                                            class="form-control"
+                                            style={{ width: "100%" }}
+                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.financialYear`}
+                                            value={family.financialYear}
+                                            onChange={(e) => handleChange(e)}
+                                          >
+                                            <option value="NA">
+                                              --select--
+                                            </option>
+                                            <option value="2004-05">
+                                              2004-05
+                                            </option>
+                                            <option value="2005-06">
+                                              2005-06
+                                            </option>
+                                            <option value="2006-07">
+                                              2006-07
+                                            </option>
+                                            <option value="2007-08">
+                                              2007-08
+                                            </option>
+                                            <option value="2008-09">
+                                              2008-09
+                                            </option>
+                                            <option value="2009-10">
+                                              2009-10
+                                            </option>
+                                            <option value="2010-11">
+                                              2010-11
+                                            </option>
+                                            <option value="2011-12">
+                                              2011-12
+                                            </option>
+                                            <option value="2012-13">
+                                              2012-13
+                                            </option>
+                                            <option value="2013-14">
+                                              2013-14
+                                            </option>
+                                            <option value="2014-15">
+                                              2014-15
+                                            </option>
+                                            <option value="2015-16">
+                                              2015-16
+                                            </option>
+                                            <option value="2016-17">
+                                              2016-17
+                                            </option>
+                                            <option value="2017-18">
+                                              2017-18
+                                            </option>
+                                            <option value="2018-19">
+                                              2018-19
+                                            </option>
+                                            <option value="2019-20">
+                                              2019-20
+                                            </option>
+                                            <option value="2020-21">
+                                              2020-21
+                                            </option>
+                                            <option value="2021-22">
+                                              2021-22
+                                            </option>
+                                            <option value="2022-23">
+                                              2022-23
+                                            </option>
+                                            <option value="2023-24">
+                                              2023-24
+                                            </option>
+                                            <option value="2024-25">
+                                              2024-25
+                                            </option>
+                                          </select>
+                                        </td>
+                                        <td>
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder=""
+                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.howManyYearsGet`}
+                                            value={family.howManyYearsGet}
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </td>
+                                      </tr>
+                                    );
+                                  }
+                                )}
                               </tbody>
                             </table>
                           </div>
+
+                          {/* add button */}
                           <div
                             class="col-sm-12 topMargin"
                             style={{ marginTop: "31px" }}
@@ -3719,88 +4302,151 @@ const StudentProfile = () => {
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr>
-                                  <td>1</td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txtxt_family_memb_name"
-                                      placeholder=""
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txtxt_id_no"
-                                      placeholder=""
-                                    />
-                                  </td>
-                                  <td>
-                                    <div class="input-group">
-                                      <div
-                                        class="input-group-addon"
-                                        id="loadSchemeName"
-                                      >
-                                        <i class="icon ion-university"></i>
-                                      </div>
-                                      <select
-                                        id="ddlSchemeName"
-                                        class="form-control select2"
-                                      >
-                                        <option selected="selected" value="0">
-                                          --select--
-                                        </option>
-                                        <option value="4">Business Aid</option>
-                                        <option value="5">General Aid</option>
-                                        <option value="2">Housing</option>
-                                        <option value="3">Medical</option>
-                                        <option value="1">
-                                          Women Empowerment
-                                        </option>
-                                      </select>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      class="form-control amount allownumericwithdecimal"
-                                      id="txtxt_amt_receveid"
-                                      placeholder=""
-                                    />
-                                  </td>
-                                  <td>
-                                    <select
-                                      class="form-control"
-                                      id="ddlFinancialYear2"
-                                      style={{ width: "100%" }}
-                                    >
-                                      <option value="NA">--select--</option>
-                                      <option value="2004-05">2004-05</option>
-                                      <option value="2005-06">2005-06</option>
-                                      <option value="2006-07">2006-07</option>
-                                      <option value="2007-08">2007-08</option>
-                                      <option value="2008-09">2008-09</option>
-                                      <option value="2009-10">2009-10</option>
-                                      <option value="2010-11">2010-11</option>
-                                      <option value="2011-12">2011-12</option>
-                                      <option value="2012-13">2012-13</option>
-                                      <option value="2013-14">2013-14</option>
-                                      <option value="2014-15">2014-15</option>
-                                      <option value="2015-16">2015-16</option>
-                                      <option value="2016-17">2016-17</option>
-                                      <option value="2017-18">2017-18</option>
-                                      <option value="2018-19">2018-19</option>
-                                      <option value="2019-20">2019-20</option>
-                                      <option value="2020-21">2020-21</option>
-                                      <option value="2021-22">2021-22</option>
-                                      <option value="2022-23">2022-23</option>
-                                      <option value="2023-24">2023-24</option>
-                                      <option value="2024-25">2024-25</option>
-                                    </select>
-                                  </td>
-                                </tr>
+                                {studentInformation.organizationSupportFamily.otherSupport.map(
+                                  (support, index) => (
+                                    <tr>
+                                      <td>1</td>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder=""
+                                          name={`organizationSupportFamily.otherSupport.${index}.memberName`}
+                                          value={support.memberName}
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </td>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder=""
+                                          name={`organizationSupportFamily.otherSupport.${index}.memberId`}
+                                          value={support.memberId}
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </td>
+                                      <td>
+                                        <div class="input-group">
+                                          <div
+                                            class="input-group-addon"
+                                            id="loadSchemeName"
+                                          >
+                                            <i class="icon ion-university"></i>
+                                          </div>
+                                          <select
+                                            class="form-control select2"
+                                            name={`organizationSupportFamily.otherSupport.${index}.scheme`}
+                                            value={support.scheme}
+                                            onChange={(e) => handleChange(e)}
+                                          >
+                                            <option
+                                              selected="selected"
+                                              value="0"
+                                            >
+                                              --select--
+                                            </option>
+                                            <option value="4">
+                                              Business Aid
+                                            </option>
+                                            <option value="5">
+                                              General Aid
+                                            </option>
+                                            <option value="2">Housing</option>
+                                            <option value="3">Medical</option>
+                                            <option value="1">
+                                              Women Empowerment
+                                            </option>
+                                          </select>
+                                        </div>
+                                      </td>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          class="form-control amount allownumericwithdecimal"
+                                          placeholder=""
+                                          name={`organizationSupportFamily.otherSupport.${index}.amountreceived`}
+                                          value={support.amountreceived}
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </td>
+                                      <td>
+                                        <select
+                                          class="form-control"
+                                          style={{ width: "100%" }}
+                                          name={`organizationSupportFamily.otherSupport.${index}.financialYear`}
+                                          value={support.financialYear}
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option value="NA">--select--</option>
+                                          <option value="2004-05">
+                                            2004-05
+                                          </option>
+                                          <option value="2005-06">
+                                            2005-06
+                                          </option>
+                                          <option value="2006-07">
+                                            2006-07
+                                          </option>
+                                          <option value="2007-08">
+                                            2007-08
+                                          </option>
+                                          <option value="2008-09">
+                                            2008-09
+                                          </option>
+                                          <option value="2009-10">
+                                            2009-10
+                                          </option>
+                                          <option value="2010-11">
+                                            2010-11
+                                          </option>
+                                          <option value="2011-12">
+                                            2011-12
+                                          </option>
+                                          <option value="2012-13">
+                                            2012-13
+                                          </option>
+                                          <option value="2013-14">
+                                            2013-14
+                                          </option>
+                                          <option value="2014-15">
+                                            2014-15
+                                          </option>
+                                          <option value="2015-16">
+                                            2015-16
+                                          </option>
+                                          <option value="2016-17">
+                                            2016-17
+                                          </option>
+                                          <option value="2017-18">
+                                            2017-18
+                                          </option>
+                                          <option value="2018-19">
+                                            2018-19
+                                          </option>
+                                          <option value="2019-20">
+                                            2019-20
+                                          </option>
+                                          <option value="2020-21">
+                                            2020-21
+                                          </option>
+                                          <option value="2021-22">
+                                            2021-22
+                                          </option>
+                                          <option value="2022-23">
+                                            2022-23
+                                          </option>
+                                          <option value="2023-24">
+                                            2023-24
+                                          </option>
+                                          <option value="2024-25">
+                                            2024-25
+                                          </option>
+                                        </select>
+                                      </td>
+                                    </tr>
+                                  )
+                                )}
                               </tbody>
                             </table>
                           </div>
@@ -3817,7 +4463,7 @@ const StudentProfile = () => {
                             />
                           </div>
                         </div>
-
+                        {/* show add saved details here */}
                         <div class="col-sm-12" style={{ marginTop: "25px" }}>
                           <div
                             class="table-responsive"
@@ -3880,8 +4526,13 @@ const StudentProfile = () => {
                                 type="text"
                                 readonly=""
                                 class="form-control"
-                                id="txt11dpHereby"
                                 placeholder="Course Name"
+                                name="familyDeclaration.courseName"
+                                value={
+                                  studentInformation.familyDeclaration
+                                    .courseName
+                                }
+                                onChange={(e) => handleChange(e)}
                               />
                               course for which we have applied for scholarship.
                             </p>
@@ -3923,11 +4574,17 @@ const StudentProfile = () => {
                             <input
                               type="text"
                               class="form-control"
-                              id="txt11dpNameOfApplicant"
                               placeholder="Name of applicant"
                               readonly=""
+                              name="familyDeclaration.applicantName"
+                              value={
+                                studentInformation.familyDeclaration
+                                  .applicantName
+                              }
+                              onChange={(e) => handleChange(e)}
                             />
                           </div>
+                          {/* Name of Parent/Guardian */}
                           <div class="col-sm-3 topMargin">
                             <label>
                               Name of Parent/Guardian
@@ -3936,9 +4593,13 @@ const StudentProfile = () => {
                             <input
                               type="text"
                               class="form-control"
-                              id="txt11dpNameOfParent"
                               placeholder="Name of Parent/Guardian"
                               readonly=""
+                              name="familyDeclaration.parentName"
+                              value={
+                                studentInformation.familyDeclaration.parentName
+                              }
+                              onChange={(e) => handleChange(e)}
                             />
                           </div>
 
@@ -3949,9 +4610,11 @@ const StudentProfile = () => {
                             <input
                               type="text"
                               class="form-control"
-                              id="txt11dpPlace"
                               placeholder="Place"
                               readonly=""
+                              name="familyDeclaration.place"
+                              value={studentInformation.familyDeclaration.place}
+                              onChange={(e) => handleChange(e)}
                             />
                           </div>
 
@@ -3962,8 +4625,10 @@ const StudentProfile = () => {
                             <input
                               type="text"
                               class="form-control"
-                              id="txt11dpDate"
                               placeholder="Date"
+                              name="familyDeclaration.date"
+                              value={studentInformation.familyDeclaration.date}
+                              onChange={(e) => handleChange(e)}
                               readonly=""
                             />
                           </div>
@@ -3984,7 +4649,7 @@ const StudentProfile = () => {
                                   class="img-circle"
                                   style={{ height: "120px", width: "120px" }}
                                   id="imgPhoto"
-                                  src="../admission/applicantImg/202026_photo.jpg"
+                                  src={`http://localhost:8088${studentInformation.familyDeclaration.studentPhoto}`}
                                   alt="Photo"
                                 />
                               </div>
@@ -4000,6 +4665,8 @@ const StudentProfile = () => {
                                           <input
                                             type="file"
                                             id="txt11dpStudentPhotoPath"
+                                            name="studentPhoto"
+                                            onChange={(e) => imageHandler(e, "studentPhoto")}
                                           />
                                         </div>
                                       </div>
@@ -4024,7 +4691,7 @@ const StudentProfile = () => {
                                   class="img-bordered-sm"
                                   style={{ height: "120px", width: "120px" }}
                                   id="imgSign"
-                                  src="../admission/applicantImg/202026_sign.jpg"
+                                  src={`http://localhost:8088${studentInformation.familyDeclaration.studentSign}`}
                                   alt="Sign"
                                 />
                               </div>
@@ -4040,6 +4707,8 @@ const StudentProfile = () => {
                                           <input
                                             type="file"
                                             id="txt11dpStudentSignPath"
+                                            name="studentSign"
+                                            onChange={(e) => imageHandler(e, "studentSign")}
                                           />
                                         </div>
                                       </div>
@@ -4054,7 +4723,6 @@ const StudentProfile = () => {
                         <div class="row">
                           <input
                             type="file"
-                            id="txt11dpGuardianPhotoPath"
                             style={{ visibility: "hidden" }}
                           />
 
@@ -4071,7 +4739,7 @@ const StudentProfile = () => {
                                   class="img-bordered-sm"
                                   style={{ height: "120px", width: "120px" }}
                                   id="parentSign"
-                                  src="../admission/applicantImg/202026_Mother.jpg"
+                                  src={`http://localhost:8088${studentInformation.familyDeclaration.parentSign}`}
                                   alt="Sign"
                                 />
                               </div>
@@ -4087,6 +4755,8 @@ const StudentProfile = () => {
                                           <input
                                             type="file"
                                             id="txt11dpGuardianSignPath"
+                                            name="parentSign"
+                                            onChange={(e) => imageHandler(e, "studentGuardianSign")}
                                           />
                                         </div>
                                       </div>
@@ -5402,7 +6072,13 @@ const StudentProfile = () => {
                                 style={{ overflowX: "inherit" }}
                               >
                                 <p style={{ fontSize: "16px" }}>
-                                  <input type="checkbox" id="lockform" />
+                                  <input
+                                    type="checkbox"
+                                    id="lockform"
+                                    name="isConfirm"
+                                    value={studentInformation.isConfirm}
+                                    onChange={(e) => handleChange(e)}
+                                  />
                                   &nbsp;&nbsp; I, hereby confirm that I have
                                   read all the instructions carefully before
                                   applying and I do understand that I will not
@@ -5420,6 +6096,7 @@ const StudentProfile = () => {
                       type="submit"
                       id="submit-btn"
                       className="btn btn-default"
+                      onClick={(e) => handleSubmit(e, "saveAsDraft")}
                     >
                       Save
                     </button>
@@ -5604,25 +6281,6 @@ const StudentProfile = () => {
             </div>
           )}
 
-          {/* <Link
-            to="/studentProfile?tab=family_details"
-            className="save_prev_btn"
-          >
-            <button type="button" className="btn btn-primary" onClick={() => handlePrev()}>
-              <i className="fa fa-caret-square-o-right margin-r-5"></i>
-              Previous
-            </button>
-          </Link>
-          <Link
-            to="/studentProfile?tab=family_details"
-            className="save_nxt_btn"
-          >
-            <button type="button" className="btn btn-primary" onClick={() => handleNext()}>
-              <i className="fa fa-caret-square-o-right margin-r-5"></i> Save &
-              Next
-            </button>
-          </Link> */}
-
           <div className="prev_nxt_btn">
             <button
               //  className={`btn btn-primary ${tabs.indexOf(currentTab) === 0 ? 'd-none' : 'd-block'}`}
@@ -5634,8 +6292,11 @@ const StudentProfile = () => {
             </button>
             <button
               className="btn btn-primary"
-              onClick={handleNext}
               disabled={tabs.indexOf(currentTab) === tabs.length - 1}
+              onClick={(e) => {
+                handleNext();
+                handleSubmit(e, "saveAsDraft");
+              }}
             >
               save_nxt_btn
             </button>

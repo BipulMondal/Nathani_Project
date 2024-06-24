@@ -55,7 +55,7 @@ const Login = () => {
     try {
       if (handleValidation()) {
         const data = loginData;
-        const res = await axios.post("http://localhost:8025/api/v1/user/login", data);
+        const res = await axios.post("http://localhost:8088/api/v1/user/login", data);
   
         console.log("response", res);
   
@@ -63,6 +63,7 @@ const Login = () => {
           toast.success(res.data.message);
           localStorage.setItem("Authorization", res.data.token);
           localStorage.setItem("userType", res.data.userType);
+          localStorage.setItem("aadharNO" , res.data.data.aadharNo )
           setLoading(false);
           setLoginData(initial);
           navigate("/studentProfile");

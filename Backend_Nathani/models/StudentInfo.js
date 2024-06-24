@@ -85,8 +85,8 @@ const studentSchema = new mongoose.Schema({
   prevAcademicInfo: {
     prevYearResult: { type: String, default: "" },
     lastYearResultImg: { type: String, default: "" },
-    lastTwoYearResult: { type: String, default: "" },
-    TwoYearBackResult: { type: String, default: "" },
+    lastTwoYearResultImg: { type: String, default: "" },
+    TwoYearBackResultImg: { type: String, default: "" },
     currentStudy: { type: String, default: "" },
     specialCase: { type: String, default: "" },
     courseName: { type: String, default: "" },

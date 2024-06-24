@@ -1,63 +1,54 @@
-var createError = require('http-errors');
-var express = require('express');
-var cors = require('cors');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const mongoose = require('mongoose');
-require('dotenv').config()
-const port = process.env.PORT
+require('dotenv').config();
+const port = process.env.PORT;
 
-var indexRouter = require('./routes/index');
+const indexRouter = require('./routes/index');
 
-var app = express();
-
-// app.use(cors({
-//   origin: "*"
-// }));
+const app = express();
 
 app.use(cors({
-  origin: '*', // Adjust to the frontend's URL
+  origin: '*',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(logger('dev'));
 
-// Database connect 
-mongoose.connect(process.env.MONGOURL,
-  {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  })
-  .then(() => {
-    console.log('Nathani Database connected\n\n\n\n');
-  })
-  .catch((error) => {
-    console.log('Error connecting to database\n\n');
-  });
+// Database connection
+mongoose.connect(process.env.MONGOURL, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+})
+.then(() => {
+  console.log('Nathani Database connected');
+})
+.catch((error) => {
+  console.log('Error connecting to database', error);
+});
 
-// Database connect end 
-
-app.use("/",indexRouter);
-// app.use('/users', usersRouter);
-
+// Routes
+app.use('/', indexRouter);
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+// Set view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
+// Error handler
+app.use((err, req, res, next) => {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
@@ -66,6 +57,5 @@ app.use(function (err, req, res, next) {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
 
 module.exports = app;
