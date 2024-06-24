@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import logo from "../images/NATHANI_LOGO.png";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import AllStatedata from "../constant/config.json";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 
 const Registar = () => {
   const initial = {
@@ -30,7 +31,8 @@ const Registar = () => {
   const [loading, setLoading] = useState(false);
   const stateNames = Object.keys(AllStatedata);
   const [filteredCities, setFilteredCities] = useState([]);
-  console.log("asdasd", registerData);
+  const {getCountryStateCity, countryState, isLoading} = useContext(GlobalContext)
+  console.log("registerData", registerData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,6 +59,10 @@ const Registar = () => {
     //   city: "", 
     // }));
   };
+
+  useEffect(() => {
+    getCountryStateCity()
+  },[])
 
   console.log("cityname", AllStatedata);
 

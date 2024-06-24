@@ -112,7 +112,4 @@ const getSingleStudentData = async (req, res) => {
 
 
 
-
-
-
 module.exports = {addStudentDetails, getSingleStudentData };

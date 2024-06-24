@@ -4,12 +4,14 @@ import queryString from "query-string";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../Loader/Loader";
+import AllStatedata from "../constant/config.json";
 
 const StudentProfile = () => {
   const location = useLocation();
   const query = queryString.parse(location.search);
   const tab = query.tab || "student_info";
   const navigate = useNavigate();
+  const stateNames = Object.keys(AllStatedata);
 
   const initialState = {
     studentInfo: {
@@ -195,6 +197,7 @@ const StudentProfile = () => {
 
   const [studentInformation, setStudentInformation] = useState(initialState);
   const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
+  const [filteredCities, setFilteredCities] = useState([]);
   console.log("studentInformation", studentInformation);
   const [currentTab, setCurrentTab] = useState("student_info");
   const [loading, setLoading] = useState(false);
@@ -601,6 +604,15 @@ const StudentProfile = () => {
       console.error("Error fetching student data:", error);
     }
   }
+  const filterCity = (state) => {
+    return AllStatedata[state] || [];
+  };
+
+  const handleStateChange = (e) => {
+    handleChange(e);
+    const cities = filterCity(e.target.value);
+    setFilteredCities(cities);
+  };
   
   useEffect(() => {
     getStudentData();
@@ -998,22 +1010,81 @@ const StudentProfile = () => {
                                 required
                               />
                             </div>
+                              {/* country */}
+                              <div className="col-lg-3">
+                              <label className="form-label">
+                                Country <span>*</span>
+                              </label>
+                              <select
+                                className="form-select"
+                                name="studentInfo.country"
+                                value={studentInformation.studentInfo.country}
+                                onChange={(e) => handleChange(e)}
+                              >
+                                {/* <option value="">--Select Country--</option>
+                                <option value="Yes">Yes</option> */}
+                                <option value="India">India</option>
+                              </select>
+                            </div>
+                             {/* state */}
+                             <div className="col-lg-3">
+                              <label className="form-label">
+                                State <span>*</span>
+                              </label>
+                              <select
+                                className="form-select"
+                                name="studentInfo.state"
+                                value={studentInformation.studentInfo.state}
+                                // onChange={(e) => handleChange(e)}
+                                onChange={(e) => {
+                                  handleStateChange(e);
+                                }}
+                              >
+                                <option value="">--Select State--</option>
+                                {stateNames.map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                              </select>
+                            </div>
+
                             {/* student city */}
                             <div className="col-lg-3">
                               <label className="form-label">
                                 City <span>*</span>
                               </label>
-                              <input
+                              {/* <input
                                 type="text"
                                 className="form-control"
                                 name="studentInfo.city"
                                 value={studentInformation.studentInfo.city}
                                 onChange={(e) => handleChange(e)}
                                 placeholder="Enter City"
-                              />
+                              /> */}
+                               <select
+                      className="form-select"
+                      id="studentInfo.city"
+                      name="studentInfo.city"
+                      value={studentInformation.studentInfo.city}
+                      onChange={(e) => handleChange(e)}
+                      required
+                    >
+                      <option value="">--select--</option>
+                      {filteredCities.map((city) => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
+                    </select>
                             </div>
-                            {/* {pin code} */}
-                            <div className="col-lg-3">
+                          
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <div className="row">
+                             {/* {pin code} */}
+                             <div className="col-lg-3">
                               <label className="form-label">
                                 Enter Pincode <span>*</span>
                               </label>
@@ -1041,42 +1112,7 @@ const StudentProfile = () => {
                                 onChange={(e) => handleChange(e)}
                               />
                             </div>
-                          </div>
-                        </div>
-                        <div className="form-group">
-                          <div className="row">
-                            {/* state */}
-                            <div className="col-lg-3">
-                              <label className="form-label">
-                                State <span>*</span>
-                              </label>
-                              <select
-                                className="form-select"
-                                name="studentInfo.state"
-                                value={studentInformation.studentInfo.state}
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option value="">--Select State--</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                              </select>
-                            </div>
-                            {/* country */}
-                            <div className="col-lg-3">
-                              <label className="form-label">
-                                Country <span>*</span>
-                              </label>
-                              <select
-                                className="form-select"
-                                name="studentInfo.country"
-                                value={studentInformation.studentInfo.country}
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option value="">--Select Country--</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                              </select>
-                            </div>
+                          
                           </div>
                         </div>
                         <hr />
