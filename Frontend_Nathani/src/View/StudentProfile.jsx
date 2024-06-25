@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../Loader/Loader";
 import AllStatedata from "../constant/config.json";
+import moment from "moment";
 
 const StudentProfile = () => {
   const location = useLocation();
@@ -196,13 +197,17 @@ const StudentProfile = () => {
   };
 
   const [studentInformation, setStudentInformation] = useState(initialState);
+  console.log("studentInformation", studentInformation.othertrustSupport);
   const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
   const [filteredCities, setFilteredCities] = useState([]);
-  console.log("studentInformation", studentInformation);
+  const [memonCities, setMemonCities] = useState([]);
+  const [academicCity, setAcademicCity] = useState([]);
+  const [otherTrustCity, setOthertrustCity] = useState([]);
+  const [otherContributionCity, setOtherContributionCity] = useState([]);
   const [currentTab, setCurrentTab] = useState("student_info");
   const [loading, setLoading] = useState(false);
   const aadharNo = localStorage.getItem("aadharNO");
-  const userType = localStorage.getItem("userType")
+  const userType = localStorage.getItem("userType");
 
   const tabs = [
     "student_info",
@@ -294,12 +299,12 @@ const StudentProfile = () => {
         section: "prevAcademicInfo",
         key: "bonafideCertificateBackImg",
       },
-        /**================================================================== */
-        studentPhoto: { section: "familyDeclaration", key: "studentPhoto" },
-        studentSign: { section: "familyDeclaration", key: "studentSign" },
-        studentGuardianSign: { section: "familyDeclaration", key: "parentSign" },
+      /**================================================================== */
+      studentPhoto: { section: "familyDeclaration", key: "studentPhoto" },
+      studentSign: { section: "familyDeclaration", key: "studentSign" },
+      studentGuardianSign: { section: "familyDeclaration", key: "parentSign" },
 
-      // 
+      //
     };
 
     try {
@@ -550,18 +555,16 @@ const StudentProfile = () => {
       try {
         const data = {
           ...studentInformation,
-           saveAsDraft: true,
-           addedBy: localStorage.getItem("addedBy")
+          saveAsDraft: true,
+          addedBy: localStorage.getItem("addedBy"),
         };
         if (!studentInformation.studentInfo.aadharNo) {
           toast.error("Aadhar no is required");
           return false;
-        }
-        else if(studentInformation.studentInfo.aadharNo.length < 16){
+        } else if (studentInformation.studentInfo.aadharNo.length < 16) {
           toast.error("Aadhar no must be 16 digit long");
           return false;
-        }
-         else {
+        } else {
           setLoading(true);
           let result = await axios.post(
             "http://localhost:8088/api/v1/user/add_Student_data",
@@ -569,6 +572,7 @@ const StudentProfile = () => {
           );
           console.log("result", result);
           if (result && result.data.status) {
+            getStudentData();
             toast.success(result.data.message);
             setLoading(false);
             setStudentInformation(initialState);
@@ -587,6 +591,7 @@ const StudentProfile = () => {
           data
         );
         if (res && res.data.status) {
+          // getStudentData();
           toast.success(res.data.message);
           setLoading(false);
           setStudentInformation(initialState);
@@ -597,47 +602,87 @@ const StudentProfile = () => {
 
   const getStudentData = async () => {
     const data = {
-      "aadharNo" : aadharNo
-    }
-    console.log("ddfaa", data)
-  
+      aadharNo: aadharNo,
+    };
     try {
-      const res = await axios.post("http://localhost:8088/api/v1/user/get_Student_data", data);
-      console.log("Response:", res?.data);
+      const res = await axios.post(
+        "http://localhost:8088/api/v1/user/get_Student_data",
+        data
+      );
+      // console.log("Response:", res?.data);
       // console.log("Response:", res?.data?.existStudent);
 
-      if(res && res.data.status && userType === "Student"){
+      if (res && res.data.status && userType === "Student") {
         setStudentInformation(res?.data?.existStudent);
       }
-
     } catch (error) {
       console.error("Error fetching student data:", error);
     }
-  }
+  };
   const filterCity = (state) => {
     return AllStatedata[state] || [];
   };
 
-  const handleStateChange = (e) => {
+  const handleStateChange = (e, index) => {
     handleChange(e);
-    const cities = filterCity(e.target.value);
-    setFilteredCities(cities);
+    const { name, value } = e.target;
+
+    if (name === "studentInfo.state") {
+      const cities = filterCity(value);
+      setFilteredCities(cities);
+    } else if (name === "jamatInfo.memonState") {
+      const cities = filterCity(value);
+      setMemonCities(cities);
+    } else if (name === "prevAcademicInfo.instituteState") {
+      const cities = filterCity(value);
+      setAcademicCity(cities);
+    } else if (name === `othertrustSupport.trustDetails.${index}.trustState`) {
+      const cities = filterCity(value);
+      setOthertrustCity(cities);
+    } else if (
+      name === `othertrustSupport.otherContribution.${index}.contributionState`
+    ) {
+      const cities = filterCity(value);
+      setOtherContributionCity(cities);
+    }
   };
-  
+
   useEffect(() => {
     getStudentData();
+
     if (localStorage.getItem("aadharNO") && userType === "Student") {
       const aadharNo = localStorage.getItem("aadharNO");
-      
+
       setStudentInformation((prev) => ({
         ...prev,
         studentInfo: {
           ...prev.studentInfo,
-          aadharNo: aadharNo
-        }
+          aadharNo: aadharNo,
+        },
       }));
     }
   }, []);
+
+  useEffect(() => {
+    if (studentInformation.studentInfo.state) {
+      const cities = filterCity(studentInformation.studentInfo.state);
+      setFilteredCities(cities);
+    }
+    if (studentInformation.jamatInfo.memonState) {
+      const cities = filterCity(studentInformation.jamatInfo.memonState);
+      setMemonCities(cities);
+    }
+    if (studentInformation.prevAcademicInfo.instituteState) {
+      const cities = filterCity(
+        studentInformation.prevAcademicInfo.instituteState
+      );
+      setAcademicCity(cities);
+    }
+  }, [
+    studentInformation.jamatInfo.memonState,
+    studentInformation.studentInfo.state,
+    studentInformation.prevAcademicInfo.instituteState,
+  ]);
 
   return (
     <>
@@ -702,7 +747,7 @@ const StudentProfile = () => {
                                 className="form-control"
                                 placeholder="Enter Aadhar No"
                                 value={studentInformation.studentInfo.aadharNo}
-                                disabled = {userType === "Student"}
+                                disabled={userType === "Student"}
                                 onChange={(e) => handleChange(e)}
                               />
                             </div>
@@ -805,7 +850,9 @@ const StudentProfile = () => {
                                 type="date"
                                 className="form-control"
                                 name="studentInfo.dob"
-                                value={studentInformation.studentInfo.dob}
+                                value={moment(
+                                  studentInformation.studentInfo.dob
+                                ).format("YYYY-MM-DD")}
                                 placeholder="Enter Date Of Birth"
                                 onChange={(e) => handleChange(e)}
                                 required
@@ -840,6 +887,10 @@ const StudentProfile = () => {
                                     name="studentInfo.gender"
                                     value="Male"
                                     onChange={(e) => handleChange(e)}
+                                    checked={
+                                      studentInformation.studentInfo.gender ===
+                                      "Male"
+                                    }
                                   />{" "}
                                   Male
                                 </label>
@@ -849,6 +900,10 @@ const StudentProfile = () => {
                                     name="studentInfo.gender"
                                     value="Female"
                                     onChange={(e) => handleChange(e)}
+                                    checked={
+                                      studentInformation.studentInfo.gender ===
+                                      "Female"
+                                    }
                                   />{" "}
                                   Female
                                 </label>
@@ -858,6 +913,10 @@ const StudentProfile = () => {
                                     name="studentInfo.gender"
                                     value="Transgender"
                                     onChange={(e) => handleChange(e)}
+                                    checked={
+                                      studentInformation.studentInfo.gender ===
+                                      "Transgender"
+                                    }
                                   />{" "}
                                   Transgender
                                 </label>
@@ -979,8 +1038,14 @@ const StudentProfile = () => {
                                   type="checkbox"
                                   className="form-check-input"
                                   name="copyParmanantAddress"
-                                  checked={copyParmanantAddress}
+                                  // checked={copyParmanantAddress}
                                   onChange={handleAddressCopy}
+                                  checked={
+                                    studentInformation.studentInfo
+                                      .currentAddress ===
+                                    studentInformation.studentInfo
+                                      .parmanentAddress
+                                  }
                                 />
                                 <label className="form-check-label"></label>
                               </div>
@@ -1020,8 +1085,8 @@ const StudentProfile = () => {
                                 required
                               />
                             </div>
-                              {/* country */}
-                              <div className="col-lg-3">
+                            {/* country */}
+                            <div className="col-lg-3">
                               <label className="form-label">
                                 Country <span>*</span>
                               </label>
@@ -1036,8 +1101,8 @@ const StudentProfile = () => {
                                 <option value="India">India</option>
                               </select>
                             </div>
-                             {/* state */}
-                             <div className="col-lg-3">
+                            {/* state */}
+                            <div className="col-lg-3">
                               <label className="form-label">
                                 State <span>*</span>
                               </label>
@@ -1052,10 +1117,10 @@ const StudentProfile = () => {
                               >
                                 <option value="">--Select State--</option>
                                 {stateNames.map((state) => (
-                        <option key={state} value={state}>
-                          {state}
-                        </option>
-                      ))}
+                                  <option key={state} value={state}>
+                                    {state}
+                                  </option>
+                                ))}
                               </select>
                             </div>
 
@@ -1072,29 +1137,28 @@ const StudentProfile = () => {
                                 onChange={(e) => handleChange(e)}
                                 placeholder="Enter City"
                               /> */}
-                               <select
-                      className="form-select"
-                      id="studentInfo.city"
-                      name="studentInfo.city"
-                      value={studentInformation.studentInfo.city}
-                      onChange={(e) => handleChange(e)}
-                      required
-                    >
-                      <option value="">--select--</option>
-                      {filteredCities.map((city) => (
-                        <option key={city} value={city}>
-                          {city}
-                        </option>
-                      ))}
-                    </select>
+                              <select
+                                className="form-select"
+                                id="studentInfo.city"
+                                name="studentInfo.city"
+                                value={studentInformation.studentInfo.city}
+                                onChange={(e) => handleChange(e)}
+                                required
+                              >
+                                <option value="">--select--</option>
+                                {filteredCities.map((city) => (
+                                  <option key={city} value={city}>
+                                    {city}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
-                          
                           </div>
                         </div>
                         <div className="form-group">
                           <div className="row">
-                             {/* {pin code} */}
-                             <div className="col-lg-3">
+                            {/* {pin code} */}
+                            <div className="col-lg-3">
                               <label className="form-label">
                                 Enter Pincode <span>*</span>
                               </label>
@@ -1122,7 +1186,6 @@ const StudentProfile = () => {
                                 onChange={(e) => handleChange(e)}
                               />
                             </div>
-                          
                           </div>
                         </div>
                         <hr />
@@ -1613,7 +1676,7 @@ const StudentProfile = () => {
                                 type="date"
                                 class="form-control"
                                 placeholder="Enter DOB"
-                                name="familyDetails.relationPersonDOB☻"
+                                name="familyDetails.relationPersonDOB"
                                 value={
                                   studentInformation.familyDetails
                                     .relationPersonDOB
@@ -1634,10 +1697,14 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name=".familyDetails.relationPersongender"
+                                  name="familyDetails.relationPersongender"
                                   onChange={(e) => handleChange(e)}
                                   id="gender_radio"
                                   value="Male"
+                                  checked={
+                                    studentInformation.familyDetails
+                                      .relationPersongender === "Male"
+                                  }
                                 />
                                 Male
                               </label>
@@ -1648,6 +1715,10 @@ const StudentProfile = () => {
                                   onChange={(e) => handleChange(e)}
                                   id="gender_radio2"
                                   value="Female"
+                                  checked={
+                                    studentInformation.familyDetails
+                                      .relationPersongender === "Female"
+                                  }
                                 />
                                 Female
                               </label>
@@ -1657,6 +1728,10 @@ const StudentProfile = () => {
                                   name="familyDetails.relationPersongender"
                                   id="gender_radio3"
                                   value="Transgender"
+                                  checked={
+                                    studentInformation.familyDetails
+                                      .relationPersongender === "Transgender"
+                                  }
                                 />
                                 Transgender
                               </label>
@@ -1954,6 +2029,10 @@ const StudentProfile = () => {
                                   onChange={(e) => handleChange(e)}
                                   id="if_memon_yes"
                                   value="Yes"
+                                  checked={
+                                    studentInformation.jamatInfo.ifMemon ===
+                                    "Yes"
+                                  }
                                 />{" "}
                                 Yes
                               </label>
@@ -1963,7 +2042,11 @@ const StudentProfile = () => {
                                   name="jamatInfo.ifMemon"
                                   onChange={(e) => handleChange(e)}
                                   id="if_memon_no"
-                                  value="no"
+                                  value="No"
+                                  checked={
+                                    studentInformation.jamatInfo.ifMemon ===
+                                    "No"
+                                  }
                                 />{" "}
                                 no
                               </label>
@@ -1983,223 +2066,258 @@ const StudentProfile = () => {
                                   name="jamatInfo.ifMotherMomen"
                                   id="mother_memon_yes"
                                   value="Yes"
-                                  onChange={() => handleChange()}
+                                  onChange={(e) => handleChange(e)}
+                                  checked={
+                                    studentInformation.jamatInfo
+                                      .ifMotherMomen === "Yes"
+                                  }
                                 />{" "}
                                 Yes
                               </label>
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name=".jamatInfo.ifMotherMomen"
+                                  name="jamatInfo.ifMotherMomen"
                                   id="mother_memon_no"
-                                  value="no"
-                                  onChange={() => handleChange()}
+                                  value="No"
+                                  onChange={(e) => handleChange(e)}
+                                  checked={
+                                    studentInformation.jamatInfo
+                                      .ifMotherMomen === "No"
+                                  }
                                 />{" "}
                                 no
                               </label>
                             </div>
                           </div>
                         </div>
-                        <div class="form-group">
-                          <div class="row">
-                            {/* momen upload img one */}
-                            <div class="col-lg-3">
-                              <label>
-                                Upload Memon Jamat Letter One <span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                class="form-control"
-                                name="memonJamatLetterOne"
-                                id="jamat_letter_one"
-                                onChange={(e) =>
-                                  imageHandler(e, "jamatLetterOne")
-                                }
-                                required
-                              />
+                        {studentInformation.jamatInfo.ifMemon === "Yes" && (
+                          <>
+                            <div class="form-group">
+                              <div class="row">
+                                {/* momen upload img one */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Upload Memon Jamat Letter One <span>*</span>
+                                  </label>
+                                  <input
+                                    type="file"
+                                    class="form-control"
+                                    name="memonJamatLetterOne"
+                                    id="jamat_letter_one"
+                                    onChange={(e) =>
+                                      imageHandler(e, "jamatLetterOne")
+                                    }
+                                    required
+                                  />
+                                </div>
+                                {/* momen img one show */}
+                                <div class="col-lg-3">
+                                  <img
+                                    id="jamat_letter_one_prev"
+                                    src={`http://localhost:8088${studentInformation.jamatInfo.memonJamatLetterOne}`}
+                                    alt="Memon Jamat Letter 1"
+                                    style={{ height: "100px", width: "100px" }}
+                                  />
+                                </div>
+                                {/* momen upload img two */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Upload Memon Jamat Letter Two <span>*</span>
+                                  </label>
+                                  <input
+                                    type="file"
+                                    class="form-control"
+                                    name="memonJamatLetterTwo"
+                                    id="jamat_letter_two"
+                                    onChange={(e) =>
+                                      imageHandler(e, "jamatLetterTwo")
+                                    }
+                                    required
+                                  />
+                                </div>
+                                {/* momen img two show */}
+                                <div class="col-lg-3">
+                                  <img
+                                    id="jamat_letter_two_prev"
+                                    src={`http://localhost:8088${studentInformation.jamatInfo.memonJamatLetterTwo}`}
+                                    alt="Memon Jamat Letter 2"
+                                    style={{ height: "100px", width: "100px" }}
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            {/* momen img one show */}
-                            <div class="col-lg-3">
-                              <img
-                                id="jamat_letter_one_prev"
-                                src={`http://localhost:8088${studentInformation.jamatInfo.memonJamatLetterOne}`}
-                                alt="Memon Jamat Letter 1"
-                                style={{ height: "100px", width: "100px" }}
-                              />
+                            <hr />
+                            <h3>
+                              <u>Jamat Details</u>
+                            </h3>
+                            <div class="form-group">
+                              <div class="row">
+                                {/* Belonging Jamat */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Belonging Jamat<span>*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="jamatInfo.belongingJamat"
+                                    value={
+                                      studentInformation.jamatInfo
+                                        .belongingJamat
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Belonging Jamat"
+                                    required
+                                  />
+                                </div>
+                                {/* jamat secretary name */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Name of President/Secretary<span>*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="jamatInfo.jamatSecretaryName"
+                                    value={
+                                      studentInformation.jamatInfo
+                                        .jamatSecretaryName
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Name of President/Secretary"
+                                    required
+                                  />
+                                </div>
+                                {/* jamat secretary mobile */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Mobile No of President/Secretary
+                                    <span>*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="jamatInfo.secretaryMobile"
+                                    value={
+                                      studentInformation.jamatInfo
+                                        .secretaryMobile
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Mobile No of President/Secretary"
+                                    required
+                                  />
+                                </div>
+                                {/* jamat secretary email */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Email of President/Secretary<span>*</span>
+                                  </label>
+                                  <input
+                                    type="email"
+                                    class="form-control"
+                                    name="jamatInfo.secretaryEmail"
+                                    value={
+                                      studentInformation.jamatInfo
+                                        .secretaryEmail
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Enter Memon/President Email"
+                                    required
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            {/* momen upload img two */}
-                            <div class="col-lg-3">
-                              <label>
-                                Upload Memon Jamat Letter Two <span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                class="form-control"
-                                name="memonJamatLetterTwo"
-                                id="jamat_letter_two"
-                                onChange={(e) =>
-                                  imageHandler(e, "jamatLetterTwo")
-                                }
-                                required
-                              />
+                            <div class="form-group">
+                              <div class="row">
+                                {/* memon address */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Memon Address <span>*</span>
+                                  </label>
+                                  <textarea
+                                    class="form-control"
+                                    name="jamatInfo.memonAddress"
+                                    value={
+                                      studentInformation.jamatInfo.memonAddress
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Enter Memon Address"
+                                    required
+                                  ></textarea>
+                                </div>
+                                {/* memon state */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    State<span>*</span>
+                                  </label>
+                                  <select
+                                    class="form-control"
+                                    name="jamatInfo.memonState"
+                                    required
+                                    value={
+                                      studentInformation.jamatInfo.memonState
+                                    }
+                                    // onChange={(e) => handleChange(e)}
+                                    onChange={(e) => {
+                                      handleStateChange(e);
+                                    }}
+                                  >
+                                    <option value="" selected="selected">
+                                      --Select State--
+                                    </option>
+                                    {stateNames.map((state) => (
+                                      <option key={state} value={state}>
+                                        {state}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                                {/* memon City */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    City<span>*</span>
+                                  </label>
+                                  <select
+                                    className="form-select"
+                                    id="jamatInfo.memonCity"
+                                    name="jamatInfo.memonCity"
+                                    value={
+                                      studentInformation.jamatInfo.memonCity
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    required
+                                  >
+                                    <option value="">--select--</option>
+                                    {memonCities.map((city) => (
+                                      <option key={city} value={city}>
+                                        {city}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                                {/* memon pin code */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Pincode<span>*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="jamatInfo.memonPin"
+                                    value={
+                                      studentInformation.jamatInfo.memonPin
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Enter Pincode"
+                                    required
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            {/* momen img two show */}
-                            <div class="col-lg-3">
-                              <img
-                                id="jamat_letter_two_prev"
-                                src={`http://localhost:8088${studentInformation.jamatInfo.memonJamatLetterTwo}`}
-                                alt="Memon Jamat Letter 2"
-                                style={{ height: "100px", width: "100px" }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <hr />
-                        <h3>
-                          <u>Jamat Details</u>
-                        </h3>
-                        <div class="form-group">
-                          <div class="row">
-                            {/* Belonging Jamat */}
-                            <div class="col-lg-3">
-                              <label>
-                                Belonging Jamat<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.belongingJamat"
-                                value={
-                                  studentInformation.jamatInfo.belongingJamat
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Belonging Jamat"
-                                required
-                              />
-                            </div>
-                            {/* jamat secretary name */}
-                            <div class="col-lg-3">
-                              <label>
-                                Name of President/Secretary<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.jamatSecretaryName"
-                                value={
-                                  studentInformation.jamatInfo
-                                    .jamatSecretaryName
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Name of President/Secretary"
-                                required
-                              />
-                            </div>
-                            {/* jamat secretary mobile */}
-                            <div class="col-lg-3">
-                              <label>
-                                Mobile No of President/Secretary<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.secretaryMobile"
-                                value={
-                                  studentInformation.jamatInfo.secretaryMobile
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Mobile No of President/Secretary"
-                                required
-                              />
-                            </div>
-                            {/* jamat secretary email */}
-                            <div class="col-lg-3">
-                              <label>
-                                Email of President/Secretary<span>*</span>
-                              </label>
-                              <input
-                                type="email"
-                                class="form-control"
-                                name="jamatInfo.secretaryEmail"
-                                value={
-                                  studentInformation.jamatInfo.secretaryEmail
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Memon/President Email"
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <div class="row">
-                            {/* memon address */}
-                            <div class="col-lg-3">
-                              <label>
-                                Memon Address <span>*</span>
-                              </label>
-                              <textarea
-                                class="form-control"
-                                name="jamatInfo.memonAddress"
-                                value={
-                                  studentInformation.jamatInfo.memonAddress
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Memon Address"
-                                required
-                              ></textarea>
-                            </div>
-                            {/* memon City */}
-                            <div class="col-lg-3">
-                              <label>
-                                City<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.memonCity"
-                                value={studentInformation.jamatInfo.memonCity}
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter City Name"
-                                required
-                              />
-                            </div>
-                            {/* memon pin code */}
-                            <div class="col-lg-3">
-                              <label>
-                                Pincode<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.memonPin"
-                                value={studentInformation.jamatInfo.memonPin}
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Pincode"
-                                required
-                              />
-                            </div>
-                            {/* memon state */}
-                            <div class="col-lg-3">
-                              <label>
-                                State<span>*</span>
-                              </label>
-                              <select
-                                class="form-control"
-                                name="jamatInfo.memonState"
-                                required
-                                value={studentInformation.jamatInfo.memonState}
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option value="" selected="selected">
-                                  --select--
-                                </option>
-                                {/* <!-- Add options for states here --> */}
-                                <option value="state">State </option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
+                          </>
+                        )}
+
                         <hr />
                         <div class="form-group">
                           <div class="row">
@@ -2215,6 +2333,10 @@ const StudentProfile = () => {
                                   onChange={(e) => handleChange(e)}
                                   id="jamat_help_yes"
                                   value="Yes"
+                                  checked={
+                                    studentInformation.jamatInfo
+                                      .helpFromJamat === "Yes"
+                                  }
                                   required
                                 />
                                 Yes
@@ -2225,74 +2347,86 @@ const StudentProfile = () => {
                                   name="jamatInfo.helpFromJamat"
                                   onChange={(e) => handleChange(e)}
                                   id="jamat_help_no"
-                                  value="no"
+                                  value="No"
+                                  checked={
+                                    studentInformation.jamatInfo
+                                      .helpFromJamat === "No"
+                                  }
                                 />
                                 no
                               </label>
                             </div>
                           </div>
                         </div>
-                        <div class="form-group">
-                          <div class="row">
-                            {/* jamat amount receive */}
-                            <div class="col-lg-3">
-                              <label>
-                                Amount Received<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.jamatReceiveAmount"
-                                value={
-                                  studentInformation.jamatInfo
-                                    .jamatReceiveAmount
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Amount Received"
-                                required
-                              />
+                        {studentInformation.jamatInfo.helpFromJamat ===
+                          "Yes" && (
+                          <>
+                            <div class="form-group">
+                              <div class="row">
+                                {/* jamat amount receive */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Amount Received<span>*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="jamatInfo.jamatReceiveAmount"
+                                    value={
+                                      studentInformation.jamatInfo
+                                        .jamatReceiveAmount
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Enter Amount Received"
+                                    required
+                                  />
+                                </div>
+                                {/* amount Receive Purpose */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Purpose<span>*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="jamatInfo.amountReceivePurpose"
+                                    value={
+                                      studentInformation.jamatInfo
+                                        .amountReceivePurpose
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Enter Purpose"
+                                    required
+                                  />
+                                </div>
+                                {/* amount type */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Amount Type <span>*</span>
+                                  </label>
+                                  <select
+                                    class="form-control"
+                                    name="jamatInfo.amountType"
+                                    required
+                                    value={
+                                      studentInformation.jamatInfo.amountType
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                  >
+                                    <option value="NA">--select--</option>
+                                    <option value="duringRamandan">
+                                      During Ramadan
+                                    </option>
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="oneTime">One Time</option>
+                                    <option value="year">Yearly</option>
+                                  </select>
+                                </div>
+                              </div>
                             </div>
-                            {/* amount Receive Purpose */}
-                            <div class="col-lg-3">
-                              <label>
-                                Purpose<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.amountReceivePurpose"
-                                value={
-                                  studentInformation.jamatInfo
-                                    .amountReceivePurpose
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Purpose"
-                                required
-                              />
-                            </div>
-                            {/* amount type */}
-                            <div class="col-lg-3">
-                              <label>
-                                Amount Type <span>*</span>
-                              </label>
-                              <select
-                                class="form-control"
-                                name="jamatInfo.amountType"
-                                required
-                                value={studentInformation.jamatInfo.amountType}
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option value="NA">--select--</option>
-                                <option value="duringRamandan">
-                                  During Ramadan
-                                </option>
-                                <option value="Monthly">Monthly</option>
-                                <option value="oneTime">One Time</option>
-                                <option value="year">Yearly</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
+                          </>
+                        )}
+
                         <hr />
                         <div class="form-group">
                           <div class="row">
@@ -2309,6 +2443,10 @@ const StudentProfile = () => {
                                   onChange={(e) => handleChange(e)}
                                   id="deeniyat_course_yes"
                                   value="Yes"
+                                  checked={
+                                    studentInformation.jamatInfo
+                                      .deeniyatCourse === "Yes"
+                                  }
                                   required
                                 />
                                 Yes
@@ -2319,66 +2457,78 @@ const StudentProfile = () => {
                                   name="jamatInfo.deeniyatCourse"
                                   id="deeniyat_course_no"
                                   onChange={(e) => handleChange(e)}
-                                  value="no"
+                                  value="No"
+                                  checked={
+                                    studentInformation.jamatInfo
+                                      .deeniyatCourse === "No"
+                                  }
                                 />
                                 no
                               </label>
                             </div>
                           </div>
                         </div>
-                        <div class="form-group">
-                          <div class="row">
-                            {/* course name */}
-                            <div class="col-lg-3">
-                              <label>
-                                Course Name<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.courseName"
-                                value={studentInformation.jamatInfo.courseName}
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Course Name"
-                                required
-                              />
+                        {studentInformation.jamatInfo.deeniyatCourse ===
+                          "Yes" && (
+                          <>
+                            <div class="form-group">
+                              <div class="row">
+                                {/* course name */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Course Name<span>*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="jamatInfo.courseName"
+                                    value={
+                                      studentInformation.jamatInfo.courseName
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Enter Course Name"
+                                    required
+                                  />
+                                </div>
+                                {/* madrasha name */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Madrasa Name<span>*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="jamatInfo.madrashaName"
+                                    value={
+                                      studentInformation.jamatInfo.madrashaName
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Enter Madrasa Name"
+                                    required
+                                  />
+                                </div>
+                                {/* any other course */}
+                                <div class="col-lg-3">
+                                  <label>
+                                    Any Other Course Name<span>*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    name="jamatInfo.anyOtherCourse"
+                                    value={
+                                      studentInformation.jamatInfo
+                                        .anyOtherCourse
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                    placeholder="Enter Other Course Name"
+                                    required
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            {/* madrasha name */}
-                            <div class="col-lg-3">
-                              <label>
-                                Madrasa Name<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.madrashaName"
-                                value={
-                                  studentInformation.jamatInfo.madrashaName
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Madrasa Name"
-                                required
-                              />
-                            </div>
-                            {/* any other course */}
-                            <div class="col-lg-3">
-                              <label>
-                                Any Other Course Name<span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="jamatInfo.anyOtherCourse"
-                                value={
-                                  studentInformation.jamatInfo.anyOtherCourse
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Other Course Name"
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
+                          </>
+                        )}
                       </div>
                     )}
 
@@ -2423,218 +2573,251 @@ const StudentProfile = () => {
                             </div>
                           </div>
                         </div>
-                        <div class="panel-collapse collapse show">
-                          <div class="panel-body">
-                            <div class="col-sm-12">
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* last year result img */}
-                                  <div class="col-lg-2">
-                                    <label>
-                                      Last Year Result{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <input
-                                      type="file"
-                                      class="form-control"
-                                      name="lastYearResultImg"
-                                      onChange={(e) =>
-                                        imageHandler(e, "lastYearResultImg")
-                                      }
-                                      required
-                                    />
+                        {studentInformation.prevAcademicInfo.prevYearResult ===
+                          "Last To Last Year Result" && (
+                          <>
+                            <div class="panel-collapse collapse show">
+                              <div class="panel-body">
+                                <div class="col-sm-12">
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* last year result img */}
+                                      <div class="col-lg-2">
+                                        <label>
+                                          Last Year Result{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <input
+                                          type="file"
+                                          class="form-control"
+                                          name="lastYearResultImg"
+                                          onChange={(e) =>
+                                            imageHandler(e, "lastYearResultImg")
+                                          }
+                                          required
+                                        />
+                                      </div>
+
+                                      <div class="col-lg-2">
+                                        <img
+                                          id="jamat_letter_two_prev"
+                                          src={`http://localhost:8088${studentInformation.prevAcademicInfo.lastYearResultImg}`}
+                                          alt="Memon Jamat Letter 2"
+                                          style={{
+                                            height: "100px",
+                                            width: "100px",
+                                          }}
+                                        />
+                                      </div>
+                                      {/* last two year img  */}
+                                      <div class="col-lg-2">
+                                        <label>
+                                          Last To Last Year Result{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <input
+                                          type="file"
+                                          class="form-control"
+                                          name="lastTwoYearResultImg"
+                                          onChange={(e) =>
+                                            imageHandler(
+                                              e,
+                                              "lastTwoYearResultImg"
+                                            )
+                                          }
+                                          required
+                                        />
+                                      </div>
+                                      <div class="col-lg-2">
+                                        <img
+                                          id="jamat_letter_two_prev"
+                                          src={`http://localhost:8088${studentInformation.prevAcademicInfo.lastTwoYearResultImg}`}
+                                          alt="Memon Jamat Letter 2"
+                                          style={{
+                                            height: "100px",
+                                            width: "100px",
+                                          }}
+                                        />
+                                      </div>
+                                      {/* two year back result img */}
+                                      <div class="col-lg-2">
+                                        <label>
+                                          2 Year Back Result{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <input
+                                          type="file"
+                                          class="form-control"
+                                          name="TwoYearBackResultImg"
+                                          onChange={(e) =>
+                                            imageHandler(
+                                              e,
+                                              "TwoYearBackResultImg"
+                                            )
+                                          }
+                                          required
+                                        />
+                                      </div>
+                                      <div class="col-lg-2">
+                                        <img
+                                          id="jamat_letter_two_prev"
+                                          src={`http://localhost:8088${studentInformation.prevAcademicInfo.TwoYearBackResultImg}`}
+                                          alt="Memon Jamat Letter 2"
+                                          style={{
+                                            height: "100px",
+                                            width: "100px",
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
                                   </div>
-                                  <div class="col-lg-2">
-                                    <img
-                                      id="jamat_letter_two_prev"
-                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.lastYearResultImg}`}
-                                      alt="Memon Jamat Letter 2"
-                                      style={{
-                                        height: "100px",
-                                        width: "100px",
-                                      }}
-                                    />
-                                  </div>
-                                  {/* last two year img  */}
-                                  <div class="col-lg-2">
-                                    <label>
-                                      Last To Last Year Result{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <input
-                                      type="file"
-                                      class="form-control"
-                                      name="lastTwoYearResultImg"
-                                      onChange={(e) =>
-                                        imageHandler(e, "lastTwoYearResultImg")
-                                      }
-                                      required
-                                    />
-                                  </div>
-                                  <div class="col-lg-2">
-                                    <img
-                                      id="jamat_letter_two_prev"
-                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.lastTwoYearResultImg}`}
-                                      alt="Memon Jamat Letter 2"
-                                      style={{
-                                        height: "100px",
-                                        width: "100px",
-                                      }}
-                                    />
-                                  </div>
-                                  {/* two year back result img */}
-                                  <div class="col-lg-2">
-                                    <label>
-                                      2 Year Back Result{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <input
-                                      type="file"
-                                      class="form-control"
-                                      name="TwoYearBackResultImg"
-                                      onChange={(e) =>
-                                        imageHandler(e, "TwoYearBackResultImg")
-                                      }
-                                      required
-                                    />
-                                  </div>
-                                  <div class="col-lg-2">
-                                    <img
-                                      id="jamat_letter_two_prev"
-                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.TwoYearBackResultImg}`}
-                                      alt="Memon Jamat Letter 2"
-                                      style={{
-                                        height: "100px",
-                                        width: "100px",
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* currently studing in  */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Currently studying in Std{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <select
-                                      class="form-control step6Class"
-                                      id="txt6scLevelOfCourse"
-                                      name="prevAcademicInfo.currentStudy"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .currentStudy
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    >
-                                      <option selected="selected" value="0">
-                                        --select--
-                                      </option>
-                                      <option category="School" value="19">
-                                        Aalima Courses
-                                      </option>
-                                      <option category="School" value="20">
-                                        Nursery
-                                      </option>
-                                      <option category="School" value="24">
-                                        Junior KG
-                                      </option>
-                                      <option category="School" value="25">
-                                        Senior KG
-                                      </option>
-                                      <option category="School" value="26">
-                                        Special Cases
-                                      </option>
-                                      <option category="School" value="1">
-                                        1st
-                                      </option>
-                                      <option category="School" value="2">
-                                        2nd
-                                      </option>
-                                      <option category="School" value="3">
-                                        3rd
-                                      </option>
-                                      <option category="School" value="4">
-                                        4th
-                                      </option>
-                                      <option category="School" value="5">
-                                        5th
-                                      </option>
-                                      <option category="School" value="6">
-                                        6th
-                                      </option>
-                                      <option category="School" value="7">
-                                        7th
-                                      </option>
-                                      <option category="School" value="8">
-                                        8th
-                                      </option>
-                                      <option category="School" value="9">
-                                        9th
-                                      </option>
-                                      <option category="School" value="10">
-                                        10th
-                                      </option>
-                                      <option category="JrCollege" value="11">
-                                        11th
-                                      </option>
-                                      <option category="JrCollege" value="12">
-                                        12th
-                                      </option>
-                                      <option category="Graduation" value="13">
-                                        Graduation
-                                      </option>
-                                      <option
-                                        category="PostGraduation"
-                                        value="14"
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* currently studing in  */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Currently studying in Std{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <select
+                                          class="form-control step6Class"
+                                          id="txt6scLevelOfCourse"
+                                          name="prevAcademicInfo.currentStudy"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .currentStudy
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option selected="selected" value="0">
+                                            --select--
+                                          </option>
+                                          <option category="School" value="19">
+                                            Aalima Courses
+                                          </option>
+                                          <option category="School" value="20">
+                                            Nursery
+                                          </option>
+                                          <option category="School" value="24">
+                                            Junior KG
+                                          </option>
+                                          <option category="School" value="25">
+                                            Senior KG
+                                          </option>
+                                          <option category="School" value="26">
+                                            Special Cases
+                                          </option>
+                                          <option category="School" value="1">
+                                            1st
+                                          </option>
+                                          <option category="School" value="2">
+                                            2nd
+                                          </option>
+                                          <option category="School" value="3">
+                                            3rd
+                                          </option>
+                                          <option category="School" value="4">
+                                            4th
+                                          </option>
+                                          <option category="School" value="5">
+                                            5th
+                                          </option>
+                                          <option category="School" value="6">
+                                            6th
+                                          </option>
+                                          <option category="School" value="7">
+                                            7th
+                                          </option>
+                                          <option category="School" value="8">
+                                            8th
+                                          </option>
+                                          <option category="School" value="9">
+                                            9th
+                                          </option>
+                                          <option category="School" value="10">
+                                            10th
+                                          </option>
+                                          <option
+                                            category="JrCollege"
+                                            value="11"
+                                          >
+                                            11th
+                                          </option>
+                                          <option
+                                            category="JrCollege"
+                                            value="12"
+                                          >
+                                            12th
+                                          </option>
+                                          <option
+                                            category="Graduation"
+                                            value="13"
+                                          >
+                                            Graduation
+                                          </option>
+                                          <option
+                                            category="PostGraduation"
+                                            value="14"
+                                          >
+                                            Post-Graduation
+                                          </option>
+                                          <option category="Diploma" value="15">
+                                            Diploma in Engineering
+                                          </option>
+                                          <option category="Diploma" value="16">
+                                            Other Diplomas
+                                          </option>
+                                          <option
+                                            category="Entrance"
+                                            value="17"
+                                          >
+                                            Entrance Exams and other
+                                            professional courses
+                                          </option>
+                                          <option
+                                            category="Vocational"
+                                            value="18"
+                                          >
+                                            Vocational
+                                          </option>
+                                        </select>
+                                      </div>
+                                      {/* special case */}
+                                      <div
+                                        class="col-sm-3 topMargin"
+                                        id="Div_OtherStd_Step6"
                                       >
-                                        Post-Graduation
-                                      </option>
-                                      <option category="Diploma" value="15">
-                                        Diploma in Engineering
-                                      </option>
-                                      <option category="Diploma" value="16">
-                                        Other Diplomas
-                                      </option>
-                                      <option category="Entrance" value="17">
-                                        Entrance Exams and other professional
-                                        courses
-                                      </option>
-                                      <option category="Vocational" value="18">
-                                        Vocational
-                                      </option>
-                                    </select>
-                                  </div>
-                                  {/* special case */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                    id="Div_OtherStd_Step6"
-                                  >
-                                    <label>Special Case</label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      name="prevAcademicInfo.specialCase"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .specialCase
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                      placeholder="Special Case"
-                                    />
-                                  </div>
-                                  {/* course name */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                    id="txtDegree"
-                                  >
-                                    <label>
-                                      Course Name
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <select
+                                        <label>Special Case</label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          name="prevAcademicInfo.specialCase"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .specialCase
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                          placeholder="Special Case"
+                                        />
+                                      </div>
+                                      {/* course name */}
+                                      <div
+                                        class="col-sm-3 topMargin"
+                                        id="txtDegree"
+                                      >
+                                        <label>
+                                          Course Name
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        {/* <select
                                       id="txt6scDegree"
                                       class="form-control"
                                       name="prevAcademicInfo.courseName"
@@ -2651,391 +2834,486 @@ const StudentProfile = () => {
                                         --select--
                                       </option>
                                       <option value="0">Other</option>
-                                    </select>
-                                  </div>
-                                  {/* Level of course */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                    id="LevelOfCourse_Step6"
-                                  >
-                                    <label>
-                                      Level of course{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <select
-                                      class="form-control select2"
-                                      id="txt5LevelOfCourse_Step6"
-                                      style={{ width: "100%" }}
-                                      name="prevAcademicInfo.levelOfCourse"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .levelOfCourse
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    >
-                                      <option value="NA">--select--</option>
-                                      <option value="1st year">1st year</option>
-                                      <option value="2nd year">2nd year</option>
-                                      <option value="3rd year">3rd year</option>
-                                      <option value="4th year">4th year</option>
-                                      <option value="5th year">5th year</option>
-                                      <option value="6th year">6th year</option>
-                                      <option value="other">Other</option>
-                                    </select>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* other course one */}
-                                  <div
-                                    class="col-sm-3 topMargin"
-                                    id="txtOtherCourse_Step6"
-                                  >
-                                    <label>
-                                      Other Course
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      name="prevAcademicInfo.otherCourseOne"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .otherCourseOne
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                      id="txt6OtherCourse_Step6"
-                                      placeholder="Other course"
-                                    />
-                                  </div>
-                                  {/* other level of course */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Other Level Of Course
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="otherLevelOfCourse"
-                                      placeholder="Other Level of course"
-                                      name="prevAcademicInfo.otherLevelOfCourse"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .otherLevelOfCourse
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                  {/* other field */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Other Field{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="other Field"
-                                      name="prevAcademicInfo.otherField"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .otherField
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* field  */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Field{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <select
-                                      class="form-control select2"
-                                      style={{ width: "100%" }}
-                                      name="prevAcademicInfo.field"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .field
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    >
-                                      <option
-                                        selected="selected"
-                                        value="select"
-                                      >
-                                        --select--
-                                      </option>
-                                      <option value="164">Arts</option>
-                                      <option value="165">Commerce</option>
-                                      <option value="166">Science</option>
-                                      <option value="0">Other</option>
-                                    </select>
-                                  </div>
-                                  {/* duration */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Duration{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <select
-                                      class="form-control select2"
-                                      style={{ width: "100%" }}
-                                      name="prevAcademicInfo.duration"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .duration
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    >
-                                      <option value="NA">--select--</option>
-                                      <option value="1 year">1 year</option>
-                                      <option value="1.5 year">1.5 year</option>
-                                      <option value="2 year">2 year</option>
-                                      <option value="2.5 year">2.5 year</option>
-                                      <option value="3 year">3 year</option>
-                                      <option value="3.5 year">3.5 year</option>
-                                      <option value="4 year">4 year</option>
-                                      <option value="4.5 year">4.5 year</option>
-                                      <option value="5 year">5 year</option>
-                                      <option value="5.5 year">5.5 year</option>
-                                      <option value="6 year">6 year</option>
-                                      <option value="other">Other</option>
-                                    </select>
-                                  </div>
-                                  {/* medium of instruction */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Medium Of Instruction
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <select
-                                      class="form-control select2"
-                                      style={{ width: "100%" }}
-                                      name="prevAcademicInfo.instructionMedium"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instructionMedium
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    >
-                                      <option value="NA">--select--</option>
-                                      <option value="English">English</option>
-                                      <option value="Gujarati">Gujarati</option>
-                                      <option value="Hindi">Hindi</option>
-                                      <option value="Marathi">Marathi</option>
-                                      <option value="Semi-English">
-                                        Semi-English
-                                      </option>
-                                      <option value="Urdu">Urdu</option>
-                                      <option value="Other">Other</option>
-                                    </select>
-                                  </div>
-                                  {/* pattern of the course */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Pattern Of The Course
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <select
-                                      class="form-control select2"
-                                      style={{ width: "100%" }}
-                                      name="prevAcademicInfo.coursePattern"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .coursePattern
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    >
-                                      <option value="NA">--select--</option>
-                                      <option value="Annual">Annual</option>
-                                      <option value="Semester">Semester</option>
-                                    </select>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* Other Duration of Course */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Other Duration of Course
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="Other Duration of Course"
-                                      name="prevAcademicInfo.otherDurationCourse"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .otherDurationCourse
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                  {/* other course two */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Other Course
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="Other Course"
-                                      name="prevAcademicInfo.otherCourseTwo"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .otherCourseTwo
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                  {/* other medium */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Other Medium
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="Other Medium"
-                                      name="prevAcademicInfo.otherMedium"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .otherMedium
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* Name Of the School / College / Institutions */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Name Of the School / College /
-                                      Institutions
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="Name Of the School/College/Institutions"
-                                      name="prevAcademicInfo.instituteName"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteName
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                  {/* Name Of the Board/University */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Name Of the Board/University
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <div class="input-group">
-                                      <div class="input-group-addon">
-                                        <i class="icon ion-university"></i>
+                                    </select> */}
+
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          name="prevAcademicInfo.courseName"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .courseName
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                          placeholder="Course Name"
+                                        />
                                       </div>
-                                      <input
-                                        type="text"
-                                        class="form-control"
-                                        placeholder="Name Of the Board/University"
-                                        name="prevAcademicInfo.instituteName"
-                                        value={
-                                          studentInformation.prevAcademicInfo
-                                            .boardName
-                                        }
-                                        onChange={(e) => handleChange(e)}
-                                      />
+                                      {/* Level of course */}
+                                      <div
+                                        class="col-sm-3 topMargin"
+                                        id="LevelOfCourse_Step6"
+                                      >
+                                        <label>
+                                          Level of course{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <select
+                                          class="form-control select2"
+                                          id="txt5LevelOfCourse_Step6"
+                                          style={{ width: "100%" }}
+                                          name="prevAcademicInfo.levelOfCourse"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .levelOfCourse
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option value="NA">--select--</option>
+                                          <option value="1st year">
+                                            1st year
+                                          </option>
+                                          <option value="2nd year">
+                                            2nd year
+                                          </option>
+                                          <option value="3rd year">
+                                            3rd year
+                                          </option>
+                                          <option value="4th year">
+                                            4th year
+                                          </option>
+                                          <option value="5th year">
+                                            5th year
+                                          </option>
+                                          <option value="6th year">
+                                            6th year
+                                          </option>
+                                          <option value="other">Other</option>
+                                        </select>
+                                      </div>
                                     </div>
                                   </div>
-                                  {/* Type of school / college / institution */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Type of school / college / institution
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <select
-                                      class="form-control select2"
-                                      style={{ width: "100%" }}
-                                      name="prevAcademicInfo.instituteType"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteType
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    >
-                                      <option value="NA">--select--</option>
-                                      <option value="Govt">Government</option>
-                                      <option value="Private">Private</option>
-                                      <option value="Semi Govt">
-                                        Semi Government
-                                      </option>
-                                    </select>
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* other course one */}
+                                      <div
+                                        class="col-sm-3 topMargin"
+                                        id="txtOtherCourse_Step6"
+                                      >
+                                        <label>
+                                          Other Course
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          name="prevAcademicInfo.otherCourseOne"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .otherCourseOne
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                          id="txt6OtherCourse_Step6"
+                                          placeholder="Other course"
+                                        />
+                                      </div>
+                                      {/* other level of course */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Other Level Of Course
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          id="otherLevelOfCourse"
+                                          placeholder="Other Level of course"
+                                          name="prevAcademicInfo.otherLevelOfCourse"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .otherLevelOfCourse
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* other field */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Other Field{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder="other Field"
+                                          name="prevAcademicInfo.otherField"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .otherField
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                    </div>
                                   </div>
-                                  {/* if private */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      If Private
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <select
-                                      class="form-control select2"
-                                      style={{ width: "100%" }}
-                                      name="prevAcademicInfo.ifPrivate"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .ifPrivate
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    >
-                                      <option value="NA">--select--</option>
-                                      <option value="Aided">Aided</option>
-                                      <option value="Unaided">Unaided</option>
-                                    </select>
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* field  */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Field{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <select
+                                          class="form-control select2"
+                                          style={{ width: "100%" }}
+                                          name="prevAcademicInfo.field"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .field
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option
+                                            selected="selected"
+                                            value="select"
+                                          >
+                                            --select--
+                                          </option>
+                                          <option value="164">Arts</option>
+                                          <option value="165">Commerce</option>
+                                          <option value="166">Science</option>
+                                          <option value="0">Other</option>
+                                        </select>
+                                      </div>
+                                      {/* duration */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Duration{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <select
+                                          class="form-control select2"
+                                          style={{ width: "100%" }}
+                                          name="prevAcademicInfo.duration"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .duration
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option value="NA">--select--</option>
+                                          <option value="1 year">1 year</option>
+                                          <option value="1.5 year">
+                                            1.5 year
+                                          </option>
+                                          <option value="2 year">2 year</option>
+                                          <option value="2.5 year">
+                                            2.5 year
+                                          </option>
+                                          <option value="3 year">3 year</option>
+                                          <option value="3.5 year">
+                                            3.5 year
+                                          </option>
+                                          <option value="4 year">4 year</option>
+                                          <option value="4.5 year">
+                                            4.5 year
+                                          </option>
+                                          <option value="5 year">5 year</option>
+                                          <option value="5.5 year">
+                                            5.5 year
+                                          </option>
+                                          <option value="6 year">6 year</option>
+                                          <option value="other">Other</option>
+                                        </select>
+                                      </div>
+                                      {/* medium of instruction */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Medium Of Instruction
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <select
+                                          class="form-control select2"
+                                          style={{ width: "100%" }}
+                                          name="prevAcademicInfo.instructionMedium"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instructionMedium
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option value="NA">--select--</option>
+                                          <option value="English">
+                                            English
+                                          </option>
+                                          <option value="Gujarati">
+                                            Gujarati
+                                          </option>
+                                          <option value="Hindi">Hindi</option>
+                                          <option value="Marathi">
+                                            Marathi
+                                          </option>
+                                          <option value="Semi-English">
+                                            Semi-English
+                                          </option>
+                                          <option value="Urdu">Urdu</option>
+                                          <option value="Other">Other</option>
+                                        </select>
+                                      </div>
+                                      {/* pattern of the course */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Pattern Of The Course
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <select
+                                          class="form-control select2"
+                                          style={{ width: "100%" }}
+                                          name="prevAcademicInfo.coursePattern"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .coursePattern
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option value="NA">--select--</option>
+                                          <option value="Annual">Annual</option>
+                                          <option value="Semester">
+                                            Semester
+                                          </option>
+                                        </select>
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* Other Duration of Course */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Other Duration of Course
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder="Other Duration of Course"
+                                          name="prevAcademicInfo.otherDurationCourse"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .otherDurationCourse
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* other course two */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Other Course
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder="Other Course"
+                                          name="prevAcademicInfo.otherCourseTwo"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .otherCourseTwo
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* other medium */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Other Medium
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder="Other Medium"
+                                          name="prevAcademicInfo.otherMedium"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .otherMedium
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* Name Of the School / College / Institutions */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Name Of the School / College /
+                                          Institutions
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder="Name Of the School/College/Institutions"
+                                          name="prevAcademicInfo.instituteName"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteName
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* Name Of the Board/University */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Name Of the Board/University
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <div class="input-group">
+                                          <div class="input-group-addon">
+                                            <i class="icon ion-university"></i>
+                                          </div>
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Name Of the Board/University"
+                                            name="prevAcademicInfo.boardName"
+                                            value={
+                                              studentInformation
+                                                .prevAcademicInfo.boardName
+                                            }
+                                            onChange={(e) => handleChange(e)}
+                                          />
+                                        </div>
+                                      </div>
+                                      {/* Type of school / college / institution */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Type of school / college / institution
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <select
+                                          class="form-control select2"
+                                          style={{ width: "100%" }}
+                                          name="prevAcademicInfo.instituteType"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteType
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option value="NA">--select--</option>
+                                          <option value="Govt">
+                                            Government
+                                          </option>
+                                          <option value="Private">
+                                            Private
+                                          </option>
+                                          <option value="Semi Govt">
+                                            Semi Government
+                                          </option>
+                                        </select>
+                                      </div>
+                                      {/* if private */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          If Private
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <select
+                                          class="form-control select2"
+                                          style={{ width: "100%" }}
+                                          name="prevAcademicInfo.ifPrivate"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .ifPrivate
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option value="NA">--select--</option>
+                                          <option value="Aided">Aided</option>
+                                          <option value="Unaided">
+                                            Unaided
+                                          </option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                  </div>
 
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* School/ College / Institute Address */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      School/ College / Institute Address
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <textarea
-                                      class="form-control"
-                                      placeholder="School/ College / Institute Address"
-                                      name="prevAcademicInfo.instituteAddress"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteAddress
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                  {/* institute city */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      City
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <input
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* School/ College / Institute Address */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          School/ College / Institute Address
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <textarea
+                                          class="form-control"
+                                          placeholder="School/ College / Institute Address"
+                                          name="prevAcademicInfo.instituteAddress"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteAddress
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* institute state */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          State
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <select
+                                          class="form-control"
+                                          name="prevAcademicInfo.instituteState"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteState
+                                          }
+                                          onChange={(e) => handleStateChange(e)}
+                                        >
+                                          <option value="NA">--select--</option>
+                                          {stateNames.map((state) => (
+                                            <option key={state} value={state}>
+                                              {state}
+                                            </option>
+                                          ))}
+                                        </select>
+                                      </div>
+                                      {/* institute city */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          City
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        {/* <input
                                       type="text"
                                       class="form-control"
                                       id="txt6scCity"
@@ -3046,310 +3324,264 @@ const StudentProfile = () => {
                                           .instituteCity
                                       }
                                       onChange={(e) => handleChange(e)}
-                                    />
+                                    /> */}
+                                        <select
+                                          class="form-control"
+                                          name="prevAcademicInfo.instituteCity"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteCity
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        >
+                                          <option value="NA">--select--</option>
+                                          {academicCity.map((state) => (
+                                            <option key={state} value={state}>
+                                              {state}
+                                            </option>
+                                          ))}
+                                        </select>
+                                      </div>
+                                      {/* institute pic code */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Pincode
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control number"
+                                          placeholder="Pincode"
+                                          data-inputmask="'mask': ['999999']"
+                                          data-mask=""
+                                          name="prevAcademicInfo.institutePin"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .institutePin
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                    </div>
                                   </div>
-                                  {/* institute pic code */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Pincode
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control number"
-                                      placeholder="Pincode"
-                                      data-inputmask="'mask': ['999999']"
-                                      data-mask=""
-                                      name="prevAcademicInfo.institutePin"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .institutePin
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* institute district */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          District
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          id="txt6scDistrict"
+                                          placeholder="District"
+                                          name="prevAcademicInfo.instituteDistrict"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteDistrict
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* institute country */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Country
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          id="txt6scCountry"
+                                          placeholder="Country"
+                                          name="prevAcademicInfo.instituteCountry"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteCountry
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* institute email */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Email
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="email"
+                                          class="form-control"
+                                          id="txt6scEmail"
+                                          placeholder="Email"
+                                          name="prevAcademicInfo.instituteEmail"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteEmail
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* institute website */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Website
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          id="txt6scWebsite"
+                                          placeholder="Website"
+                                          name="prevAcademicInfo.instituteWebsite"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteWebsite
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                    </div>
                                   </div>
-                                  {/* institute district */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      District
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txt6scDistrict"
-                                      placeholder="District"
-                                      name="prevAcademicInfo.instituteDistrict"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteDistrict
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* institute land line */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Landline Number
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          id="txt6LandlineNumber"
+                                          placeholder="Landline Number"
+                                          name="prevAcademicInfo.instituteLandLineNo"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteLandLineNo
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* institute contact no */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          School/ College / Institute Contact
+                                          number
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control number"
+                                          id="txt6scAlterNumber"
+                                          placeholder="School/ College / Institute Contact number"
+                                          name="prevAcademicInfo.instituteContactNo"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteContactNo
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                      {/* institute mobile no */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Mobile Number
+                                          <span style={{ color: "red" }}></span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          class="form-control number"
+                                          id="txt6LandlineNumber_Step6"
+                                          placeholder="Mobile Number"
+                                          data-inputmask="'mask': ['9999999999']"
+                                          data-mask=""
+                                          name="prevAcademicInfo.instituteMobileNo"
+                                          value={
+                                            studentInformation.prevAcademicInfo
+                                              .instituteMobileNo
+                                          }
+                                          onChange={(e) => handleChange(e)}
+                                        />
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* institute state */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      State
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <select
-                                      class="form-control"
-                                      name="prevAcademicInfo.instituteState"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteState
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    >
-                                      <option value="NA">--select--</option>
-                                      <option value="Andhra Pradesh">
-                                        Andhra Pradesh
-                                      </option>
-                                      <option value="Arunachal Pradesh">
-                                        Arunachal Pradesh
-                                      </option>
-                                      <option value="Assam">Assam</option>
-                                      <option value="Bihar">Bihar</option>
-                                      <option value="Chhattisgarh">
-                                        Chhattisgarh
-                                      </option>
-                                      <option value="Goa">Goa</option>
-                                      <option value="Gujarat">Gujarat</option>
-                                      <option value="Haryana">Haryana</option>
-                                      <option value="Himachal Pradesh">
-                                        Himachal Pradesh
-                                      </option>
-                                      <option value="Jammu & Kashmir">
-                                        Jammu & Kashmir
-                                      </option>
-                                      <option value="Jharkhand">
-                                        Jharkhand
-                                      </option>
-                                      <option value="Karnataka">
-                                        Karnataka
-                                      </option>
-                                      <option value="Kerala">Kerala</option>
-                                      <option value="Madhya Pradesh">
-                                        Madhya Pradesh
-                                      </option>
-                                      <option value="Maharashtra">
-                                        Maharashtra
-                                      </option>
-                                      <option value="Manipur">Manipur</option>
-                                      <option value="Meghalaya">
-                                        Meghalaya
-                                      </option>
-                                      <option value="Mizoram">Mizoram</option>
-                                      <option value="Nagaland">Nagaland</option>
-                                      <option value="Odisha">Odisha</option>
-                                      <option value="Punjab">Punjab</option>
-                                      <option value="Rajasthan">
-                                        Rajasthan
-                                      </option>
-                                      <option value="Sikkim">Sikkim</option>
-                                      <option value="Tamil Nadu">
-                                        Tamil Nadu
-                                      </option>
-                                      <option value="Telangana">
-                                        Telangana
-                                      </option>
-                                      <option value="Tripura">Tripura</option>
-                                      <option value="Uttar Pradesh">
-                                        Uttar Pradesh
-                                      </option>
-                                      <option value="Uttarakhand">
-                                        Uttarakhand
-                                      </option>
-                                      <option value="West Bengal">
-                                        West Bengal
-                                      </option>
-                                    </select>
-                                  </div>
-                                  {/* institute country */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Country
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txt6scCountry"
-                                      placeholder="Country"
-                                      name="prevAcademicInfo.instituteCountry"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteCountry
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                  {/* institute email */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Email
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="email"
-                                      class="form-control"
-                                      id="txt6scEmail"
-                                      placeholder="Email"
-                                      name="prevAcademicInfo.instituteEmail"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteEmail
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                  {/* institute website */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Website
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txt6scWebsite"
-                                      placeholder="Website"
-                                      name="prevAcademicInfo.instituteWebsite"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteWebsite
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* institute land line */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Landline Number
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="txt6LandlineNumber"
-                                      placeholder="Landline Number"
-                                      name="prevAcademicInfo.instituteLandLineNo"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteLandLineNo
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                  {/* institute contact no */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      School/ College / Institute Contact number
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control number"
-                                      id="txt6scAlterNumber"
-                                      placeholder="School/ College / Institute Contact number"
-                                      name="prevAcademicInfo.instituteContactNo"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteContactNo
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                  {/* institute mobile no */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Mobile Number
-                                      <span style={{ color: "red" }}></span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      class="form-control number"
-                                      id="txt6LandlineNumber_Step6"
-                                      placeholder="Mobile Number"
-                                      data-inputmask="'mask': ['9999999999']"
-                                      data-mask=""
-                                      name="prevAcademicInfo.instituteMobileNo"
-                                      value={
-                                        studentInformation.prevAcademicInfo
-                                          .instituteMobileNo
-                                      }
-                                      onChange={(e) => handleChange(e)}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <div class="row">
-                                  {/* Bonafide Certificate Front img */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Bonafide Certificate Front
-                                      <span style={{ color: "red" }}>*</span>
-                                    </label>
-                                    <input
-                                      type="file"
-                                      class="form-control"
-                                      name="bonafied_certificate"
-                                      id="bonafied_certificate"
-                                      onChange={(e) => imageHandler(e, "bonafideCertificateFrontImg")}
-                                    />
-                                  </div>
-                                  {/* show Bonafide Certificate Front img  */}
-                                  <div class="col-lg-2">
-                                    <img
-                                      id="jamat_letter_two_prev"
-                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.bonafideCertificateFrontImg}`}
-                                      alt="Memon Jamat Letter 2"
-                                      style={{
-                                        height: "100px",
-                                        width: "100px",
-                                      }}
-                                    />
-                                  </div>
-                                  {/* Bonafide Certificate Back side */}
-                                  <div class="col-sm-3 topMargin">
-                                    <label>
-                                      Bonafide Certificate Back side
-                                    </label>
-                                    <input
-                                      type="file"
-                                      class="form-control"
-                                      name="bonafideCertificateBackImg"
-                                      id="bonafied_back"
-                                      onChange={(e) => imageHandler(e, "bonafideCertificateBackImg")}
-                                    />
-                                  </div>
-                                  {/* show Bonafide Certificate back img */}
-                                  <div class="col-lg-3">
-                                    <img
-                                      id="bonafied_back_prev"
-                                      src={`http://localhost:8088${studentInformation.prevAcademicInfo.bonafideCertificateBackImg}`}
-                                      alt="Bonafide Certificate Backside"
-                                      style={{
-                                        height: "100px",
-                                        width: "100px",
-                                      }}
-                                    />
+                                  <div class="form-group">
+                                    <div class="row">
+                                      {/* Bonafide Certificate Front img */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Bonafide Certificate Front
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </label>
+                                        <input
+                                          type="file"
+                                          class="form-control"
+                                          name="bonafied_certificate"
+                                          id="bonafied_certificate"
+                                          onChange={(e) =>
+                                            imageHandler(
+                                              e,
+                                              "bonafideCertificateFrontImg"
+                                            )
+                                          }
+                                        />
+                                      </div>
+                                      {/* show Bonafide Certificate Front img  */}
+                                      <div class="col-lg-2">
+                                        <img
+                                          id="jamat_letter_two_prev"
+                                          src={`http://localhost:8088${studentInformation.prevAcademicInfo.bonafideCertificateFrontImg}`}
+                                          alt="Memon Jamat Letter 2"
+                                          style={{
+                                            height: "100px",
+                                            width: "100px",
+                                          }}
+                                        />
+                                      </div>
+                                      {/* Bonafide Certificate Back side */}
+                                      <div class="col-sm-3 topMargin">
+                                        <label>
+                                          Bonafide Certificate Back side
+                                        </label>
+                                        <input
+                                          type="file"
+                                          class="form-control"
+                                          name="bonafideCertificateBackImg"
+                                          id="bonafied_back"
+                                          onChange={(e) =>
+                                            imageHandler(
+                                              e,
+                                              "bonafideCertificateBackImg"
+                                            )
+                                          }
+                                        />
+                                      </div>
+                                      {/* show Bonafide Certificate back img */}
+                                      <div class="col-lg-3">
+                                        <img
+                                          id="bonafied_back_prev"
+                                          src={`http://localhost:8088${studentInformation.prevAcademicInfo.bonafideCertificateBackImg}`}
+                                          alt="Bonafide Certificate Backside"
+                                          style={{
+                                            height: "100px",
+                                            width: "100px",
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
+                          </>
+                        )}
                       </div>
                     )}
 
@@ -3373,575 +3605,329 @@ const StudentProfile = () => {
                                 }
                                 onChange={(e) => handleChange(e)}
                               >
-                                <option value="NA">--select--</option>
+                                <option value="">--select--</option>
                                 <option value="No">No</option>
                                 <option value="Yes">Yes</option>
                               </select>
                             </div>
                           </div>
                         </div>
-                        <div class="form-group">
-                          <div class="row" style={{ display: "block" }}>
-                            <div class="col-sm-12 topMargin">
-                              <table class="table table-bordered">
-                                <thead>
-                                  <tr>
-                                    <th>Sr No</th>
-                                    <th>Name Of The Trust </th>
-                                    <th>
-                                      Amount received current year{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </th>
-                                    <th>
-                                      Amount received last year{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </th>
-                                    <th>
-                                      State{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </th>
-                                    <th>
-                                      City{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {studentInformation.othertrustSupport.trustDetails.map(
-                                    (trust, index) => (
-                                      <tr key={index}>
-                                        <td>1</td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Name Of The Trust"
-                                            name={`othertrustSupport.trustDetails.${index}.trustName`}
-                                            value={trust.trustName}
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control amount allownumericwithdecimal"
-                                            placeholder="Amount received current year"
-                                            name={`othertrustSupport.trustDetails.${index}.currentYearAmount`}
-                                            value={trust.currentYearAmount}
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control amount allownumericwithdecimal"
-                                            id="txt8amt_received_yr_1"
-                                            placeholder="Amount received last year"
-                                            name={`othertrustSupport.trustDetails.${index}.lastYearAmount`}
-                                            value={trust.lastYearAmount}
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                        <td>
-                                          <select
-                                            class="form-control"
-                                            name={`othertrustSupport.trustDetails.${index}.trustState`}
-                                            value={trust.trustState}
-                                            onChange={(e) => handleChange(e)}
-                                          >
-                                            <option value="NA">
-                                              --select--
-                                            </option>
-                                            <option value="Andhra Pradesh">
-                                              Andhra Pradesh
-                                            </option>
-                                            <option value="Arunachal Pradesh">
-                                              Arunachal Pradesh
-                                            </option>
-                                            <option value="Assam">Assam</option>
-                                            <option value="Bihar">Bihar</option>
-                                            <option value="Chhattisgarh">
-                                              Chhattisgarh
-                                            </option>
-                                            <option value="Goa">Goa</option>
-                                            <option value="Gujarat">
-                                              Gujarat
-                                            </option>
-                                            <option value="Haryana">
-                                              Haryana
-                                            </option>
-                                            <option value="Himachal Pradesh">
-                                              Himachal Pradesh
-                                            </option>
-                                            <option value="Jammu &amp; Kashmir">
-                                              Jammu &amp; Kashmir
-                                            </option>
-                                            <option value="Jharkhand">
-                                              Jharkhand
-                                            </option>
-                                            <option value="Karnataka">
-                                              Karnataka
-                                            </option>
-                                            <option value="Kerala">
-                                              Kerala
-                                            </option>
-                                            <option value="Madhya Pradesh">
-                                              Madhya Pradesh
-                                            </option>
-                                            <option value="Maharashtra">
-                                              Maharashtra
-                                            </option>
-                                            <option value="Manipur">
-                                              Manipur
-                                            </option>
-                                            <option value="Meghalaya">
-                                              Meghalaya
-                                            </option>
-                                            <option value="Mizoram">
-                                              Mizoram
-                                            </option>
-                                            <option value="Nagaland">
-                                              Nagaland
-                                            </option>
-                                            <option value="Odisha">
-                                              Odisha
-                                            </option>
-                                            <option value="Punjab">
-                                              Punjab
-                                            </option>
-                                            <option value="Rajasthan">
-                                              Rajasthan
-                                            </option>
-                                            <option value="Sikkim">
-                                              Sikkim
-                                            </option>
-                                            <option value="Tamil Nadu">
-                                              Tamil Nadu
-                                            </option>
-                                            <option value="Telangana">
-                                              Telangana
-                                            </option>
-                                            <option value="Tripura">
-                                              Tripura
-                                            </option>
-                                            <option value="Uttar Pradesh">
-                                              Uttar Pradesh
-                                            </option>
-                                            <option value="Uttarakhand">
-                                              Uttarakhand
-                                            </option>
-                                            <option value="West Bengal">
-                                              West Bengal
-                                            </option>
-                                          </select>
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            id="txt8City_1"
-                                            placeholder="City"
-                                            name={`othertrustSupport.trustDetails.${index}.trustCity`}
-                                            value={trust.trustCity}
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
+                        {studentInformation.othertrustSupport
+                          .otherTrustSupport === "Yes" && (
+                          <>
+                            <div class="form-group">
+                              <div class="row" style={{ display: "block" }}>
+                                <div class="col-sm-12 topMargin">
+                                  <table class="table table-bordered">
+                                    <thead>
+                                      <tr>
+                                        <th>Sr No</th>
+                                        <th>Name Of The Trust </th>
+                                        <th>
+                                          Amount received current year{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </th>
+                                        <th>
+                                          Amount received last year{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </th>
+                                        <th>
+                                          State{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </th>
+                                        <th>
+                                          City{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </th>
                                       </tr>
-                                    )
-                                  )}
+                                    </thead>
+                                    <tbody>
+                                      {studentInformation.othertrustSupport.trustDetails.map(
+                                        (trust, index) => (
+                                          <tr key={index}>
+                                            <td>1</td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Name Of The Trust"
+                                                name={`othertrustSupport.trustDetails.${index}.trustName`}
+                                                value={trust.trustName}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control amount allownumericwithdecimal"
+                                                placeholder="Amount received current year"
+                                                name={`othertrustSupport.trustDetails.${index}.currentYearAmount`}
+                                                value={trust.currentYearAmount}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control amount allownumericwithdecimal"
+                                                id="txt8amt_received_yr_1"
+                                                placeholder="Amount received last year"
+                                                name={`othertrustSupport.trustDetails.${index}.lastYearAmount`}
+                                                value={trust.lastYearAmount}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <select
+                                                class="form-control"
+                                                name={`othertrustSupport.trustDetails.${index}.trustState`}
+                                                value={trust.trustState}
+                                                onChange={(e) =>
+                                                  handleStateChange(e, index)
+                                                }
+                                              >
+                                                <option value="NA">
+                                                  --select--
+                                                </option>
+                                                {stateNames?.map((state) => (
+                                                  <option
+                                                    key={state}
+                                                    value={state}
+                                                  >
+                                                    {state}
+                                                  </option>
+                                                ))}
+                                              </select>
+                                            </td>
+                                            <td>
+                                              <select
+                                                class="form-control"
+                                                name={`othertrustSupport.trustDetails.${index}.trustCity`}
+                                                value={trust.trustCity}
+                                                onChange={(e) =>
+                                                  handleChange(e, index)
+                                                }
+                                              >
+                                                <option value="">
+                                                  --select--
+                                                </option>
+                                                {otherTrustCity.map((state) => (
+                                                  <option
+                                                    key={state}
+                                                    value={state}
+                                                  >
+                                                    {state}
+                                                  </option>
+                                                ))}
+                                              </select>
+                                            </td>
+                                          </tr>
+                                        )
+                                      )}
 
-                                  {/* <tr>
-                                    <td>2</td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control"
-                                        id="txt8name_add_trust_2"
-                                        placeholder="Name Of The Trust"
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control amount allownumericwithdecimal"
-                                        id="txt8amt_cuur_yr_2"
-                                        placeholder="Amount received current year"
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control amount allownumericwithdecimal"
-                                        id="txt8amt_received_yr_2"
-                                        placeholder="Amount received last year"
-                                      />
-                                    </td>
-                                    <td>
-                                      <select
-                                        id="txt8State_2"
-                                        class="form-control"
-                                      >
-                                        <option value="NA">--select--</option>
-                                        <option value="Andhra Pradesh">
-                                          Andhra Pradesh
-                                        </option>
-                                        <option value="Arunachal Pradesh">
-                                          Arunachal Pradesh
-                                        </option>
-                                        <option value="Assam">Assam</option>
-                                        <option value="Bihar">Bihar</option>
-                                        <option value="Chhattisgarh">
-                                          Chhattisgarh
-                                        </option>
-                                        <option value="Goa">Goa</option>
-                                        <option value="Gujarat">Gujarat</option>
-                                        <option value="Haryana">Haryana</option>
-                                        <option value="Himachal Pradesh">
-                                          Himachal Pradesh
-                                        </option>
-                                        <option value="Jammu &amp; Kashmir">
-                                          Jammu &amp; Kashmir
-                                        </option>
-                                        <option value="Jharkhand">
-                                          Jharkhand
-                                        </option>
-                                        <option value="Karnataka">
-                                          Karnataka
-                                        </option>
-                                        <option value="Kerala">Kerala</option>
-                                        <option value="Madhya Pradesh">
-                                          Madhya Pradesh
-                                        </option>
-                                        <option value="Maharashtra">
-                                          Maharashtra
-                                        </option>
-                                        <option value="Manipur">Manipur</option>
-                                        <option value="Meghalaya">
-                                          Meghalaya
-                                        </option>
-                                        <option value="Mizoram">Mizoram</option>
-                                        <option value="Nagaland">
-                                          Nagaland
-                                        </option>
-                                        <option value="Odisha">Odisha</option>
-                                        <option value="Punjab">Punjab</option>
-                                        <option value="Rajasthan">
-                                          Rajasthan
-                                        </option>
-                                        <option value="Sikkim">Sikkim</option>
-                                        <option value="Tamil Nadu">
-                                          Tamil Nadu
-                                        </option>
-                                        <option value="Telangana">
-                                          Telangana
-                                        </option>
-                                        <option value="Tripura">Tripura</option>
-                                        <option value="Uttar Pradesh">
-                                          Uttar Pradesh
-                                        </option>
-                                        <option value="Uttarakhand">
-                                          Uttarakhand
-                                        </option>
-                                        <option value="West Bengal">
-                                          West Bengal
-                                        </option>
-                                      </select>
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control"
-                                        id="txt8City_2"
-                                        placeholder="City"
-                                      />
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td>3</td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control"
-                                        id="txt8name_add_trust_3"
-                                        placeholder="Name Of The Trust"
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control amount allownumericwithdecimal"
-                                        id="txt8amt_cuur_yr_3"
-                                        placeholder="Amount received current year"
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control amount allownumericwithdecimal"
-                                        id="txt8amt_received_yr_3"
-                                        placeholder="Amount received last year"
-                                      />
-                                    </td>
-                                    <td>
-                                      <select
-                                        id="txt8State_3"
-                                        class="form-control"
-                                      >
-                                        <option value="NA">--select--</option>
-                                        <option value="Andhra Pradesh">
-                                          Andhra Pradesh
-                                        </option>
-                                        <option value="Arunachal Pradesh">
-                                          Arunachal Pradesh
-                                        </option>
-                                        <option value="Assam">Assam</option>
-                                        <option value="Bihar">Bihar</option>
-                                        <option value="Chhattisgarh">
-                                          Chhattisgarh
-                                        </option>
-                                        <option value="Goa">Goa</option>
-                                        <option value="Gujarat">Gujarat</option>
-                                        <option value="Haryana">Haryana</option>
-                                        <option value="Himachal Pradesh">
-                                          Himachal Pradesh
-                                        </option>
-                                        <option value="Jammu &amp; Kashmir">
-                                          Jammu &amp; Kashmir
-                                        </option>
-                                        <option value="Jharkhand">
-                                          Jharkhand
-                                        </option>
-                                        <option value="Karnataka">
-                                          Karnataka
-                                        </option>
-                                        <option value="Kerala">Kerala</option>
-                                        <option value="Madhya Pradesh">
-                                          Madhya Pradesh
-                                        </option>
-                                        <option value="Maharashtra">
-                                          Maharashtra
-                                        </option>
-                                        <option value="Manipur">Manipur</option>
-                                        <option value="Meghalaya">
-                                          Meghalaya
-                                        </option>
-                                        <option value="Mizoram">Mizoram</option>
-                                        <option value="Nagaland">
-                                          Nagaland
-                                        </option>
-                                        <option value="Odisha">Odisha</option>
-                                        <option value="Punjab">Punjab</option>
-                                        <option value="Rajasthan">
-                                          Rajasthan
-                                        </option>
-                                        <option value="Sikkim">Sikkim</option>
-                                        <option value="Tamil Nadu">
-                                          Tamil Nadu
-                                        </option>
-                                        <option value="Telangana">
-                                          Telangana
-                                        </option>
-                                        <option value="Tripura">Tripura</option>
-                                        <option value="Uttar Pradesh">
-                                          Uttar Pradesh
-                                        </option>
-                                        <option value="Uttarakhand">
-                                          Uttarakhand
-                                        </option>
-                                        <option value="West Bengal">
-                                          West Bengal
-                                        </option>
-                                      </select>
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="text"
-                                        class="form-control"
-                                        id="txt8City_3"
-                                        placeholder="City"
-                                      />
-                                    </td>
-                                  </tr>*/}
-                                  <tr>
-                                    <th>Sr No</th>
-                                    <th>
-                                      Contribution from other sources{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </th>
-                                    <th>
-                                      Amount received current year{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </th>
-                                    <th>
-                                      Amount received last year{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </th>
-                                    <th>
-                                      State{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </th>
-                                    <th>
-                                      City{" "}
-                                      <span style={{ color: "red" }}>*</span>
-                                    </th>
-                                  </tr>
-                                  {studentInformation.othertrustSupport.otherContribution.map(
-                                    (contribution, index) => (
-                                      <tr key={index}>
-                                        <td>1</td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Name Of The Trust"
-                                            name={`othertrustSupport.otherContribution.${index}.contributionSource`}
-                                            value={
-                                              contribution.contributionSource
-                                            }
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control amount allownumericwithdecimal"
-                                            placeholder="Amount received current year"
-                                            name={`othertrustSupport.otherContribution.${index}.contributionCurrentyearAmunt`}
-                                            value={
-                                              contribution.contributionCurrentyearAmunt
-                                            }
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control amount allownumericwithdecimal"
-                                            id="txt8amt_received_yr_1"
-                                            placeholder="Amount received last year"
-                                            name={`othertrustSupport.otherContribution.${index}.contributionLastyearAmunt`}
-                                            value={
-                                              contribution.contributionLastyearAmunt
-                                            }
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                        <td>
-                                          <select
-                                            class="form-control"
-                                            name={`othertrustSupport.otherContribution.${index}.contributionState`}
-                                            value={
-                                              contribution.contributionState
-                                            }
-                                            onChange={(e) => handleChange(e)}
+                                      <tr style={{ marginTop: "10px" }}>
+                                        <th>Sr No</th>
+                                        <th>
+                                          Contribution from other sources{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </th>
+                                        <th>
+                                          Amount received current year{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </th>
+                                        <th>
+                                          Amount received last year{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </th>
+                                        <th>
+                                          State{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </th>
+                                        <th>
+                                          City{" "}
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        </th>
+                                        <th>
+                                          <button
+                                            type="button"
+                                            className="btn btn-primary"
+                                            onClick={(e) => {
+                                              setStudentInformation((prev) => ({
+                                                ...prev,
+                                                othertrustSupport: {
+                                                  ...prev.othertrustSupport,
+                                                  otherContribution: [
+                                                    ...prev.othertrustSupport
+                                                      .otherContribution,
+                                                    {
+                                                      contributionSource: "",
+                                                      contributionCurrentyearAmunt: 0,
+                                                      contributionLastyearAmunt: 0,
+                                                      contributionState: "",
+                                                      contributionCity: "",
+                                                    },
+                                                  ],
+                                                },
+                                              }));
+                                            }}
                                           >
-                                            <option value="NA">
-                                              --select--
-                                            </option>
-                                            <option value="Andhra Pradesh">
-                                              Andhra Pradesh
-                                            </option>
-                                            <option value="Arunachal Pradesh">
-                                              Arunachal Pradesh
-                                            </option>
-                                            <option value="Assam">Assam</option>
-                                            <option value="Bihar">Bihar</option>
-                                            <option value="Chhattisgarh">
-                                              Chhattisgarh
-                                            </option>
-                                            <option value="Goa">Goa</option>
-                                            <option value="Gujarat">
-                                              Gujarat
-                                            </option>
-                                            <option value="Haryana">
-                                              Haryana
-                                            </option>
-                                            <option value="Himachal Pradesh">
-                                              Himachal Pradesh
-                                            </option>
-                                            <option value="Jammu &amp; Kashmir">
-                                              Jammu &amp; Kashmir
-                                            </option>
-                                            <option value="Jharkhand">
-                                              Jharkhand
-                                            </option>
-                                            <option value="Karnataka">
-                                              Karnataka
-                                            </option>
-                                            <option value="Kerala">
-                                              Kerala
-                                            </option>
-                                            <option value="Madhya Pradesh">
-                                              Madhya Pradesh
-                                            </option>
-                                            <option value="Maharashtra">
-                                              Maharashtra
-                                            </option>
-                                            <option value="Manipur">
-                                              Manipur
-                                            </option>
-                                            <option value="Meghalaya">
-                                              Meghalaya
-                                            </option>
-                                            <option value="Mizoram">
-                                              Mizoram
-                                            </option>
-                                            <option value="Nagaland">
-                                              Nagaland
-                                            </option>
-                                            <option value="Odisha">
-                                              Odisha
-                                            </option>
-                                            <option value="Punjab">
-                                              Punjab
-                                            </option>
-                                            <option value="Rajasthan">
-                                              Rajasthan
-                                            </option>
-                                            <option value="Sikkim">
-                                              Sikkim
-                                            </option>
-                                            <option value="Tamil Nadu">
-                                              Tamil Nadu
-                                            </option>
-                                            <option value="Telangana">
-                                              Telangana
-                                            </option>
-                                            <option value="Tripura">
-                                              Tripura
-                                            </option>
-                                            <option value="Uttar Pradesh">
-                                              Uttar Pradesh
-                                            </option>
-                                            <option value="Uttarakhand">
-                                              Uttarakhand
-                                            </option>
-                                            <option value="West Bengal">
-                                              West Bengal
-                                            </option>
-                                          </select>
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            id="txt8City_1"
-                                            placeholder="City"
-                                            name={`othertrustSupport.otherContribution.${index}.contributionCity`}
-                                            value={
-                                              contribution.contributionCity
-                                            }
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
+                                            <i class="fa-solid fa-plus"></i>
+                                          </button>
+                                        </th>
                                       </tr>
-                                    )
-                                  )}
-                                </tbody>
-                              </table>
+                                      {studentInformation.othertrustSupport.otherContribution.map(
+                                        (contribution, index) => (
+                                          <tr key={index}>
+                                            <td>1</td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Name Of The Trust"
+                                                name={`othertrustSupport.otherContribution.${index}.contributionSource`}
+                                                value={
+                                                  contribution.contributionSource
+                                                }
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control amount allownumericwithdecimal"
+                                                placeholder="Amount received current year"
+                                                name={`othertrustSupport.otherContribution.${index}.contributionCurrentyearAmunt`}
+                                                value={
+                                                  contribution.contributionCurrentyearAmunt
+                                                }
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control amount allownumericwithdecimal"
+                                                id="txt8amt_received_yr_1"
+                                                placeholder="Amount received last year"
+                                                name={`othertrustSupport.otherContribution.${index}.contributionLastyearAmunt`}
+                                                value={
+                                                  contribution.contributionLastyearAmunt
+                                                }
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <select
+                                                class="form-control"
+                                                name={`othertrustSupport.otherContribution.${index}.contributionState`}
+                                                value={
+                                                  contribution.contributionState
+                                                }
+                                                onChange={(e) =>
+                                                  handleStateChange(e, index)
+                                                }
+                                              >
+                                                <option value="">
+                                                  --select--
+                                                </option>
+                                                {stateNames.map((state) => (
+                                                  <option
+                                                    key={state}
+                                                    value={state}
+                                                  >
+                                                    {state}
+                                                  </option>
+                                                ))}
+                                              </select>
+                                            </td>
+                                            <td>
+                                              <select
+                                                class="form-control"
+                                                name={`othertrustSupport.otherContribution.${index}.contributionCity`}
+                                                value={
+                                                  contribution.contributionCity
+                                                }
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              >
+                                                <option value="">
+                                                  --select--
+                                                </option>
+                                                {otherContributionCity.map(
+                                                  (state) => (
+                                                    <option
+                                                      key={state}
+                                                      value={state}
+                                                    >
+                                                      {state}
+                                                    </option>
+                                                  )
+                                                )}
+                                              </select>
+                                            </td>
+                                            <td>
+                                            {studentInformation.othertrustSupport.otherContribution.length > 1 && (
+                                              <button
+                                                type="button"
+                                                className="btn btn-danger"
+                                                onClick={() =>
+                                                  setStudentInformation((prev) => ({
+                                                    ...prev,
+                                                    othertrustSupport: {
+                                                      ...prev.othertrustSupport,
+                                                      otherContribution: prev.othertrustSupport.otherContribution.filter(
+                                                        (item, i) => i !== index
+                                                      ),
+                                                    },
+                                                  }))
+                                                }
+                                              >
+                                                <i className="fa-solid fa-minus"></i>
+                                              </button>
+                                            )}
+                                            </td>
+                                          </tr>
+                                        )
+                                      )}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
+                          </>
+                        )}
+
                         <div class="form-group">
                           <div class="row">
                             <hr />
@@ -3958,14 +3944,14 @@ const StudentProfile = () => {
                               </label>
                               <input
                                 type="radio"
-                                name={`othertrustSupport.otherContribution.govtScholarshipApply`}
+                                name={`othertrustSupport.govtScholarshipApply`}
                                 value="Yes"
                                 onChange={(e) => handleChange(e)}
                               />
                               Yes &nbsp;&nbsp;
                               <input
                                 type="radio"
-                                name={`othertrustSupport.otherContribution.govtScholarshipApply`}
+                                name={`othertrustSupport.govtScholarshipApply`}
                                 value="No"
                                 onChange={(e) => handleChange(e)}
                               />
@@ -3973,99 +3959,104 @@ const StudentProfile = () => {
                             </div>
                           </div>
                         </div>
-
-                        <div class="form-group">
-                          <div class="row" id="govtScholarship">
-                            {/* scholarship amount receive */}
-                            <div class="col-sm-3 topMargin">
-                              <label>
-                                Amount received{" "}
-                                <span style={{ color: "red" }}></span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control amount allownumericwithdecimal"
-                                placeholder=""
-                                name="othertrustSupport.scholarAmount"
-                                value={
-                                  studentInformation.othertrustSupport
-                                    .scholarAmount
-                                }
-                                onChange={(e) => handleChange(e)}
-                              />
+                        {studentInformation.othertrustSupport
+                          .govtScholarshipApply === "Yes" && (
+                          <>
+                            <div class="form-group">
+                              <div class="row" id="govtScholarship">
+                                {/* scholarship amount receive */}
+                                <div class="col-sm-3 topMargin">
+                                  <label>
+                                    Amount received{" "}
+                                    <span style={{ color: "red" }}></span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control amount allownumericwithdecimal"
+                                    placeholder=""
+                                    name="othertrustSupport.scholarAmount"
+                                    value={
+                                      studentInformation.othertrustSupport
+                                        .scholarAmount
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                  />
+                                </div>
+                                {/* scholar year */}
+                                <div class="col-sm-3 topMargin">
+                                  <label>
+                                    Year <span style={{ color: "red" }}></span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder=""
+                                    name="othertrustSupport.scholarYear"
+                                    value={
+                                      studentInformation.othertrustSupport
+                                        .scholarYear
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                  />
+                                </div>
+                                {/* scholarship name */}
+                                <div class="col-sm-3 topMargin">
+                                  <label>
+                                    Name of the govt. scholarship{" "}
+                                    <span style={{ color: "red" }}></span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder=""
+                                    name="othertrustSupport.scholarName"
+                                    value={
+                                      studentInformation.othertrustSupport
+                                        .scholarName
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                  />
+                                </div>
+                                {/* application id */}
+                                <div class="col-sm-3 topMargin">
+                                  <label>
+                                    Application Id{" "}
+                                    <span style={{ color: "red" }}></span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder=""
+                                    name="othertrustSupport.applicationId"
+                                    value={
+                                      studentInformation.othertrustSupport
+                                        .applicationId
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                  />
+                                </div>
+                                {/* application password */}
+                                <div class="col-sm-3 topMargin">
+                                  <label>
+                                    Password{" "}
+                                    <span style={{ color: "red" }}></span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder=""
+                                    name="othertrustSupport.applicationPass"
+                                    value={
+                                      studentInformation.othertrustSupport
+                                        .applicationPass
+                                    }
+                                    onChange={(e) => handleChange(e)}
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            {/* scholar year */}
-                            <div class="col-sm-3 topMargin">
-                              <label>
-                                Year <span style={{ color: "red" }}></span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder=""
-                                name="othertrustSupport.scholarYear"
-                                value={
-                                  studentInformation.othertrustSupport
-                                    .scholarYear
-                                }
-                                onChange={(e) => handleChange(e)}
-                              />
-                            </div>
-                            {/* scholarship name */}
-                            <div class="col-sm-3 topMargin">
-                              <label>
-                                Name of the govt. scholarship{" "}
-                                <span style={{ color: "red" }}></span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder=""
-                                name="othertrustSupport.scholarName"
-                                value={
-                                  studentInformation.othertrustSupport
-                                    .scholarName
-                                }
-                                onChange={(e) => handleChange(e)}
-                              />
-                            </div>
-                            {/* application id */}
-                            <div class="col-sm-3 topMargin">
-                              <label>
-                                Application Id{" "}
-                                <span style={{ color: "red" }}></span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder=""
-                                name="othertrustSupport.applicationId"
-                                value={
-                                  studentInformation.othertrustSupport
-                                    .applicationId
-                                }
-                                onChange={(e) => handleChange(e)}
-                              />
-                            </div>
-                            {/* application password */}
-                            <div class="col-sm-3 topMargin">
-                              <label>
-                                Password <span style={{ color: "red" }}></span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder=""
-                                name="othertrustSupport.applicationPass"
-                                value={
-                                  studentInformation.othertrustSupport
-                                    .applicationPass
-                                }
-                                onChange={(e) => handleChange(e)}
-                              />
-                            </div>
-                          </div>
-                        </div>
+                          </>
+                        )}
                       </div>
                     )}
 
@@ -4712,7 +4703,9 @@ const StudentProfile = () => {
                                             type="file"
                                             id="txt11dpStudentPhotoPath"
                                             name="studentPhoto"
-                                            onChange={(e) => imageHandler(e, "studentPhoto")}
+                                            onChange={(e) =>
+                                              imageHandler(e, "studentPhoto")
+                                            }
                                           />
                                         </div>
                                       </div>
@@ -4754,7 +4747,9 @@ const StudentProfile = () => {
                                             type="file"
                                             id="txt11dpStudentSignPath"
                                             name="studentSign"
-                                            onChange={(e) => imageHandler(e, "studentSign")}
+                                            onChange={(e) =>
+                                              imageHandler(e, "studentSign")
+                                            }
                                           />
                                         </div>
                                       </div>
@@ -4767,10 +4762,7 @@ const StudentProfile = () => {
                           </div>
                         </div>
                         <div class="row">
-                          <input
-                            type="file"
-                            style={{ visibility: "hidden" }}
-                          />
+                          <input type="file" style={{ visibility: "hidden" }} />
 
                           <div class="col-md-6 topMargin">
                             <div class="box box-widget widget-user">
@@ -4802,7 +4794,12 @@ const StudentProfile = () => {
                                             type="file"
                                             id="txt11dpGuardianSignPath"
                                             name="parentSign"
-                                            onChange={(e) => imageHandler(e, "studentGuardianSign")}
+                                            onChange={(e) =>
+                                              imageHandler(
+                                                e,
+                                                "studentGuardianSign"
+                                              )
+                                            }
                                           />
                                         </div>
                                       </div>

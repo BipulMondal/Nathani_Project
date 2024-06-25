@@ -116,8 +116,8 @@ const studentSchema = new mongoose.Schema({
     instituteLandLineNo: { type: Number },
     instituteContactNo: { type: Number },
     instituteMobileNo: { type: Number },
-    bonafideCertificateFrontImg: { type: Number },
-    bonafideCertificateBackImg: { type: Number },
+    bonafideCertificateFrontImg: { type: String },
+    bonafideCertificateBackImg: { type: String },
   },
   othertrustSupport: {
     otherTrustSupport: { type: String, default: "" },
