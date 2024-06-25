@@ -45,8 +45,9 @@ const addStudentDetails = async (req, res) => {
       const existsStudent = await studentModal.findOne({
         "studentInfo.aadharNo": AadharNo,
         isDeleted: false,
-        saveAsDraft: false,
       });
+
+      console.log("fuck", AadharNo, existsStudent)
 
       if (existsStudent) {
         return res.status(401).json({
@@ -81,16 +82,15 @@ const addStudentDetails = async (req, res) => {
 
 const getSingleStudentData = async (req, res) => {
   try {
-
     const { aadharNo } = req.body;
 
     // Query the nested field using dot notation
     const existStudent = await studentModal.findOne({ "studentInfo.aadharNo": aadharNo });
-    console.log("asdasd", existStudent, aadharNo, req.body);
+    // console.log("asdasd", existStudent, aadharNo, req.body);
   
 
     if (!existStudent) {
-      return res.status(401).json({
+      return res.status(200).json({
         status: false,
         message: "No Student Found"
       });
@@ -104,12 +104,40 @@ const getSingleStudentData = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       status: false,
-      message: "An error occurred",
+      message: "server error occurred",
       error: error.message
     });
   }
 };
 
+const getStudentsDetailsAddedBy = async (req, res) => {
+try {
+  const {aadharNo, addedBy} = req.body;
+  let allData = await studentModal.find({ addedBy : addedBy, isDeleted: false});
+  console.log("cccc", addedBy)
+  if(!allData){
+    return res.status(401).json({
+      status: false,
+      message: "no students details found"
+    })
+  }
+  else{
+    return res.status(200).json({
+      status: true,
+      message: "Students Data gets Successfully",
+      allData
+    })
+  }
+} catch (error) {
+  return res.status(500).json({
+    status: false,
+    message: "server error occurred",
+    error: error.message
+  });
+}
+
+}
 
 
-module.exports = {addStudentDetails, getSingleStudentData };
+
+module.exports = {addStudentDetails, getSingleStudentData, getStudentsDetailsAddedBy };

@@ -24,7 +24,6 @@ const Login = () => {
     }));
   };
 
-  console.log("vvfvfvf", loginData);
 
   const handleValidation = () => {
     if (!loginData.email) {
@@ -56,17 +55,21 @@ const Login = () => {
       if (handleValidation()) {
         const data = loginData;
         const res = await axios.post("http://localhost:8088/api/v1/user/login", data);
-  
-        console.log("response", res);
-  
-        if (res.data.status) {
+    console.log("fuckfu", res.data)
+        if (res && res.data.status) {
           toast.success(res.data.message);
           localStorage.setItem("Authorization", res.data.token);
           localStorage.setItem("userType", res.data.userType);
           localStorage.setItem("aadharNO" , res.data.data.aadharNo )
+          localStorage.setItem("addedBy", res.data.data.id)
           setLoading(false);
           setLoginData(initial);
-          navigate("/studentProfile");
+          if(res.data.userType === "Student"){
+            navigate("/studentProfile");
+          }
+          else{
+            navigate("/");
+          }
         } else {
           toast.error(res.data.message);
           setLoading(false);

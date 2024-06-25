@@ -201,6 +201,8 @@ const StudentProfile = () => {
   console.log("studentInformation", studentInformation);
   const [currentTab, setCurrentTab] = useState("student_info");
   const [loading, setLoading] = useState(false);
+  const aadharNo = localStorage.getItem("aadharNO");
+  const userType = localStorage.getItem("userType")
 
   const tabs = [
     "student_info",
@@ -389,6 +391,10 @@ const StudentProfile = () => {
       toast.error("Aadhar no is required");
       return false;
     }
+    if (studentInformation.studentInfo.aadharNo < 16) {
+      toast.error("Aadhar no must be 16 digit long");
+      return false;
+    }
     if (!studentInformation.studentInfo.lastName) {
       toast.error("Last name is required");
       return false;
@@ -544,12 +550,18 @@ const StudentProfile = () => {
       try {
         const data = {
           ...studentInformation,
-           saveAsDraft: true
+           saveAsDraft: true,
+           addedBy: localStorage.getItem("addedBy")
         };
         if (!studentInformation.studentInfo.aadharNo) {
           toast.error("Aadhar no is required");
           return false;
-        } else {
+        }
+        else if(studentInformation.studentInfo.aadharNo.length < 16){
+          toast.error("Aadhar no must be 16 digit long");
+          return false;
+        }
+         else {
           setLoading(true);
           let result = await axios.post(
             "http://localhost:8088/api/v1/user/add_Student_data",
@@ -584,8 +596,6 @@ const StudentProfile = () => {
   };
 
   const getStudentData = async () => {
-    const aadharNo = localStorage.getItem("aadharNO");
-
     const data = {
       "aadharNo" : aadharNo
     }
@@ -596,7 +606,7 @@ const StudentProfile = () => {
       console.log("Response:", res?.data);
       // console.log("Response:", res?.data?.existStudent);
 
-      if(res && res.data.status){
+      if(res && res.data.status && userType === "Student"){
         setStudentInformation(res?.data?.existStudent);
       }
 
@@ -616,7 +626,7 @@ const StudentProfile = () => {
   
   useEffect(() => {
     getStudentData();
-    if (localStorage.getItem("aadharNO")) {
+    if (localStorage.getItem("aadharNO") && userType === "Student") {
       const aadharNo = localStorage.getItem("aadharNO");
       
       setStudentInformation((prev) => ({
@@ -692,7 +702,7 @@ const StudentProfile = () => {
                                 className="form-control"
                                 placeholder="Enter Aadhar No"
                                 value={studentInformation.studentInfo.aadharNo}
-                                disabled
+                                disabled = {userType === "Student"}
                                 onChange={(e) => handleChange(e)}
                               />
                             </div>
@@ -1526,7 +1536,7 @@ const StudentProfile = () => {
                               </label>
                               <select
                                 class="form-control"
-                                name=".familyDetails.relationWithStudent"
+                                name="familyDetails.relationWithStudent"
                                 value={
                                   studentInformation.familyDetails
                                     .relationWithStudent
