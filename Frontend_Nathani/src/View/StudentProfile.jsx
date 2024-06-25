@@ -1980,7 +1980,7 @@ const StudentProfile = () => {
                               <label class="radio-inline">
                                 <input
                                   type="radio"
-                                  name=".jamatInfo.ifMotherMomen"
+                                  name="jamatInfo.ifMotherMomen"
                                   id="mother_memon_yes"
                                   value="Yes"
                                   onChange={() => handleChange()}

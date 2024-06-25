@@ -24,7 +24,6 @@ const Registar = () => {
     loginId: "",
     password: "",
     confirmpassword: "",
-    userType: "user",
   };
   const navigate = useNavigate();
   const [registerData, setRegisterData] = useState(initial);
@@ -161,7 +160,10 @@ const Registar = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = registerData;
+    const data = {
+      ...registerData,
+      userType: registerData.registeredBy,
+    }
 
     setLoading(true);
     try {
