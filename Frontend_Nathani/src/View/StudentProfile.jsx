@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, json, useLocation, useNavigate } from "react-router-dom";
 import queryString from "query-string";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../Loader/Loader";
 import AllStatedata from "../constant/config.json";
 import moment from "moment";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
+import CityDropdown from "../components/CityDropdown";
 
 const StudentProfile = () => {
   const location = useLocation();
@@ -14,191 +16,195 @@ const StudentProfile = () => {
   const navigate = useNavigate();
   const stateNames = Object.keys(AllStatedata);
 
-  const initialState = {
-    studentInfo: {
-      aadharNo: "",
-      lastName: "",
-      firstName: "",
-      fatherName: "",
-      motherName: "",
-      guardianName: "",
-      dob: "",
-      birthPlace: "",
-      gender: "",
-      maritalStatus: "",
-      spouseName: "",
-      StudentMobileNo: "",
-      StudentEmail: "",
-      parmanentAddress: "",
-      currentAddress: "",
-      landMark: "",
-      city: "",
-      pin: "",
-      district: "",
-      state: "",
-      country: "",
-      physicalChallange: "",
-      physicalChallangeImg: "",
-      orphan: "",
-      parentDeathCertificateImg: "",
-      addaharFrontImg: "",
-      aadharBackImg: "",
-      rationFrontImg: "",
-      rationBackImg: "",
-      electricityBillImg: "",
-      category: "",
-      zakatFund: 0,
-      refferedBy: "",
-      refMobileNo: "",
-    },
-    familyDetails: {
-      parentStatus: "",
-      parentStatusOneImg: "",
-      parentStatusTwoImg: "",
-      relationWithStudent: "",
-      relationPersonName: "",
-      relationPersonMaritalStatus: "",
-      relationPersonDOB: "",
-      relationPersongender: "",
-      relationPersonAadhar: "",
-      relationPersonEducation: "",
-      relationPersonOccupation: "",
-      relationPersonOccupationDetails: "",
-      relationPersonMonthlyIncome: 0,
-      incomeFileFrontImg: "",
-      incomeFileBackImg: "",
-      handiCapped: "",
-      handiCapFileOneImg: "",
-      handiCapFileTwoImg: "",
-      personCity: "",
-      personStudying: "",
-    },
-    jamatInfo: {
-      ifMemon: "",
-      ifMotherMomen: "",
-      memonJamatLetterOne: "",
-      memonJamatLetterTwo: "",
-      jamatDetails: "",
-      belongingJamat: "",
-      jamatSecretaryName: "",
-      secretaryMobile: "",
-      secretaryEmail: "",
-      memonAddress: "",
-      memonCity: "",
-      memonPin: "",
-      memonState: "",
-      helpFromJamat: "",
-      jamatReceiveAmount: 0,
-      amountReceivePurpose: "",
-      amountType: "",
-      deeniyatCourse: "",
-      courseName: "",
-      madrashaName: "",
-      anyOtherCourse: "",
-    },
-    prevAcademicInfo: {
-      prevYearResult: "",
-      lastYearResultImg: "",
-      lastTwoYearResultImg: "",
-      TwoYearBackResultImg: "",
-      currentStudy: "",
-      specialCase: "",
-      courseName: "",
-      levelOfCourse: "",
-      otherCourseOne: "",
-      otherLevelOfCourse: "",
-      otherField: "",
-      field: "",
-      duration: "",
-      instructionMedium: "",
-      coursePattern: "",
-      otherDurationCourse: "",
-      otherCourseTwo: "",
-      otherMedium: "",
-      instituteName: "",
-      boardName: "",
-      instituteType: "",
-      ifPrivate: "",
-      instituteAddress: "",
-      instituteCity: "",
-      institutePin: "",
-      instituteDistrict: "",
-      instituteState: "",
-      instituteCountry: "",
-      instituteEmail: "",
-      instituteWebsite: "",
-      instituteLandLineNo: "",
-      instituteContactNo: "",
-      instituteMobileNo: "",
-      bonafideCertificateFrontImg: "",
-      bonafideCertificateBackImg: "",
-    },
-    othertrustSupport: {
-      otherTrustSupport: "",
-      trustDetails: [
-        {
-          trustName: "",
-          currentYearAmount: 0,
-          lastYearAmount: 0,
-          trustState: "",
-          trustCity: "",
-        },
-      ],
-      otherContribution: [
-        {
-          contributionSource: "",
-          contributionCurrentyearAmunt: 0,
-          contributionLastyearAmunt: 0,
-          contributionState: "",
-          contributionCity: "",
-        },
-      ],
-      govtScholarshipApply: "",
-      scholarAmount: 0,
-      scholarYear: "",
-      scholarName: "",
-      applicationId: "",
-      applicationPass: "",
-    },
-    organizationSupportFamily: {
-      receivedSupport: "",
-      supportFamilyDetails: [
-        {
-          memberName: "",
-          memberId: "",
-          course: "",
-          amountReceived: 0,
-          financialYear: "",
-          howManyYearsGet: 0,
-        },
-      ],
-      memberReceiveSupport:"",
-      otherSupport: [
-        {
-          memberName: "",
-          memberId: "",
-          scheme: "",
-          amountreceived: 0,
-          financialYear: "",
-        },
-      ],
-    },
-    familyDeclaration: {
-      courseName: "",
-      applicantName: "",
-      parentName: "",
-      place: "",
-      date: "",
-      studentPhoto: "",
-      studentSign: "",
-      parentSign: "",
-    },
-    studentCode: "",
-    isConfirm: false,
-  };
+  // const initialState = {
+  //   studentInfo: {
+  //     aadharNo: "",
+  //     lastName: "",
+  //     firstName: "",
+  //     fatherName: "",
+  //     motherName: "",
+  //     guardianName: "",
+  //     dob: "",
+  //     birthPlace: "",
+  //     gender: "",
+  //     maritalStatus: "",
+  //     spouseName: "",
+  //     StudentMobileNo: "",
+  //     StudentEmail: "",
+  //     parmanentAddress: "",
+  //     currentAddress: "",
+  //     landMark: "",
+  //     city: "",
+  //     pin: "",
+  //     district: "",
+  //     state: "",
+  //     country: "",
+  //     physicalChallange: "",
+  //     physicalChallangeImg: "",
+  //     orphan: "",
+  //     parentDeathCertificateImg: "",
+  //     addaharFrontImg: "",
+  //     aadharBackImg: "",
+  //     rationFrontImg: "",
+  //     rationBackImg: "",
+  //     electricityBillImg: "",
+  //     category: "",
+  //     zakatFund: 0,
+  //     refferedBy: "",
+  //     refMobileNo: "",
+  //   },
+  //   familyDetails: {
+  //     parentStatus: "",
+  //     parentStatusOneImg: "",
+  //     parentStatusTwoImg: "",
+  //     relationWithStudent: "",
+  //     relationPersonName: "",
+  //     relationPersonMaritalStatus: "",
+  //     relationPersonDOB: "",
+  //     relationPersongender: "",
+  //     relationPersonAadhar: "",
+  //     relationPersonEducation: "",
+  //     relationPersonOccupation: "",
+  //     relationPersonOccupationDetails: "",
+  //     relationPersonMonthlyIncome: 0,
+  //     incomeFileFrontImg: "",
+  //     incomeFileBackImg: "",
+  //     handiCapped: "",
+  //     handiCapFileOneImg: "",
+  //     handiCapFileTwoImg: "",
+  //     personCity: "",
+  //     personStudying: "",
+  //   },
+  //   jamatInfo: {
+  //     ifMemon: "",
+  //     ifMotherMomen: "",
+  //     memonJamatLetterOne: "",
+  //     memonJamatLetterTwo: "",
+  //     jamatDetails: "",
+  //     belongingJamat: "",
+  //     jamatSecretaryName: "",
+  //     secretaryMobile: "",
+  //     secretaryEmail: "",
+  //     memonAddress: "",
+  //     memonCity: "",
+  //     memonPin: "",
+  //     memonState: "",
+  //     helpFromJamat: "",
+  //     jamatReceiveAmount: 0,
+  //     amountReceivePurpose: "",
+  //     amountType: "",
+  //     deeniyatCourse: "",
+  //     courseName: "",
+  //     madrashaName: "",
+  //     anyOtherCourse: "",
+  //   },
+  //   prevAcademicInfo: {
+  //     prevYearResult: "",
+  //     lastYearResultImg: "",
+  //     lastTwoYearResultImg: "",
+  //     TwoYearBackResultImg: "",
+  //     currentStudy: "",
+  //     specialCase: "",
+  //     courseName: "",
+  //     levelOfCourse: "",
+  //     otherCourseOne: "",
+  //     otherLevelOfCourse: "",
+  //     otherField: "",
+  //     field: "",
+  //     duration: "",
+  //     instructionMedium: "",
+  //     coursePattern: "",
+  //     otherDurationCourse: "",
+  //     otherCourseTwo: "",
+  //     otherMedium: "",
+  //     instituteName: "",
+  //     boardName: "",
+  //     instituteType: "",
+  //     ifPrivate: "",
+  //     instituteAddress: "",
+  //     instituteCity: "",
+  //     institutePin: "",
+  //     instituteDistrict: "",
+  //     instituteState: "",
+  //     instituteCountry: "",
+  //     instituteEmail: "",
+  //     instituteWebsite: "",
+  //     instituteLandLineNo: "",
+  //     instituteContactNo: "",
+  //     instituteMobileNo: "",
+  //     bonafideCertificateFrontImg: "",
+  //     bonafideCertificateBackImg: "",
+  //   },
+  //   othertrustSupport: {
+  //     otherTrustSupport: "",
+  //     trustDetails: [
+  //       {
+  //         trustName: "",
+  //         currentYearAmount: 0,
+  //         lastYearAmount: 0,
+  //         trustState: "",
+  //         trustCity: "",
+  //       },
+  //     ],
+  //     otherContribution: [
+  //       {
+  //         contributionSource: "",
+  //         contributionCurrentyearAmunt: 0,
+  //         contributionLastyearAmunt: 0,
+  //         contributionState: "",
+  //         contributionCity: "",
+  //       },
+  //     ],
+  //     govtScholarshipApply: "",
+  //     scholarAmount: 0,
+  //     scholarYear: "",
+  //     scholarName: "",
+  //     applicationId: "",
+  //     applicationPass: "",
+  //   },
+  //   organizationSupportFamily: {
+  //     receivedSupport: "",
+  //     supportFamilyDetails: [
+  //       {
+  //         memberName: "",
+  //         memberId: "",
+  //         course: "",
+  //         amountReceived: 0,
+  //         financialYear: "",
+  //         howManyYearsGet: 0,
+  //       },
+  //     ],
+  //     memberReceiveSupport: "",
+  //     otherSupport: [
+  //       {
+  //         memberName: "",
+  //         memberId: "",
+  //         scheme: "",
+  //         amountreceived: 0,
+  //         financialYear: "",
+  //       },
+  //     ],
+  //   },
+  //   familyDeclaration: {
+  //     courseName: "",
+  //     applicantName: "",
+  //     parentName: "",
+  //     place: "",
+  //     date: "",
+  //     studentPhoto: "",
+  //     studentSign: "",
+  //     parentSign: "",
+  //   },
+  //   studentCode: "",
+  //   isConfirm: false,
+  // };
 
-  const [studentInformation, setStudentInformation] = useState(initialState);
-  console.log("studentInformation", studentInformation.othertrustSupport);
+  // const [studentInformation, setStudentInformation] = useState(initialState);
+  const {studentInformation, setStudentInformation, getStudentData} = useContext(GlobalContext)
+  console.log(
+    "organizationSupportFamily",
+    studentInformation
+  );
   const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
   const [filteredCities, setFilteredCities] = useState([]);
   const [memonCities, setMemonCities] = useState([]);
@@ -209,6 +215,8 @@ const StudentProfile = () => {
   const [loading, setLoading] = useState(false);
   const aadharNo = localStorage.getItem("aadharNO");
   const userType = localStorage.getItem("userType");
+
+ 
 
   const tabs = [
     "student_info",
@@ -338,6 +346,7 @@ const StudentProfile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log("ducks", name, value);
     const keys = name.split(".");
 
     if (keys.length === 1) {
@@ -576,7 +585,7 @@ const StudentProfile = () => {
             getStudentData();
             toast.success(result.data.message);
             setLoading(false);
-            setStudentInformation(initialState);
+            // setStudentInformation(initialState);
           }
         }
       } catch (error) {
@@ -595,31 +604,13 @@ const StudentProfile = () => {
           // getStudentData();
           toast.success(res.data.message);
           setLoading(false);
-          setStudentInformation(initialState);
+          // setStudentInformation(initialState);
         }
       }
     }
   };
 
-  const getStudentData = async () => {
-    const data = {
-      aadharNo: aadharNo,
-    };
-    try {
-      const res = await axios.post(
-        "http://localhost:8088/api/v1/user/get_Student_data",
-        data
-      );
-      // console.log("Response:", res?.data);
-      // console.log("Response:", res?.data?.existStudent);
 
-      if (res && res.data.status && userType === "Student") {
-        setStudentInformation(res?.data?.existStudent);
-      }
-    } catch (error) {
-      console.error("Error fetching student data:", error);
-    }
-  };
   const filterCity = (state) => {
     return AllStatedata[state] || [];
   };
@@ -627,6 +618,7 @@ const StudentProfile = () => {
   const handleStateChange = (e, index) => {
     handleChange(e);
     const { name, value } = e.target;
+    console.log("sssssssss", index);
 
     if (name === "studentInfo.state") {
       const cities = filterCity(value);
@@ -679,10 +671,17 @@ const StudentProfile = () => {
       );
       setAcademicCity(cities);
     }
+    if (studentInformation.othertrustSupport.trustDetails[0].trustState) {
+      const cities = filterCity(
+        studentInformation.othertrustSupport.trustDetails[0].trustState
+      );
+      setOthertrustCity(cities);
+    }
   }, [
     studentInformation.jamatInfo.memonState,
     studentInformation.studentInfo.state,
     studentInformation.prevAcademicInfo.instituteState,
+    studentInformation.othertrustSupport.trustDetails[0].trustCity,
   ]);
 
   return (
@@ -3660,13 +3659,13 @@ const StudentProfile = () => {
                                                   trustDetails: [
                                                     ...prev.othertrustSupport
                                                       .trustDetails,
-                                                      {
-                                                        trustName: "",
-                                                        currentYearAmount: 0,
-                                                        lastYearAmount: 0,
-                                                        trustState: "",
-                                                        trustCity: "",
-                                                      }
+                                                    {
+                                                      trustName: "",
+                                                      currentYearAmount: 0,
+                                                      lastYearAmount: 0,
+                                                      trustState: "",
+                                                      trustCity: "",
+                                                    },
                                                   ],
                                                 },
                                               }));
@@ -3678,10 +3677,16 @@ const StudentProfile = () => {
                                       </tr>
                                     </thead>
                                     <tbody>
+                                      {" "}
+                                      {console.log(
+                                        "studentInformation.othertrustSupport.trustDetails",
+                                        studentInformation.othertrustSupport
+                                          .trustDetails
+                                      )}
                                       {studentInformation.othertrustSupport.trustDetails.map(
                                         (trust, index) => (
                                           <tr key={index}>
-                                            <td>1</td>
+                                            <td>1 {trust.trustCity}</td>
                                             <td>
                                               <input
                                                 type="text"
@@ -3742,55 +3747,71 @@ const StudentProfile = () => {
                                               </select>
                                             </td>
                                             <td>
-                                              <select
-                                                class="form-control"
-                                                name={`othertrustSupport.trustDetails.${index}.trustCity`}
-                                                value={trust.trustCity}
-                                                onChange={(e) =>
-                                                  handleChange(e, index)
-                                                }
-                                              >
-                                                <option value="">
-                                                  --select--
-                                                </option>
-                                                {otherTrustCity.map((state) => (
-                                                  <option
-                                                    key={state}
-                                                    value={state}
-                                                  >
-                                                    {state}
-                                                  </option>
-                                                ))}
-                                              </select>
+                                              <CityDropdown
+                                              
+                                              state={trust.trustState}
+                                              value={trust.trustCity}
+                                              onChange={(e)=>{
+                                                let updated = JSON.parse(JSON.stringify(studentInformation))
+                                                updated.othertrustSupport.trustDetails[index].trustCity=e.target.value
+                                                setStudentInformation(updated)
+                                              }}
+
+                                              />
                                             </td>
                                             <td>
-                                            {studentInformation.othertrustSupport.trustDetails.length > 1 && (
-                                              <button
-                                                type="button"
-                                                className="btn btn-danger"
-                                                onClick={() =>{
-                                                 if(studentInformation.othertrustSupport.trustDetails){
-
-                                                 }
-                                                  setStudentInformation((prev) => ({
-                                                    ...prev,
-                                                    othertrustSupport: {
-                                                      ...prev.othertrustSupport,
-                                                      trustDetails: prev.othertrustSupport.trustDetails.filter(
-                                                        (item, i) => i !== index
-                                                      ),
-                                                    },
-                                                  }))
-                                                }}
-                                              >
-                                                <i className="fa-solid fa-minus"></i>
-                                              </button>
-                                            )}
+                                              {studentInformation
+                                                .othertrustSupport.trustDetails
+                                                .length > 1 && (
+                                                <button
+                                                  type="button"
+                                                  className="btn btn-danger"
+                                                  onClick={() => {
+                                                    let updated = JSON.parse(JSON.stringify(studentInformation))
+                                                    console.log("updateded", updated)
+                                                    if(!updated.othertrustSupport.trustDetails[index].trustName){
+                                                      toast.error("Trust Name is required")
+                                                      return 
+                                                    }
+                                                    if(updated.othertrustSupport.trustDetails[index].currentYearAmount <= 0){
+                                                      toast.error("current year amount is required")
+                                                      return 
+                                                    }
+                                                    if(!updated.othertrustSupport.trustDetails[index].lastYearAmount){
+                                                      toast.error("last year amount is required")
+                                                      return 
+                                                    }
+                                                    if(!updated.othertrustSupport.trustDetails[index].trustState){
+                                                      toast.error("State is required")
+                                                      return 
+                                                    }
+                                                    if(!updated.othertrustSupport.trustDetails[index].trustCity){
+                                                      toast.error("city is required")
+                                                      return 
+                                                    }
+                                                  
+                                                    setStudentInformation(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        othertrustSupport: {
+                                                          ...prev.othertrustSupport,
+                                                          trustDetails:
+                                                            prev.othertrustSupport.trustDetails.filter(
+                                                              (item, i) =>
+                                                                i !== index
+                                                            ),
+                                                        },
+                                                      })
+                                                    );
+                                                  }}
+                                                >
+                                                  <i className="fa-solid fa-minus"></i>
+                                                </button>
+                                              )}
                                             </td>
                                           </tr>
                                         )
                                       )}
-
                                       <tr style={{ marginTop: "10px" }}>
                                         <th>Sr No</th>
                                         <th>
@@ -3949,25 +3970,32 @@ const StudentProfile = () => {
                                               </select>
                                             </td>
                                             <td>
-                                            {studentInformation.othertrustSupport.otherContribution.length > 1 && (
-                                              <button
-                                                type="button"
-                                                className="btn btn-danger"
-                                                onClick={() =>
-                                                  setStudentInformation((prev) => ({
-                                                    ...prev,
-                                                    othertrustSupport: {
-                                                      ...prev.othertrustSupport,
-                                                      otherContribution: prev.othertrustSupport.otherContribution.filter(
-                                                        (item, i) => i !== index
-                                                      ),
-                                                    },
-                                                  }))
-                                                }
-                                              >
-                                                <i className="fa-solid fa-minus"></i>
-                                              </button>
-                                            )}
+                                              {studentInformation
+                                                .othertrustSupport
+                                                .otherContribution.length >
+                                                1 && (
+                                                <button
+                                                  type="button"
+                                                  className="btn btn-danger"
+                                                  onClick={() =>
+                                                    setStudentInformation(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        othertrustSupport: {
+                                                          ...prev.othertrustSupport,
+                                                          otherContribution:
+                                                            prev.othertrustSupport.otherContribution.filter(
+                                                              (item, i) =>
+                                                                i !== index
+                                                            ),
+                                                        },
+                                                      })
+                                                    )
+                                                  }
+                                                >
+                                                  <i className="fa-solid fa-minus"></i>
+                                                </button>
+                                              )}
                                             </td>
                                           </tr>
                                         )
@@ -4126,7 +4154,10 @@ const StudentProfile = () => {
                               id="received_sibling_orgo"
                               style={{ width: "100%" }}
                               name="organizationSupportFamily.receivedSupport"
-                              value={studentInformation.organizationSupportFamily.receivedSupport}
+                              value={
+                                studentInformation.organizationSupportFamily
+                                  .receivedSupport
+                              }
                               onChange={(e) => handleChange(e)}
                             >
                               <option value="">--select--</option>
@@ -4135,229 +4166,262 @@ const StudentProfile = () => {
                             </select>
                           </div>
                         </div>
-                        { studentInformation.organizationSupportFamily.receivedSupport === "Yes" && (
+                        {studentInformation.organizationSupportFamily
+                          .receivedSupport === "Yes" && (
                           <>
-                          <div class="row" id="txt9ReceivedsiblingYes">
-                          <div class="col-sm-12 topMargin">
-                            <table class="table table-bordered">
-                              <thead>
-                                <tr>
-                                  <th>Sr No</th>
-                                  <th>Name of Brother/Sister</th>
-                                  <th>ID No.</th>
-                                  <th>Course</th>
-                                  <th>Amount Received</th>
-                                  <th>Financial year</th>
-                                  <th>
-                                    Last how many years they have been receiving
-                                    support?
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {studentInformation.organizationSupportFamily.supportFamilyDetails.map(
-                                  (family, index) => {
-                                    console.log("fufu", family);
-                                    return (
-                                      <tr key={index}>
-                                        <td>1</td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            id="txtx_bro_sis_name"
-                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.memberName`}
-                                            value={family.memberName}
-                                            onChange={(e) => handleChange(e)}
-                                            placeholder=""
-                                          />
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder=""
-                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.memberId`}
-                                            value={family.memberId}
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder=""
-                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.course`}
-                                            value={family.course}
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control amount allownumericwithdecimal"
-                                            placeholder=""
-                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.amountReceived`}
-                                            value={family.amountReceived}
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                        <td>
-                                          <select
-                                            class="form-control"
-                                            style={{ width: "100%" }}
-                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.financialYear`}
-                                            value={family.financialYear}
-                                            onChange={(e) => handleChange(e)}
-                                          >
-                                            <option value="NA">
-                                              --select--
-                                            </option>
-                                            <option value="2004-05">
-                                              2004-05
-                                            </option>
-                                            <option value="2005-06">
-                                              2005-06
-                                            </option>
-                                            <option value="2006-07">
-                                              2006-07
-                                            </option>
-                                            <option value="2007-08">
-                                              2007-08
-                                            </option>
-                                            <option value="2008-09">
-                                              2008-09
-                                            </option>
-                                            <option value="2009-10">
-                                              2009-10
-                                            </option>
-                                            <option value="2010-11">
-                                              2010-11
-                                            </option>
-                                            <option value="2011-12">
-                                              2011-12
-                                            </option>
-                                            <option value="2012-13">
-                                              2012-13
-                                            </option>
-                                            <option value="2013-14">
-                                              2013-14
-                                            </option>
-                                            <option value="2014-15">
-                                              2014-15
-                                            </option>
-                                            <option value="2015-16">
-                                              2015-16
-                                            </option>
-                                            <option value="2016-17">
-                                              2016-17
-                                            </option>
-                                            <option value="2017-18">
-                                              2017-18
-                                            </option>
-                                            <option value="2018-19">
-                                              2018-19
-                                            </option>
-                                            <option value="2019-20">
-                                              2019-20
-                                            </option>
-                                            <option value="2020-21">
-                                              2020-21
-                                            </option>
-                                            <option value="2021-22">
-                                              2021-22
-                                            </option>
-                                            <option value="2022-23">
-                                              2022-23
-                                            </option>
-                                            <option value="2023-24">
-                                              2023-24
-                                            </option>
-                                            <option value="2024-25">
-                                              2024-25
-                                            </option>
-                                          </select>
-                                        </td>
-                                        <td>
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder=""
-                                            name={`organizationSupportFamily.supportFamilyDetails.${index}.howManyYearsGet`}
-                                            value={family.howManyYearsGet}
-                                            onChange={(e) => handleChange(e)}
-                                          />
-                                        </td>
-                                      </tr>
-                                    );
-                                  }
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
+                            <div class="row" id="txt9ReceivedsiblingYes">
+                              <div class="col-sm-12 topMargin">
+                                <table class="table table-bordered">
+                                  <thead>
+                                    <tr>
+                                      <th>Sr No</th>
+                                      <th>Name of Brother/Sister</th>
+                                      <th>ID No.</th>
+                                      <th>Course</th>
+                                      <th>Amount Received</th>
+                                      <th>Financial year</th>
+                                      <th>
+                                        Last how many years they have been
+                                        receiving support?
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {studentInformation.organizationSupportFamily.supportFamilyDetails.map(
+                                      (family, index) => {
+                                        console.log(
+                                          "fufufufu",
+                                          family.financialYear,
+                                          moment(family.financialYear).format(
+                                            "YYYY-MM-DD"
+                                          )
+                                        );
+                                        return (
+                                          <tr key={index}>
+                                            <td>1</td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control"
+                                                id="txtx_bro_sis_name"
+                                                name={`organizationSupportFamily.supportFamilyDetails.${index}.memberName`}
+                                                value={family.memberName}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                                placeholder=""
+                                              />
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control"
+                                                placeholder=""
+                                                name={`organizationSupportFamily.supportFamilyDetails.${index}.memberId`}
+                                                value={family.memberId}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control"
+                                                placeholder=""
+                                                name={`organizationSupportFamily.supportFamilyDetails.${index}.course`}
+                                                value={family.course}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control amount allownumericwithdecimal"
+                                                placeholder=""
+                                                name={`organizationSupportFamily.supportFamilyDetails.${index}.amountReceived`}
+                                                value={family.amountReceived}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <select
+                                                class="form-control"
+                                                style={{ width: "100%" }}
+                                                name={`organizationSupportFamily.supportFamilyDetails.${index}.financialYear`}
+                                                value={family.financialYear}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              >
+                                                <option value="NA">
+                                                  --select--
+                                                </option>
+                                                <option value="2004-05">
+                                                  2004-05
+                                                </option>
+                                                <option value="2005-06">
+                                                  2005-06
+                                                </option>
+                                                <option value="2006-07">
+                                                  2006-07
+                                                </option>
+                                                <option value="2007-08">
+                                                  2007-08
+                                                </option>
+                                                <option value="2008-09">
+                                                  2008-09
+                                                </option>
+                                                <option value="2009-10">
+                                                  2009-10
+                                                </option>
+                                                <option value="2010-11">
+                                                  2010-11
+                                                </option>
+                                                <option value="2011-12">
+                                                  2011-12
+                                                </option>
+                                                <option value="2012-13">
+                                                  2012-13
+                                                </option>
+                                                <option value="2013-14">
+                                                  2013-14
+                                                </option>
+                                                <option value="2014-15">
+                                                  2014-15
+                                                </option>
+                                                <option value="2015-16">
+                                                  2015-16
+                                                </option>
+                                                <option value="2016-17">
+                                                  2016-17
+                                                </option>
+                                                <option value="2017-18">
+                                                  2017-18
+                                                </option>
+                                                <option value="2018-19">
+                                                  2018-19
+                                                </option>
+                                                <option value="2019-20">
+                                                  2019-20
+                                                </option>
+                                                <option value="2020-21">
+                                                  2020-21
+                                                </option>
+                                                <option value="2021-22">
+                                                  2021-22
+                                                </option>
+                                                <option value="2022-23">
+                                                  2022-23
+                                                </option>
+                                                <option value="2023-24">
+                                                  2023-24
+                                                </option>
+                                                <option value="2024-25">
+                                                  2024-25
+                                                </option>
+                                              </select>
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control"
+                                                placeholder=""
+                                                name={`organizationSupportFamily.supportFamilyDetails.${index}.howManyYearsGet`}
+                                                value={family.howManyYearsGet}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                          </tr>
+                                        );
+                                      }
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
 
-                          {/* add button */}
-                          <div
-                            class="col-sm-12 topMargin"
-                            style={{ display: "flex", justifyContent: 'flex-end' }}
-                            id="newbtn2"
-                          >
-                            <button
-                              type="button"
-                              class="btn btn-primary"
-                              id="addorgoView2"
-                              onClick={(e) => handleSubmit(e, "saveAsDraft")}
-                            >Save</button>
-                          </div>
-                        </div>
-                        
-                        {/* table data show */}
-                        <div class="col-sm-12" style={{ marginTop: "25px" }}>
-                          <div
-                            class="table-responsive"
-                            style={{ maxHeight: "350px" }}
-                          >
-                            <table
-                              id="fees_from_our_organization2"
-                              class="table no-margin table-condensed"
-                              // style={{}}
+                              {/* add button */}
+                              <div
+                                class="col-sm-12 topMargin"
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-end",
+                                }}
+                                id="newbtn2"
+                              >
+                                <button
+                                  type="button"
+                                  class="btn btn-primary"
+                                  id="addorgoView2"
+                                  onClick={(e) =>
+                                    handleSubmit(e, "saveAsDraft")
+                                  }
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* table data show */}
+                            <div
+                              class="col-sm-12"
+                              style={{ marginTop: "25px" }}
                             >
-                              <thead>
-                                <tr>
-                                  <th>Sr.No.</th>
-                                  <th>Name of Brother/Sister</th>
-                                  <th>ID No.</th>
-                                  <th>Course</th>
-                                  <th>Amount Received </th>
-                                  <th>Financial year</th>
-                                  <th>
-                                    Last how many years have they been receiving
-                                    support
-                                  </th>
-                                  <th id="3rd">Delete </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr id="13442">
-                                  <td>1</td>
-                                  <td>Tareeq</td>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
-                                  <td>2018-19</td>
-                                  <td>2</td>
-                                  <td id="3rd">
-                                    <i
-                                      class="fa fa-trash-o removeorgoRole2"
-                                      id="btnEduorgoDeletes0"
-                                    ></i>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                          <hr style={{ borderColor: "red" }} />
-                        </div>
+                              <div
+                                class="table-responsive"
+                                style={{ maxHeight: "350px" }}
+                              >
+                                <table
+                                  id="fees_from_our_organization2"
+                                  class="table no-margin table-condensed"
+                                  // style={{}}
+                                >
+                                  <thead>
+                                    <tr>
+                                      <th>Sr.No.</th>
+                                      <th>Name of Brother/Sister</th>
+                                      <th>ID No.</th>
+                                      <th>Course</th>
+                                      <th>Amount Received </th>
+                                      <th>Financial year</th>
+                                      <th>
+                                        Last how many years have they been
+                                        receiving support
+                                      </th>
+                                      <th id="3rd">Delete </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {studentInformation.organizationSupportFamily.supportFamilyDetails.map(
+                                      (item, index) => {
+                                        console.log("iytem", item)
+                                        return (
+                                          <tr id="13442">
+                                            <td>{index + 1}</td>
+                                            <td>{item?.memberName}</td>
+                                            <td>{item?.memberId}</td>
+                                            <td>{item?.course}</td>
+                                            <td>{item?.amountReceived}</td>
+                                            <td>{item?.financialYear}</td>
+                                            <td>{item?.howManyYearsGet}</td>
+                                            <td>
+                                            <i className="fa-solid fa-trash"></i>
+                                            </td>
+                                          </tr>
+                                        );
+                                      }
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
+                              <hr style={{ borderColor: "red" }} />
+                            </div>
                           </>
                         )}
 
@@ -4373,7 +4437,10 @@ const StudentProfile = () => {
                               id="other_schem_support"
                               style={{ width: "100%" }}
                               name="organizationSupportFamily.memberReceiveSupport"
-                              value={studentInformation.organizationSupportFamily.memberReceiveSupport}
+                              value={
+                                studentInformation.organizationSupportFamily
+                                  .memberReceiveSupport
+                              }
                               onChange={(e) => handleChange(e)}
                             >
                               <option value="">--select--</option>
@@ -4382,213 +4449,233 @@ const StudentProfile = () => {
                             </select>
                           </div>
                         </div>
-                        {studentInformation.organizationSupportFamily.memberReceiveSupport === "Yes" && (
+                        {studentInformation.organizationSupportFamily
+                          .memberReceiveSupport === "Yes" && (
                           <>
-                           <div class="row" id="txt9ReceivedEductionYes">
-                          <div class="col-sm-12 topMargin">
-                            <table class="table table-bordered">
-                              <thead>
-                                <tr>
-                                  <th>Sr No</th>
-                                  <th>Name of the family member</th>
-                                  <th>ID No.</th>
-                                  <th>scheme</th>
-                                  <th>Amount Received</th>
-                                  <th>Financial year</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {studentInformation.organizationSupportFamily.otherSupport.map(
-                                  (support, index) => {
-                                    return (
-                                      <tr>
-                                      <td>1</td>
-                                      <td>
-                                        <input
-                                          type="text"
-                                          class="form-control"
-                                          placeholder=""
-                                          name={`organizationSupportFamily.otherSupport.${index}.memberName`}
-                                          value={support.memberName}
-                                          onChange={(e) => handleChange(e)}
-                                        />
-                                      </td>
-                                      <td>
-                                        <input
-                                          type="text"
-                                          class="form-control"
-                                          placeholder=""
-                                          name={`organizationSupportFamily.otherSupport.${index}.memberId`}
-                                          value={support.memberId}
-                                          onChange={(e) => handleChange(e)}
-                                        />
-                                      </td>
-                                      <td>
-                                        <div class="input-group">
-                                          <div
-                                            class="input-group-addon"
-                                            id="loadSchemeName"
-                                          >
-                                            <i class="icon ion-university"></i>
-                                          </div>
-                                          <select
-                                            class="form-control select2"
-                                            name={`organizationSupportFamily.otherSupport.${index}.scheme`}
-                                            value={support.scheme}
-                                            onChange={(e) => handleChange(e)}
-                                          >
-                                            <option
-                                              selected="selected"
-                                              value="0"
-                                            >
-                                              --select--
-                                            </option>
-                                            <option value="4">
-                                              Business Aid
-                                            </option>
-                                            <option value="5">
-                                              General Aid
-                                            </option>
-                                            <option value="2">Housing</option>
-                                            <option value="3">Medical</option>
-                                            <option value="1">
-                                              Women Empowerment
-                                            </option>
-                                          </select>
-                                        </div>
-                                      </td>
-                                      <td>
-                                        <input
-                                          type="text"
-                                          class="form-control amount allownumericwithdecimal"
-                                          placeholder=""
-                                          name={`organizationSupportFamily.otherSupport.${index}.amountreceived`}
-                                          value={support.amountreceived}
-                                          onChange={(e) => handleChange(e)}
-                                        />
-                                      </td>
-                                      <td>
-                                        <select
-                                          class="form-control"
-                                          style={{ width: "100%" }}
-                                          name={`organizationSupportFamily.otherSupport.${index}.financialYear`}
-                                          value={support.financialYear}
-                                          onChange={(e) => handleChange(e)}
-                                        >
-                                          <option value="NA">--select--</option>
-                                          <option value="2004-05">
-                                            2004-05
-                                          </option>
-                                          <option value="2005-06">
-                                            2005-06
-                                          </option>
-                                          <option value="2006-07">
-                                            2006-07
-                                          </option>
-                                          <option value="2007-08">
-                                            2007-08
-                                          </option>
-                                          <option value="2008-09">
-                                            2008-09
-                                          </option>
-                                          <option value="2009-10">
-                                            2009-10
-                                          </option>
-                                          <option value="2010-11">
-                                            2010-11
-                                          </option>
-                                          <option value="2011-12">
-                                            2011-12
-                                          </option>
-                                          <option value="2012-13">
-                                            2012-13
-                                          </option>
-                                          <option value="2013-14">
-                                            2013-14
-                                          </option>
-                                          <option value="2014-15">
-                                            2014-15
-                                          </option>
-                                          <option value="2015-16">
-                                            2015-16
-                                          </option>
-                                          <option value="2016-17">
-                                            2016-17
-                                          </option>
-                                          <option value="2017-18">
-                                            2017-18
-                                          </option>
-                                          <option value="2018-19">
-                                            2018-19
-                                          </option>
-                                          <option value="2019-20">
-                                            2019-20
-                                          </option>
-                                          <option value="2020-21">
-                                            2020-21
-                                          </option>
-                                          <option value="2021-22">
-                                            2021-22
-                                          </option>
-                                          <option value="2022-23">
-                                            2022-23
-                                          </option>
-                                          <option value="2023-24">
-                                            2023-24
-                                          </option>
-                                          <option value="2024-25">
-                                            2024-25
-                                          </option>
-                                        </select>
-                                      </td>
+                            <div class="row" id="txt9ReceivedEductionYes">
+                              <div class="col-sm-12 topMargin">
+                                <table class="table table-bordered">
+                                  <thead>
+                                    <tr>
+                                      <th>Sr No</th>
+                                      <th>Name of the family member</th>
+                                      <th>ID No.</th>
+                                      <th>scheme</th>
+                                      <th>Amount Received</th>
+                                      <th>Financial year</th>
                                     </tr>
-                                    )
-                                  }  
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
-                          <div
-                            class="col-sm-12 topMargin"
-                            style={{ marginTop: "31px", display: "none" }}
-                            id="newbtn3"
-                          >
-                            <input
-                              type="button"
-                              class="btn btn-primary"
-                              id="addorgoView3"
-                              value="Add More"
-                            />
-                          </div>
-                        </div>
-                        {/* show add saved details here */}
-                        <div class="col-sm-12" style={{ marginTop: "25px" }}>
-                          <div
-                            class="table-responsive"
-                            style={{ maxHeight: "350px" }}
-                          >
-                            <table
-                              id="fees_from_our_organization3"
-                              class="table no-margin table-condensed"
+                                  </thead>
+                                  <tbody>
+                                    {studentInformation.organizationSupportFamily.otherSupport.map(
+                                      (support, index) => {
+                                        return (
+                                          <tr>
+                                            <td>1</td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control"
+                                                placeholder=""
+                                                name={`organizationSupportFamily.otherSupport.${index}.memberName`}
+                                                value={support.memberName}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control"
+                                                placeholder=""
+                                                name={`organizationSupportFamily.otherSupport.${index}.memberId`}
+                                                value={support.memberId}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <div class="input-group">
+                                                <div
+                                                  class="input-group-addon"
+                                                  id="loadSchemeName"
+                                                >
+                                                  <i class="icon ion-university"></i>
+                                                </div>
+                                                <select
+                                                  class="form-control select2"
+                                                  name={`organizationSupportFamily.otherSupport.${index}.scheme`}
+                                                  value={support.scheme}
+                                                  onChange={(e) =>
+                                                    handleChange(e)
+                                                  }
+                                                >
+                                                  <option
+                                                    selected="selected"
+                                                    value="0"
+                                                  >
+                                                    --select--
+                                                  </option>
+                                                  <option value="4">
+                                                    Business Aid
+                                                  </option>
+                                                  <option value="5">
+                                                    General Aid
+                                                  </option>
+                                                  <option value="2">
+                                                    Housing
+                                                  </option>
+                                                  <option value="3">
+                                                    Medical
+                                                  </option>
+                                                  <option value="1">
+                                                    Women Empowerment
+                                                  </option>
+                                                </select>
+                                              </div>
+                                            </td>
+                                            <td>
+                                              <input
+                                                type="text"
+                                                class="form-control amount allownumericwithdecimal"
+                                                placeholder=""
+                                                name={`organizationSupportFamily.otherSupport.${index}.amountreceived`}
+                                                value={support.amountreceived}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              />
+                                            </td>
+                                            <td>
+                                              <select
+                                                class="form-control"
+                                                style={{ width: "100%" }}
+                                                name={`organizationSupportFamily.otherSupport.${index}.financialYear`}
+                                                value={support.financialYear}
+                                                onChange={(e) =>
+                                                  handleChange(e)
+                                                }
+                                              >
+                                                <option value="NA">
+                                                  --select--
+                                                </option>
+                                                <option value="2004-05">
+                                                  2004-05
+                                                </option>
+                                                <option value="2005-06">
+                                                  2005-06
+                                                </option>
+                                                <option value="2006-07">
+                                                  2006-07
+                                                </option>
+                                                <option value="2007-08">
+                                                  2007-08
+                                                </option>
+                                                <option value="2008-09">
+                                                  2008-09
+                                                </option>
+                                                <option value="2009-10">
+                                                  2009-10
+                                                </option>
+                                                <option value="2010-11">
+                                                  2010-11
+                                                </option>
+                                                <option value="2011-12">
+                                                  2011-12
+                                                </option>
+                                                <option value="2012-13">
+                                                  2012-13
+                                                </option>
+                                                <option value="2013-14">
+                                                  2013-14
+                                                </option>
+                                                <option value="2014-15">
+                                                  2014-15
+                                                </option>
+                                                <option value="2015-16">
+                                                  2015-16
+                                                </option>
+                                                <option value="2016-17">
+                                                  2016-17
+                                                </option>
+                                                <option value="2017-18">
+                                                  2017-18
+                                                </option>
+                                                <option value="2018-19">
+                                                  2018-19
+                                                </option>
+                                                <option value="2019-20">
+                                                  2019-20
+                                                </option>
+                                                <option value="2020-21">
+                                                  2020-21
+                                                </option>
+                                                <option value="2021-22">
+                                                  2021-22
+                                                </option>
+                                                <option value="2022-23">
+                                                  2022-23
+                                                </option>
+                                                <option value="2023-24">
+                                                  2023-24
+                                                </option>
+                                                <option value="2024-25">
+                                                  2024-25
+                                                </option>
+                                              </select>
+                                            </td>
+                                          </tr>
+                                        );
+                                      }
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
+                              <div
+                                class="col-sm-12 topMargin"
+                                style={{ marginTop: "31px", display: "none" }}
+                                id="newbtn3"
+                              >
+                                <input
+                                  type="button"
+                                  class="btn btn-primary"
+                                  id="addorgoView3"
+                                  value="Add More"
+                                />
+                              </div>
+                            </div>
+                            {/* show add saved details here */}
+                            <div
+                              class="col-sm-12"
+                              style={{ marginTop: "25px" }}
                             >
-                              <thead>
-                                <tr>
-                                  <th>Sr.No. </th>
-                                  <th>Name of the family member </th>
-                                  <th>ID No. </th>
-                                  <th>scheme </th>
-                                  <th>Amount Received </th>
-                                  <th>Financial year </th>
-                                  <th id="4rth">Delete </th>
-                                </tr>
-                              </thead>
-                              <tbody></tbody>
-                            </table>
-                          </div>
-                        </div>
+                              <div
+                                class="table-responsive"
+                                style={{ maxHeight: "350px" }}
+                              >
+                                <table
+                                  id="fees_from_our_organization3"
+                                  class="table no-margin table-condensed"
+                                >
+                                  <thead>
+                                    <tr>
+                                      <th>Sr.No. </th>
+                                      <th>Name of the family member </th>
+                                      <th>ID No. </th>
+                                      <th>scheme </th>
+                                      <th>Amount Received </th>
+                                      <th>Financial year </th>
+                                      <th id="4rth">Delete </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody></tbody>
+                                </table>
+                              </div>
+                            </div>
                           </>
                         )}
-                       
+
                         <hr />
                       </div>
                     )}

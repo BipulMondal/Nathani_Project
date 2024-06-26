@@ -154,7 +154,7 @@ const studentSchema = new mongoose.Schema({
         memberId: { type: String, default: "" },
         course: { type: String, default: "" },
         amountReceived: { type: Number },
-        financialYear: { type: Date },
+        financialYear: { type: String, default: "" },
         howManyYearsGet: { type: Number },
       },
     ],
