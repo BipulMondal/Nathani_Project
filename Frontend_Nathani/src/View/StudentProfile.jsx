@@ -161,7 +161,7 @@ const StudentProfile = () => {
       applicationPass: "",
     },
     organizationSupportFamily: {
-      receivedSupport: false,
+      receivedSupport: "",
       supportFamilyDetails: [
         {
           memberName: "",
@@ -172,6 +172,7 @@ const StudentProfile = () => {
           howManyYearsGet: 0,
         },
       ],
+      memberReceiveSupport:"",
       otherSupport: [
         {
           memberName: "",
@@ -3647,6 +3648,33 @@ const StudentProfile = () => {
                                             *
                                           </span>
                                         </th>
+                                        <th>
+                                          <button
+                                            type="button"
+                                            className="btn btn-primary"
+                                            onClick={(e) => {
+                                              setStudentInformation((prev) => ({
+                                                ...prev,
+                                                othertrustSupport: {
+                                                  ...prev.othertrustSupport,
+                                                  trustDetails: [
+                                                    ...prev.othertrustSupport
+                                                      .trustDetails,
+                                                      {
+                                                        trustName: "",
+                                                        currentYearAmount: 0,
+                                                        lastYearAmount: 0,
+                                                        trustState: "",
+                                                        trustCity: "",
+                                                      }
+                                                  ],
+                                                },
+                                              }));
+                                            }}
+                                          >
+                                            <i class="fa-solid fa-plus"></i>
+                                          </button>
+                                        </th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -3734,6 +3762,30 @@ const StudentProfile = () => {
                                                   </option>
                                                 ))}
                                               </select>
+                                            </td>
+                                            <td>
+                                            {studentInformation.othertrustSupport.trustDetails.length > 1 && (
+                                              <button
+                                                type="button"
+                                                className="btn btn-danger"
+                                                onClick={() =>{
+                                                 if(studentInformation.othertrustSupport.trustDetails){
+
+                                                 }
+                                                  setStudentInformation((prev) => ({
+                                                    ...prev,
+                                                    othertrustSupport: {
+                                                      ...prev.othertrustSupport,
+                                                      trustDetails: prev.othertrustSupport.trustDetails.filter(
+                                                        (item, i) => i !== index
+                                                      ),
+                                                    },
+                                                  }))
+                                                }}
+                                              >
+                                                <i className="fa-solid fa-minus"></i>
+                                              </button>
+                                            )}
                                             </td>
                                           </tr>
                                         )
@@ -4074,19 +4126,18 @@ const StudentProfile = () => {
                               id="received_sibling_orgo"
                               style={{ width: "100%" }}
                               name="organizationSupportFamily.receivedSupport"
-                              value={
-                                studentInformation.organizationSupportFamily
-                                  .receivedSupport
-                              }
+                              value={studentInformation.organizationSupportFamily.receivedSupport}
                               onChange={(e) => handleChange(e)}
                             >
-                              <option value="NA">--select--</option>
+                              <option value="">--select--</option>
                               <option value="No">No</option>
                               <option value="Yes">Yes</option>
                             </select>
                           </div>
                         </div>
-                        <div class="row" id="txt9ReceivedsiblingYes">
+                        { studentInformation.organizationSupportFamily.receivedSupport === "Yes" && (
+                          <>
+                          <div class="row" id="txt9ReceivedsiblingYes">
                           <div class="col-sm-12 topMargin">
                             <table class="table table-bordered">
                               <thead>
@@ -4248,18 +4299,19 @@ const StudentProfile = () => {
                           {/* add button */}
                           <div
                             class="col-sm-12 topMargin"
-                            style={{ marginTop: "31px" }}
+                            style={{ display: "flex", justifyContent: 'flex-end' }}
                             id="newbtn2"
                           >
-                            <input
+                            <button
                               type="button"
                               class="btn btn-primary"
                               id="addorgoView2"
-                              value="Add More"
-                            />
+                              onClick={(e) => handleSubmit(e, "saveAsDraft")}
+                            >Save</button>
                           </div>
                         </div>
-
+                        
+                        {/* table data show */}
                         <div class="col-sm-12" style={{ marginTop: "25px" }}>
                           <div
                             class="table-responsive"
@@ -4306,6 +4358,9 @@ const StudentProfile = () => {
                           </div>
                           <hr style={{ borderColor: "red" }} />
                         </div>
+                          </>
+                        )}
+
                         <div class="row">
                           <div class="col-sm-6 topMargin">
                             <label>
@@ -4317,15 +4372,19 @@ const StudentProfile = () => {
                               class="form-control select2"
                               id="other_schem_support"
                               style={{ width: "100%" }}
+                              name="organizationSupportFamily.memberReceiveSupport"
+                              value={studentInformation.organizationSupportFamily.memberReceiveSupport}
+                              onChange={(e) => handleChange(e)}
                             >
-                              <option value="NA">--select--</option>
+                              <option value="">--select--</option>
                               <option value="No">No</option>
                               <option value="Yes">Yes</option>
                             </select>
                           </div>
                         </div>
-
-                        <div class="row" id="txt9ReceivedEductionYes">
+                        {studentInformation.organizationSupportFamily.memberReceiveSupport === "Yes" && (
+                          <>
+                           <div class="row" id="txt9ReceivedEductionYes">
                           <div class="col-sm-12 topMargin">
                             <table class="table table-bordered">
                               <thead>
@@ -4340,8 +4399,9 @@ const StudentProfile = () => {
                               </thead>
                               <tbody>
                                 {studentInformation.organizationSupportFamily.otherSupport.map(
-                                  (support, index) => (
-                                    <tr>
+                                  (support, index) => {
+                                    return (
+                                      <tr>
                                       <td>1</td>
                                       <td>
                                         <input
@@ -4482,7 +4542,8 @@ const StudentProfile = () => {
                                         </select>
                                       </td>
                                     </tr>
-                                  )
+                                    )
+                                  }  
                                 )}
                               </tbody>
                             </table>
@@ -4525,6 +4586,9 @@ const StudentProfile = () => {
                             </table>
                           </div>
                         </div>
+                          </>
+                        )}
+                       
                         <hr />
                       </div>
                     )}

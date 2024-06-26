@@ -147,7 +147,7 @@ const studentSchema = new mongoose.Schema({
     applicationPass: { type: String, default: "" },
   },
   organizationSupportFamily: {
-    receivedSupport: { type: Boolean },
+    receivedSupport: { type: String , default: "" },
     supportFamilyDetails: [
       {
         memberName: { type: String, default: "" },
@@ -158,6 +158,7 @@ const studentSchema = new mongoose.Schema({
         howManyYearsGet: { type: Number },
       },
     ],
+    memberReceiveSupport: {type: String , default: ""},
     otherSupport: [
       {
         memberName: { type: String, default: "" },
