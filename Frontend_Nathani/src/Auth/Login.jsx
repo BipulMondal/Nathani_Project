@@ -55,7 +55,6 @@ const Login = () => {
       if (handleValidation()) {
         const data = loginData;
         const res = await axios.post("http://localhost:8088/api/v1/user/login", data);
-    console.log("fuckfu", res.data)
         if (res && res.data.status) {
           toast.success(res.data.message);
           localStorage.setItem("Authorization", res.data.token);

@@ -140,7 +140,6 @@ try {
 }
 
 const addNewStudentDetails = async (req, res) => {
-  console.log("fuckkkkkk", req.body)
   try {
     let AadharNo =  req.body.aadharNo;
     const check = await studentDetailsModal.findOne({
@@ -181,8 +180,6 @@ const addNewStudentDetails = async (req, res) => {
         aadharNo: AadharNo,
         isDeleted: false,
       });
-
-      console.log("fuck", AadharNo, existsStudent)
 
       if (existsStudent) {
         return res.status(401).json({

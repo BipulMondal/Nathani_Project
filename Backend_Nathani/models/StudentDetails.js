@@ -1,10 +1,7 @@
 const mongoose = require("mongoose");
 
 const studentDetails = new mongoose.Schema({
-  addedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "registrations", // This should be the name of the model you're referencing
-  },
+  addedBy: {type: mongoose.Types.ObjectId},
   aadharNo: { type: String, default: "" },
   lastName: { type: String, default: "" },
   firstName: { type: String, default: "" },

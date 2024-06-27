@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import axios from "axios"
 const baseUrl = "http://localhost:8088/api/v1/user/"
 
@@ -264,6 +264,22 @@ const GlobalProvider = ({ children }) => {
   //   }
   // };
 
+
+  useEffect(() => {
+    getStudentData();
+
+    if (localStorage.getItem("aadharNO") && userType === "Student") {
+      const aadharNo = localStorage.getItem("aadharNO");
+
+      setStudentInformation((prev) => ({
+        ...prev,
+        studentInfo: {
+          ...prev.studentInfo,
+          aadharNo: aadharNo,
+        },
+      }));
+    }
+  }, []);
 
 
 
