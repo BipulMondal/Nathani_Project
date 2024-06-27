@@ -16,188 +16,188 @@ const StudentProfile = () => {
   const navigate = useNavigate();
   const stateNames = Object.keys(AllStatedata);
 
-  const [studentInfo, setStudentInfo] = useState({
-        aadharNo: "",
-        lastName: "",
-        firstName: "",
-        fatherName: "",
-        motherName: "",
-        guardianName: "",
-        dob: "",
-        birthPlace: "",
-        gender: "",
-        maritalStatus: "",
-        spouseName: "",
-        StudentMobileNo: "",
-        StudentEmail: "",
-        parmanentAddress: "",
-        currentAddress: "",
-        landMark: "",
-        city: "",
-        pin: "",
-        district: "",
-        state: "",
-        country: "",
-        physicalChallange: "",
-        physicalChallangeImg: "",
-        orphan: "",
-        parentDeathCertificateImg: "",
-        addaharFrontImg: "",
-        aadharBackImg: "",
-        rationFrontImg: "",
-        rationBackImg: "",
-        electricityBillImg: "",
-        category: "",
-        zakatFund: 0,
-        refferedBy: "",
-        refMobileNo: "",
-        studentCode: "",
-        isConfirm: false,
-      })
-  const  [familyDetails, setFamilyDetails] = useState({
-        parentStatus: "",
-        parentStatusOneImg: "",
-        parentStatusTwoImg: "",
-        relationWithStudent: "",
-        relationPersonName: "",
-        relationPersonMaritalStatus: "",
-        relationPersonDOB: "",
-        relationPersongender: "",
-        relationPersonAadhar: "",
-        relationPersonEducation: "",
-        relationPersonOccupation: "",
-        relationPersonOccupationDetails: "",
-        relationPersonMonthlyIncome: 0,
-        incomeFileFrontImg: "",
-        incomeFileBackImg: "",
-        handiCapped: "",
-        handiCapFileOneImg: "",
-        handiCapFileTwoImg: "",
-        personCity: "",
-        personStudying: "",
-      })
-  const  [jamatInfo, setjamatInfo] =useEffect ({
-          ifMemon: "",
-        ifMotherMomen: "",
-        memonJamatLetterOne: "",
-        memonJamatLetterTwo: "",
-        jamatDetails: "",
-        belongingJamat: "",
-        jamatSecretaryName: "",
-        secretaryMobile: "",
-        secretaryEmail: "",
-        memonAddress: "",
-        memonCity: "",
-        memonPin: "",
-        memonState: "",
-        helpFromJamat: "",
-        jamatReceiveAmount: 0,
-        amountReceivePurpose: "",
-        amountType: "",
-        deeniyatCourse: "",
-        courseName: "",
-        madrashaName: "",
-        anyOtherCourse: "",
-      })
+  // const [studentInfo, setStudentInfo] = useState({
+  //       aadharNo: "",
+  //       lastName: "",
+  //       firstName: "",
+  //       fatherName: "",
+  //       motherName: "",
+  //       guardianName: "",
+  //       dob: "",
+  //       birthPlace: "",
+  //       gender: "",
+  //       maritalStatus: "",
+  //       spouseName: "",
+  //       StudentMobileNo: "",
+  //       StudentEmail: "",
+  //       parmanentAddress: "",
+  //       currentAddress: "",
+  //       landMark: "",
+  //       city: "",
+  //       pin: "",
+  //       district: "",
+  //       state: "",
+  //       country: "",
+  //       physicalChallange: "",
+  //       physicalChallangeImg: "",
+  //       orphan: "",
+  //       parentDeathCertificateImg: "",
+  //       addaharFrontImg: "",
+  //       aadharBackImg: "",
+  //       rationFrontImg: "",
+  //       rationBackImg: "",
+  //       electricityBillImg: "",
+  //       category: "",
+  //       zakatFund: 0,
+  //       refferedBy: "",
+  //       refMobileNo: "",
+  //       studentCode: "",
+  //       isConfirm: false,
+  //     })
+  // const  [familyDetails, setFamilyDetails] = useState({
+  //       parentStatus: "",
+  //       parentStatusOneImg: "",
+  //       parentStatusTwoImg: "",
+  //       relationWithStudent: "",
+  //       relationPersonName: "",
+  //       relationPersonMaritalStatus: "",
+  //       relationPersonDOB: "",
+  //       relationPersongender: "",
+  //       relationPersonAadhar: "",
+  //       relationPersonEducation: "",
+  //       relationPersonOccupation: "",
+  //       relationPersonOccupationDetails: "",
+  //       relationPersonMonthlyIncome: 0,
+  //       incomeFileFrontImg: "",
+  //       incomeFileBackImg: "",
+  //       handiCapped: "",
+  //       handiCapFileOneImg: "",
+  //       handiCapFileTwoImg: "",
+  //       personCity: "",
+  //       personStudying: "",
+  //     })
+  // const  [jamatInfo, setjamatInfo] =useEffect ({
+  //         ifMemon: "",
+  //       ifMotherMomen: "",
+  //       memonJamatLetterOne: "",
+  //       memonJamatLetterTwo: "",
+  //       jamatDetails: "",
+  //       belongingJamat: "",
+  //       jamatSecretaryName: "",
+  //       secretaryMobile: "",
+  //       secretaryEmail: "",
+  //       memonAddress: "",
+  //       memonCity: "",
+  //       memonPin: "",
+  //       memonState: "",
+  //       helpFromJamat: "",
+  //       jamatReceiveAmount: 0,
+  //       amountReceivePurpose: "",
+  //       amountType: "",
+  //       deeniyatCourse: "",
+  //       courseName: "",
+  //       madrashaName: "",
+  //       anyOtherCourse: "",
+  //     })
 
-   const [prevAcademicInfo, setPrevAcademicInfo] = useState({
-        prevYearResult: "",
-        lastYearResultImg: "",
-        lastTwoYearResultImg: "",
-        TwoYearBackResultImg: "",
-        currentStudy: "",
-        specialCase: "",
-        courseName: "",
-        levelOfCourse: "",
-        otherCourseOne: "",
-        otherLevelOfCourse: "",
-        otherField: "",
-        field: "",
-        duration: "",
-        instructionMedium: "",
-        coursePattern: "",
-        otherDurationCourse: "",
-        otherCourseTwo: "",
-        otherMedium: "",
-        instituteName: "",
-        boardName: "",
-        instituteType: "",
-        ifPrivate: "",
-        instituteAddress: "",
-        instituteCity: "",
-        institutePin: "",
-        instituteDistrict: "",
-        instituteState: "",
-        instituteCountry: "",
-        instituteEmail: "",
-        instituteWebsite: "",
-        instituteLandLineNo: "",
-        instituteContactNo: "",
-        instituteMobileNo: "",
-        bonafideCertificateFrontImg: "",
-        bonafideCertificateBackImg: "",
-      })
-    const [ othertrustSupport, setOthserTrustSupport] = useState({
-        otherTrustSupport: "",
-        trustDetails: [
-          {
-            trustName: "",
-            currentYearAmount: 0,
-            lastYearAmount: 0,
-            trustState: "",
-            trustCity: "",
-          },
-        ],
-        otherContribution: [
-          {
-            contributionSource: "",
-            contributionCurrentyearAmunt: 0,
-            contributionLastyearAmunt: 0,
-            contributionState: "",
-            contributionCity: "",
-          },
-        ],
-        govtScholarshipApply: "",
-        scholarAmount: 0,
-        scholarYear: "",
-        scholarName: "",
-        applicationId: "",
-        applicationPass: "",
-      })
-      const [organizationSupportFamily, setOrganixationSupport] = useState({
-        receivedSupport: "",
-        supportFamilyDetails: [
-          {
-            memberName: "",
-            memberId: "",
-            course: "",
-            amountReceived: 0,
-            financialYear: "",
-            howManyYearsGet: 0,
-          },
-        ],
-        memberReceiveSupport: "",
-        otherSupport: [
-          {
-            memberName: "",
-            memberId: "",
-            scheme: "",
-            amountreceived: 0,
-            financialYear: "",
-          },
-        ],
-      })
+  //  const [prevAcademicInfo, setPrevAcademicInfo] = useState({
+  //       prevYearResult: "",
+  //       lastYearResultImg: "",
+  //       lastTwoYearResultImg: "",
+  //       TwoYearBackResultImg: "",
+  //       currentStudy: "",
+  //       specialCase: "",
+  //       courseName: "",
+  //       levelOfCourse: "",
+  //       otherCourseOne: "",
+  //       otherLevelOfCourse: "",
+  //       otherField: "",
+  //       field: "",
+  //       duration: "",
+  //       instructionMedium: "",
+  //       coursePattern: "",
+  //       otherDurationCourse: "",
+  //       otherCourseTwo: "",
+  //       otherMedium: "",
+  //       instituteName: "",
+  //       boardName: "",
+  //       instituteType: "",
+  //       ifPrivate: "",
+  //       instituteAddress: "",
+  //       instituteCity: "",
+  //       institutePin: "",
+  //       instituteDistrict: "",
+  //       instituteState: "",
+  //       instituteCountry: "",
+  //       instituteEmail: "",
+  //       instituteWebsite: "",
+  //       instituteLandLineNo: "",
+  //       instituteContactNo: "",
+  //       instituteMobileNo: "",
+  //       bonafideCertificateFrontImg: "",
+  //       bonafideCertificateBackImg: "",
+  //     })
+  //   const [ othertrustSupport, setOthserTrustSupport] = useState({
+  //       otherTrustSupport: "",
+  //       trustDetails: [
+  //         {
+  //           trustName: "",
+  //           currentYearAmount: 0,
+  //           lastYearAmount: 0,
+  //           trustState: "",
+  //           trustCity: "",
+  //         },
+  //       ],
+  //       otherContribution: [
+  //         {
+  //           contributionSource: "",
+  //           contributionCurrentyearAmunt: 0,
+  //           contributionLastyearAmunt: 0,
+  //           contributionState: "",
+  //           contributionCity: "",
+  //         },
+  //       ],
+  //       govtScholarshipApply: "",
+  //       scholarAmount: 0,
+  //       scholarYear: "",
+  //       scholarName: "",
+  //       applicationId: "",
+  //       applicationPass: "",
+  //     })
+  //     const [organizationSupportFamily, setOrganixationSupport] = useState({
+  //       receivedSupport: "",
+  //       supportFamilyDetails: [
+  //         {
+  //           memberName: "",
+  //           memberId: "",
+  //           course: "",
+  //           amountReceived: 0,
+  //           financialYear: "",
+  //           howManyYearsGet: 0,
+  //         },
+  //       ],
+  //       memberReceiveSupport: "",
+  //       otherSupport: [
+  //         {
+  //           memberName: "",
+  //           memberId: "",
+  //           scheme: "",
+  //           amountreceived: 0,
+  //           financialYear: "",
+  //         },
+  //       ],
+  //     })
 
-   const [familyDeclaration, setFamilyDeclaration] = useState({
-            courseName: "",
-            applicantName: "",
-            parentName: "",
-            place: "",
-            date: "",
-            studentPhoto: "",
-            studentSign: "",
-            parentSign: "",
-          })
+  //  const [familyDeclaration, setFamilyDeclaration] = useState({
+  //           courseName: "",
+  //           applicantName: "",
+  //           parentName: "",
+  //           place: "",
+  //           date: "",
+  //           studentPhoto: "",
+  //           studentSign: "",
+  //           parentSign: "",
+  //         })
 
   const {studentInformation, setStudentInformation, getStudentData} = useContext(GlobalContext)
   console.log(
@@ -3647,31 +3647,60 @@ const StudentProfile = () => {
                                           </span>
                                         </th>
                                         <th>
-                                          <button
-                                            type="button"
-                                            className="btn btn-primary"
-                                            onClick={(e) => {
-                                              setStudentInformation((prev) => ({
-                                                ...prev,
-                                                othertrustSupport: {
-                                                  ...prev.othertrustSupport,
-                                                  trustDetails: [
-                                                    ...prev.othertrustSupport
-                                                      .trustDetails,
-                                                    {
-                                                      trustName: "",
-                                                      currentYearAmount: 0,
-                                                      lastYearAmount: 0,
-                                                      trustState: "",
-                                                      trustCity: "",
-                                                    },
-                                                  ],
-                                                },
-                                              }));
-                                            }}
-                                          >
-                                            <i class="fa-solid fa-plus"></i>
-                                          </button>
+                                        <button
+  type="button"
+  className="btn btn-primary"
+  onClick={(e) => {
+    // Clone the existing student information
+    let updated = JSON.parse(JSON.stringify(studentInformation));
+    
+    // Get the last trust detail
+    const lastTrust = updated.othertrustSupport.trustDetails[updated.othertrustSupport.trustDetails.length - 1];
+    
+    // Validation checks
+    if (!lastTrust.trustName) {
+      toast.error("Trust Name is required");
+      return;
+    }
+    if (lastTrust.currentYearAmount <= 0) {
+      toast.error("Current year amount is required");
+      return;
+    }
+    if (lastTrust.lastYearAmount <= 0) {
+      toast.error("Last year amount is required");
+      return;
+    }
+    if (!lastTrust.trustState) {
+      toast.error("State is required");
+      return;
+    }
+    if (!lastTrust.trustCity) {
+      toast.error("City is required");
+      return;
+    }
+    
+    // If all validations pass, add a new empty object
+    setStudentInformation((prev) => ({
+      ...prev,
+      othertrustSupport: {
+        ...prev.othertrustSupport,
+        trustDetails: [
+          ...prev.othertrustSupport.trustDetails,
+          {
+            trustName: "",
+            currentYearAmount: 0,
+            lastYearAmount: 0,
+            trustState: "",
+            trustCity: "",
+          },
+        ],
+      },
+    }));
+  }}
+>
+  <i className="fa-solid fa-plus"></i>
+</button>
+
                                         </th>
                                       </tr>
                                     </thead>
@@ -3765,30 +3794,7 @@ const StudentProfile = () => {
                                                 <button
                                                   type="button"
                                                   className="btn btn-danger"
-                                                  onClick={() => {
-                                                    let updated = JSON.parse(JSON.stringify(studentInformation))
-                                                    console.log("updateded", updated)
-                                                    if(!updated.othertrustSupport.trustDetails[index].trustName){
-                                                      toast.error("Trust Name is required")
-                                                      return 
-                                                    }
-                                                    if(updated.othertrustSupport.trustDetails[index].currentYearAmount <= 0){
-                                                      toast.error("current year amount is required")
-                                                      return 
-                                                    }
-                                                    if(!updated.othertrustSupport.trustDetails[index].lastYearAmount){
-                                                      toast.error("last year amount is required")
-                                                      return 
-                                                    }
-                                                    if(!updated.othertrustSupport.trustDetails[index].trustState){
-                                                      toast.error("State is required")
-                                                      return 
-                                                    }
-                                                    if(!updated.othertrustSupport.trustDetails[index].trustCity){
-                                                      toast.error("city is required")
-                                                      return 
-                                                    }
-                                                  
+                                                  onClick={() => {                                                  
                                                     setStudentInformation(
                                                       (prev) => ({
                                                         ...prev,
