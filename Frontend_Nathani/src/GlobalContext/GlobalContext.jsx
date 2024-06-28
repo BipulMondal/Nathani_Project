@@ -42,7 +42,7 @@ const GlobalProvider = ({ children }) => {
       refferedBy: "",
       refMobileNo: "",
     },
-    familyDetails: {
+    familyDetails: [{
       parentStatus: "",
       parentStatusOneImg: "",
       parentStatusTwoImg: "",
@@ -63,7 +63,7 @@ const GlobalProvider = ({ children }) => {
       handiCapFileTwoImg: "",
       personCity: "",
       personStudying: "",
-    },
+    }],
     jamatInfo: {
       ifMemon: "",
       ifMotherMomen: "",

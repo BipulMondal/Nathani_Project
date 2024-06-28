@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const studentDetails = new mongoose.Schema({
   addedBy: {type: mongoose.Types.ObjectId},
-  aadharNo: { type: String, default: "" },
+  aadharNo: {type: String, default :"", required: true},
   lastName: { type: String, default: "" },
   firstName: { type: String, default: "" },
   fatherName: { type: String, default: "" },

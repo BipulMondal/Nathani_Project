@@ -37,7 +37,7 @@ const studentSchema = new mongoose.Schema({
     refferedBy: { type: String, default: "" },
     refMobileNo: { type: String, default: "" },
   },
-  familyDetails: {
+  familyDetails: [{
     parentStatus: { type: String, default: "" },
     parentStatusOneImg: { type: String, default: "" },
     parentStatusTwoImg: { type: String, default: "" },
@@ -58,7 +58,7 @@ const studentSchema = new mongoose.Schema({
     handiCapFileTwoImg: { type: String, default: "" },
     personCity: { type: String, default: "" },
     personStudying: { type: String, default: "" },
-  },
+  }],
   jamatInfo: {
     ifMemon: { type: String, default: "" },
     ifMotherMomen: { type: String, default: "" },
