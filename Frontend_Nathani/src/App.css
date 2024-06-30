@@ -237,3 +237,15 @@ table {
 .prev_nxt_btn button {
  cursor: pointer;
 }
+
+/* ================   table icon color css ===========*/
+.table_edit_icon {
+  cursor: pointer;
+  color: blue;
+}
+
+.table_delete_icon {
+  cursor: pointer;
+  color: red;
+  margin-left: 20px;
+}

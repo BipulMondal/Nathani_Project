@@ -15,195 +15,23 @@ const StudentProfile = () => {
   const tab = query.tab || "student_info";
   const navigate = useNavigate();
   const stateNames = Object.keys(AllStatedata);
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  // const [studentInfo, setStudentInfo] = useState({
-  //       aadharNo: "",
-  //       lastName: "",
-  //       firstName: "",
-  //       fatherName: "",
-  //       motherName: "",
-  //       guardianName: "",
-  //       dob: "",
-  //       birthPlace: "",
-  //       gender: "",
-  //       maritalStatus: "",
-  //       spouseName: "",
-  //       StudentMobileNo: "",
-  //       StudentEmail: "",
-  //       parmanentAddress: "",
-  //       currentAddress: "",
-  //       landMark: "",
-  //       city: "",
-  //       pin: "",
-  //       district: "",
-  //       state: "",
-  //       country: "",
-  //       physicalChallange: "",
-  //       physicalChallangeImg: "",
-  //       orphan: "",
-  //       parentDeathCertificateImg: "",
-  //       addaharFrontImg: "",
-  //       aadharBackImg: "",
-  //       rationFrontImg: "",
-  //       rationBackImg: "",
-  //       electricityBillImg: "",
-  //       category: "",
-  //       zakatFund: 0,
-  //       refferedBy: "",
-  //       refMobileNo: "",
-  //       studentCode: "",
-  //       isConfirm: false,
-  //     })
-  // const  [familyDetails, setFamilyDetails] = useState({
-  //       parentStatus: "",
-  //       parentStatusOneImg: "",
-  //       parentStatusTwoImg: "",
-  //       relationWithStudent: "",
-  //       relationPersonName: "",
-  //       relationPersonMaritalStatus: "",
-  //       relationPersonDOB: "",
-  //       relationPersongender: "",
-  //       relationPersonAadhar: "",
-  //       relationPersonEducation: "",
-  //       relationPersonOccupation: "",
-  //       relationPersonOccupationDetails: "",
-  //       relationPersonMonthlyIncome: 0,
-  //       incomeFileFrontImg: "",
-  //       incomeFileBackImg: "",
-  //       handiCapped: "",
-  //       handiCapFileOneImg: "",
-  //       handiCapFileTwoImg: "",
-  //       personCity: "",
-  //       personStudying: "",
-  //     })
-  // const  [jamatInfo, setjamatInfo] =useEffect ({
-  //         ifMemon: "",
-  //       ifMotherMomen: "",
-  //       memonJamatLetterOne: "",
-  //       memonJamatLetterTwo: "",
-  //       jamatDetails: "",
-  //       belongingJamat: "",
-  //       jamatSecretaryName: "",
-  //       secretaryMobile: "",
-  //       secretaryEmail: "",
-  //       memonAddress: "",
-  //       memonCity: "",
-  //       memonPin: "",
-  //       memonState: "",
-  //       helpFromJamat: "",
-  //       jamatReceiveAmount: 0,
-  //       amountReceivePurpose: "",
-  //       amountType: "",
-  //       deeniyatCourse: "",
-  //       courseName: "",
-  //       madrashaName: "",
-  //       anyOtherCourse: "",
-  //     })
 
-  //  const [prevAcademicInfo, setPrevAcademicInfo] = useState({
-  //       prevYearResult: "",
-  //       lastYearResultImg: "",
-  //       lastTwoYearResultImg: "",
-  //       TwoYearBackResultImg: "",
-  //       currentStudy: "",
-  //       specialCase: "",
-  //       courseName: "",
-  //       levelOfCourse: "",
-  //       otherCourseOne: "",
-  //       otherLevelOfCourse: "",
-  //       otherField: "",
-  //       field: "",
-  //       duration: "",
-  //       instructionMedium: "",
-  //       coursePattern: "",
-  //       otherDurationCourse: "",
-  //       otherCourseTwo: "",
-  //       otherMedium: "",
-  //       instituteName: "",
-  //       boardName: "",
-  //       instituteType: "",
-  //       ifPrivate: "",
-  //       instituteAddress: "",
-  //       instituteCity: "",
-  //       institutePin: "",
-  //       instituteDistrict: "",
-  //       instituteState: "",
-  //       instituteCountry: "",
-  //       instituteEmail: "",
-  //       instituteWebsite: "",
-  //       instituteLandLineNo: "",
-  //       instituteContactNo: "",
-  //       instituteMobileNo: "",
-  //       bonafideCertificateFrontImg: "",
-  //       bonafideCertificateBackImg: "",
-  //     })
-  //   const [ othertrustSupport, setOthserTrustSupport] = useState({
-  //       otherTrustSupport: "",
-  //       trustDetails: [
-  //         {
-  //           trustName: "",
-  //           currentYearAmount: 0,
-  //           lastYearAmount: 0,
-  //           trustState: "",
-  //           trustCity: "",
-  //         },
-  //       ],
-  //       otherContribution: [
-  //         {
-  //           contributionSource: "",
-  //           contributionCurrentyearAmunt: 0,
-  //           contributionLastyearAmunt: 0,
-  //           contributionState: "",
-  //           contributionCity: "",
-  //         },
-  //       ],
-  //       govtScholarshipApply: "",
-  //       scholarAmount: 0,
-  //       scholarYear: "",
-  //       scholarName: "",
-  //       applicationId: "",
-  //       applicationPass: "",
-  //     })
-  //     const [organizationSupportFamily, setOrganixationSupport] = useState({
-  //       receivedSupport: "",
-  //       supportFamilyDetails: [
-  //         {
-  //           memberName: "",
-  //           memberId: "",
-  //           course: "",
-  //           amountReceived: 0,
-  //           financialYear: "",
-  //           howManyYearsGet: 0,
-  //         },
-  //       ],
-  //       memberReceiveSupport: "",
-  //       otherSupport: [
-  //         {
-  //           memberName: "",
-  //           memberId: "",
-  //           scheme: "",
-  //           amountreceived: 0,
-  //           financialYear: "",
-  //         },
-  //       ],
-  //     })
+  const {
+    studentInformation,
+    setStudentInformation,
+    getStudentData,
+    allFamilyDetails,
+    setAllFamilyDetails,
+    academicInfo,
+    setAcademicInfo,
+    organizationSupport,
+    setorganizationSupport
+  } = useContext(GlobalContext);
 
-  //  const [familyDeclaration, setFamilyDeclaration] = useState({
-  //           courseName: "",
-  //           applicantName: "",
-  //           parentName: "",
-  //           place: "",
-  //           date: "",
-  //           studentPhoto: "",
-  //           studentSign: "",
-  //           parentSign: "",
-  //         })
+  console.log("organizationSupport", organizationSupport);
 
-  const {studentInformation, setStudentInformation, getStudentData} = useContext(GlobalContext)
-  console.log(
-    "organizationSupportFamily",
-    studentInformation
-  );
   const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
   const [filteredCities, setFilteredCities] = useState([]);
   const [memonCities, setMemonCities] = useState([]);
@@ -214,8 +42,7 @@ const StudentProfile = () => {
   const [loading, setLoading] = useState(false);
   const aadharNo = localStorage.getItem("aadharNO");
   const userType = localStorage.getItem("userType");
-
- 
+  const [buttonShow, setbuttonSchow] = useState(false)
 
   const tabs = [
     "student_info",
@@ -342,6 +169,99 @@ const StudentProfile = () => {
       console.error("Error uploading file", error);
     }
   };
+
+
+  // const imageHandler = async (e, state) => {
+  //   if (e.target.files.length === 0) return;
+  
+  //   const DATA = new FormData();
+  //   DATA.append("image", e.target.files[0]);
+  
+  //   const stateToKeyMap = {
+  //     isPhysical: { section: "studentInfo", key: "physicalChallangeImg" },
+  //     parentDeath: { section: "studentInfo", key: "parentDeathCertificateImg" },
+  //     aadharFront: { section: "studentInfo", key: "addaharFrontImg" },
+  //     aadharBack: { section: "studentInfo", key: "aadharBackImg" },
+  //     rationFront: { section: "studentInfo", key: "rationFrontImg" },
+  //     rationBack: { section: "studentInfo", key: "rationBackImg" },
+  //     electricityBill: { section: "studentInfo", key: "electricityBillImg" },
+  //     /**================================================================== */
+  //     parentStatusOne: { section: "familyDetails", key: "parentStatusOneImg" },
+  //     parentStatusTwo: { section: "familyDetails", key: "parentStatusTwoImg" },
+  //     incomeFront: { section: "familyDetails", key: "incomeFileFrontImg" },
+  //     incomeBack: { section: "familyDetails", key: "incomeFileBackImg" },
+  //     handicapedFront: { section: "familyDetails", key: "handiCapFileOneImg" },
+  //     handicapedBack: { section: "familyDetails", key: "handiCapFileTwoImg" },
+  //     /**================================================================== */
+  //     jamatLetterOne: { section: "jamatInfo", key: "memonJamatLetterOne" },
+  //     jamatLetterTwo: { section: "jamatInfo", key: "memonJamatLetterTwo" },
+  //     /**================================================================== */
+  //     lastYearResultImg: {
+  //       section: "prevAcademicInfo",
+  //       key: "lastYearResultImg",
+  //     },
+  //     lastTwoYearResultImg: {
+  //       section: "prevAcademicInfo",
+  //       key: "lastTwoYearResultImg",
+  //     },
+  //     TwoYearBackResultImg: {
+  //       section: "prevAcademicInfo",
+  //       key: "TwoYearBackResultImg",
+  //     },
+  //     bonafideCertificateFrontImg: {
+  //       section: "prevAcademicInfo",
+  //       key: "bonafideCertificateFrontImg",
+  //     },
+  //     bonafideCertificateBackImg: {
+  //       section: "prevAcademicInfo",
+  //       key: "bonafideCertificateBackImg",
+  //     },
+  //     /**================================================================== */
+  //     studentPhoto: { section: "familyDeclaration", key: "studentPhoto" },
+  //     studentSign: { section: "familyDeclaration", key: "studentSign" },
+  //     studentGuardianSign: { section: "familyDeclaration", key: "parentSign" },
+  //     //
+  //   };
+  
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:8088/api/v1/user/upload",
+  //       DATA,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+  
+  //     if (response && response.data.status && stateToKeyMap[state]) {
+  //       const uploadedFilePath = response.data.file;
+  //       const { section, key } = stateToKeyMap[state];
+  
+  //       setStudentInformation((prevInfo) => {
+  //         if (section === "familyDetails") {
+  //           return {
+  //             ...prevInfo,
+  //             familyDetails: prevInfo.familyDetails.map((detail, index) =>
+  //               index === 0 ? { ...detail, [key]: uploadedFilePath } : detail
+  //             ),
+  //           };
+  //         } else {
+  //           return {
+  //             ...prevInfo,
+  //             [section]: {
+  //               ...prevInfo[section],
+  //               [key]: uploadedFilePath,
+  //             },
+  //           };
+  //         }
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error uploading file", error);
+  //   }
+  // };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -565,6 +485,7 @@ const StudentProfile = () => {
         const data = {
           ...studentInformation,
           saveAsDraft: true,
+          _id: localStorage.getItem("id"),
           addedBy: localStorage.getItem("addedBy"),
         };
         if (!studentInformation.studentInfo.aadharNo) {
@@ -579,7 +500,7 @@ const StudentProfile = () => {
             "http://localhost:8088/api/v1/user/add_Student_data",
             data
           );
-          console.log("result", result);
+          // console.log("result", result);
           if (result && result.data.status) {
             getStudentData();
             toast.success(result.data.message);
@@ -609,7 +530,6 @@ const StudentProfile = () => {
     }
   };
 
-
   const filterCity = (state) => {
     return AllStatedata[state] || [];
   };
@@ -617,7 +537,7 @@ const StudentProfile = () => {
   const handleStateChange = (e, index) => {
     handleChange(e);
     const { name, value } = e.target;
-    console.log("sssssssss", index);
+    // console.log("sssssssss", index);
 
     if (name === "studentInfo.state") {
       const cities = filterCity(value);
@@ -638,22 +558,6 @@ const StudentProfile = () => {
       setOtherContributionCity(cities);
     }
   };
-
-  // useEffect(() => {
-  //   getStudentData();
-
-  //   if (localStorage.getItem("aadharNO") && userType === "Student") {
-  //     const aadharNo = localStorage.getItem("aadharNO");
-
-  //     setStudentInformation((prev) => ({
-  //       ...prev,
-  //       studentInfo: {
-  //         ...prev.studentInfo,
-  //         aadharNo: aadharNo,
-  //       },
-  //     }));
-  //   }
-  // }, []);
 
   useEffect(() => {
     if (studentInformation.studentInfo.state) {
@@ -682,6 +586,33 @@ const StudentProfile = () => {
     studentInformation.prevAcademicInfo.instituteState,
     studentInformation.othertrustSupport.trustDetails[0].trustCity,
   ]);
+
+  const handleStore = (e, item, state) => {
+    console.log("sdsdsdsdsdsd", item, state)
+
+    setStudentInformation((prev) => ({
+      ...prev,
+      familyDetails: prev.familyDetails.map((detail, index) => 
+        index === 0 ? { ...detail, ...item } : detail
+      )
+    }));
+  }
+
+  const handleAddFamilyMember = async () => {
+    try {
+      const data ={
+        ...studentInformation.familyDetails,
+        _id: localStorage.getItem("id")
+      } 
+      console.log("data", data)
+      let res = await axios.post(`http://localhost:8088/api/v1/user/add_family/${aadharNo}`, data);
+      if(res &  res.status){
+console.log("ressssss", res)
+      }
+    } catch (error) {
+      
+    }
+  }
 
   return (
     <>
@@ -745,7 +676,7 @@ const StudentProfile = () => {
                                 name="studentInfo.aadharNo"
                                 className="form-control"
                                 placeholder="Enter Aadhar No"
-                                value={studentInformation.studentInfo.aadharNo}
+                                value={studentInformation.studentInfo.aadharNo ? studentInformation.studentInfo.aadharNo : aadharNo}
                                 disabled={userType === "Student"}
                                 onChange={(e) => handleChange(e)}
                               />
@@ -981,7 +912,7 @@ const StudentProfile = () => {
                                 Enter Student's Mobile <span>*</span>
                               </label>
                               <input
-                                type="text"
+                                type="number"
                                 className="form-control"
                                 name="studentInfo.StudentMobileNo"
                                 value={
@@ -1162,7 +1093,7 @@ const StudentProfile = () => {
                                 Enter Pincode <span>*</span>
                               </label>
                               <input
-                                type="text"
+                                type="number"
                                 className="form-control"
                                 name="studentInfo.pin"
                                 placeholder="Enter Pincode"
@@ -1434,9 +1365,9 @@ const StudentProfile = () => {
                                 onChange={(e) => handleChange(e)}
                               >
                                 <option value="">--Select Category--</option>
-                                <option value="Yes">Memon</option>
-                                <option value="No">Muslim</option>
-                                <option value="No">Non-Muslim</option>
+                                <option value="Memon">Memon</option>
+                                <option value="Muslim">Muslim</option>
+                                <option value="Non-Muslim">Non-Muslim</option>
                               </select>
                             </div>
                             {/* zakat fund */}
@@ -1445,7 +1376,7 @@ const StudentProfile = () => {
                                 Application for Zakat Fund <span>*</span>
                               </label>
                               <input
-                                type="text"
+                                type="number"
                                 className="form-control"
                                 name="studentInfo.zakatFund"
                                 value={studentInformation.studentInfo.zakatFund}
@@ -1479,7 +1410,7 @@ const StudentProfile = () => {
                                 Referrer Mobile No <span>*</span>
                               </label>
                               <input
-                                type="text"
+                                type="number"
                                 className="form-control"
                                 name="studentInfo.refMobileNo"
                                 placeholder="Enter Referrer Mobile No"
@@ -1496,517 +1427,533 @@ const StudentProfile = () => {
                     )}
 
                     {/* ========== family details sections ============== */}
-                    {tab === "family_details" && (
-                      <div className="family_details">
-                        <div class="form-group">
-                          <div class="row">
-                            {/* parent status */}
-                            <div class="col-lg-3">
-                              <label>
-                                Parent Status <span>*</span>
-                              </label>
-                              <select
-                                class="form-control"
-                                name="familyDetails.parentStatus"
-                                value={
-                                  studentInformation.familyDetails.parentStatus
-                                }
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option selected="selected" value="">
-                                  --select--
-                                </option>
-                                <option value="Divorcee">Divorcee</option>
-                                <option value="General">General</option>
-                                <option value="Separated">
-                                  Separated/Destitute
-                                </option>
-                                <option value="Single Father">
-                                  Single Father
-                                </option>
-                                <option value="Widow">Widow</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        {studentInformation.familyDetails.parentStatus !==
-                          "General" &&
-                          studentInformation.familyDetails.parentStatus !==
-                            "" && (
-                            <div class="form-group">
-                              <div class="row">
-                                {/* parent status img 1 */}
-                                <div class="col-lg-3">
-                                  <label>
-                                    Parent Status File One <span>*</span>
-                                  </label>
-                                  <input
-                                    type="file"
-                                    class="form-control"
-                                    name="parentStatusOneImg"
-                                    onChange={(e) =>
-                                      imageHandler(e, "parentStatusOne")
-                                    }
-                                    id="parent_stauts_file_one"
-                                    required
-                                  />
-                                </div>
-                                {/* shoe status img one */}
-                                <div class="col-lg-3">
-                                  <img
-                                    id="parent_stauts_file_one_prev"
-                                    src={`http://localhost:8088${studentInformation.familyDetails.parentStatusOneImg}`}
-                                    alt="Upload Parent Status File One"
-                                    style={{ height: "100px", width: "100px" }}
-                                  />
-                                </div>
-                                {/* Parent Status File Two img */}
-                                <div class="col-lg-3">
-                                  <label>
-                                    Parent Status File Two <span>*</span>
-                                  </label>
-                                  <input
-                                    type="file"
-                                    class="form-control"
-                                    name="parentStatusTwoImg"
-                                    onChange={(e) =>
-                                      imageHandler(e, "parentStatusTwo")
-                                    }
-                                    id="parent_stauts_file_two"
-                                    required
-                                  />
-                                </div>
-                                {/* shoe status img two */}
-                                <div class="col-lg-3">
-                                  <img
-                                    id="parent_stauts_file_two_prev"
-                                    src={`http://localhost:8088${studentInformation.familyDetails.parentStatusTwoImg}`}
-                                    alt="Upload Parent Status File Two"
-                                    style={{ height: "100px", width: "100px" }}
-                                  />
-                                </div>
+                    {tab === "family_details" &&   (
+                          <div className="family_details">
+                          <div class="form-group">
+                            <div class="row">
+                              {/* parent status */}
+                              <div class="col-lg-3">
+                                <label>
+                                  Parent Status <span>*</span>
+                                </label>
+                                <select
+                                  class="form-control"
+                                  name="familyDetails.parentStatus"
+                                  value={studentInformation.familyDetails.parentStatus}
+                                  onChange={(e) => handleChange(e)}
+                                >
+                                  <option selected="selected" value="">
+                                    --select--
+                                  </option>
+                                  <option value="Divorcee">Divorcee</option>
+                                  <option value="General">General</option>
+                                  <option value="Separated">
+                                    Separated/Destitute
+                                  </option>
+                                  <option value="Single Father">
+                                    Single Father
+                                  </option>
+                                  <option value="Widow">Widow</option>
+                                </select>
                               </div>
                             </div>
-                          )}
-
-                        <div class="form-group">
-                          <div class="row">
-                            {/* Relation With Student */}
-                            <div class="col-lg-3">
-                              <label>
-                                Relation With Student <span>*</span>
-                              </label>
-                              <select
-                                class="form-control"
-                                name="familyDetails.relationWithStudent"
-                                value={
-                                  studentInformation.familyDetails
-                                    .relationWithStudent
-                                }
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option value="">--select--</option>
-                                <option value="Aunty">Aunty</option>
-                                <option value="Brother">Brother</option>
-                                <option value="Cousin Brother">
-                                  Cousin Brother
-                                </option>
-                                <option value="Cousin Sister">
-                                  Cousin Sister
-                                </option>
-                                <option value="Father">Father</option>
-                                <option value="Grand Father">
-                                  Grand Father
-                                </option>
-                                <option value="Grand Mother">
-                                  Grand Mother
-                                </option>
-                                <option value="Mother">Mother</option>
-                                <option value="Sister">Sister</option>
-                                <option value="Uncle">Uncle</option>
-                              </select>
-                            </div>
-                            {/* relation person name */}
-                            <div class="col-lg-3">
-                              <label>
-                                Enter Person Name <span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="familyDetails.relationPersonName"
-                                placeholder="Enter Person Name"
-                                value={
-                                  studentInformation.familyDetails
-                                    .relationPersonName
-                                }
-                                onChange={(e) => handleChange(e)}
-                                required
-                              />
-                            </div>
-                            {/* Marital Status */}
-                            <div class="col-lg-3">
-                              <label>
-                                Marital Status <span>*</span>
-                              </label>
-                              <select
-                                class="form-control"
-                                name="familyDetails.relationPersonMaritalStatus"
-                                value={
-                                  studentInformation.familyDetails
-                                    .relationPersonMaritalStatus
-                                }
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option value="">--select--</option>
-                                <option value="Divorce">Divorce</option>
-                                <option value="Married">Married</option>
-                                <option value="Separated">Separated</option>
-                                <option value="Unmarried">Unmarried</option>
-                                <option value="Widow">Widow</option>
-                              </select>
-                            </div>
-                            {/* relation Person DOB */}
-                            <div class="col-lg-3">
-                              <label>
-                                DOB <span>*</span>
-                              </label>
-                              <input
-                                type="date"
-                                class="form-control"
-                                placeholder="Enter DOB"
-                                name="familyDetails.relationPersonDOB"
-                                value={
-                                  studentInformation.familyDetails
-                                    .relationPersonDOB
-                                }
-                                onChange={(e) => handleChange(e)}
-                                required
-                              />
-                            </div>
                           </div>
-                        </div>
-                        <div class="form-group">
-                          <div class="row">
-                            {/* relation Person gender */}
-                            <div class="col-lg-3">
-                              <label>
-                                Gender <span>*</span>
-                              </label>
-                              <label class="radio-inline">
-                                <input
-                                  type="radio"
-                                  name="familyDetails.relationPersongender"
-                                  onChange={(e) => handleChange(e)}
-                                  id="gender_radio"
-                                  value="Male"
-                                  checked={
-                                    studentInformation.familyDetails
-                                      .relationPersongender === "Male"
-                                  }
-                                />
-                                Male
-                              </label>
-                              <label class="radio-inline">
-                                <input
-                                  type="radio"
-                                  name="familyDetails.relationPersongender"
-                                  onChange={(e) => handleChange(e)}
-                                  id="gender_radio2"
-                                  value="Female"
-                                  checked={
-                                    studentInformation.familyDetails
-                                      .relationPersongender === "Female"
-                                  }
-                                />
-                                Female
-                              </label>
-                              <label class="radio-inline">
-                                <input
-                                  type="radio"
-                                  name="familyDetails.relationPersongender"
-                                  id="gender_radio3"
-                                  value="Transgender"
-                                  checked={
-                                    studentInformation.familyDetails
-                                      .relationPersongender === "Transgender"
-                                  }
-                                />
-                                Transgender
-                              </label>
-                            </div>
-
-                            {/* relation personaadhar card no */}
-                            <div class="col-lg-3">
-                              <label>
-                                Aadhar Card No <span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control"
-                                name="familyDetails.relationPersonAadhar"
-                                value={
-                                  studentInformation.familyDetails
-                                    .relationPersonAadhar
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Aadhar Card No"
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="form-group">
-                          <div className="row">
-                            {/* relation person education  */}
-                            <div className="col-lg-3">
-                              <label>
-                                Education <span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                name="familyDetails.relationPersonEducation"
-                                value={
-                                  studentInformation.familyDetails
-                                    .relationPersonEducation
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Education"
-                                required
-                              />
-                            </div>
-                            {/* relation Person Occupation */}
-                            <div className="col-lg-3">
-                              <label>
-                                Occupation <span>*</span>
-                              </label>
-                              <select
-                                className="form-control"
-                                name="familyDetails.relationPersonOccupation"
-                                value={
-                                  studentInformation.familyDetails
-                                    .relationPersonOccupation
-                                }
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option value="NA" selected="selected">
-                                  --select--
-                                </option>
-                                <option value="Business">Business</option>
-                                <option value="Hawker">Hawker</option>
-                                <option value="House Wife">House Wife</option>
-                                <option value="Others">Others</option>
-                                <option value="Self Employed">
-                                  Self Employed
-                                </option>
-                                <option value="Service">Service</option>
-                                <option value="Student">Student</option>
-                                <option value="Unemployed">Unemployed</option>
-                              </select>
-                            </div>
-                            {/* relation Person Occupation Details */}
-                            <div className="col-lg-3">
-                              <label>
-                                Occupation Details <span>*</span>
-                              </label>
-                              <textarea
-                                className="form-control"
-                                name="familyDetails.relationPersonOccupationDetails"
-                                value={
-                                  studentInformation.familyDetails
-                                    .relationPersonOccupationDetails
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Occupation Details"
-                                required
-                              ></textarea>
-                            </div>
-                            {/* relation person monthly income */}
-                            <div className="col-lg-3">
-                              <label>
-                                Monthly Income/Fees <span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                name="familyDetails.relationPersonMonthlyIncome"
-                                value={
-                                  studentInformation.familyDetails
-                                    .relationPersonMonthlyIncome
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Monthly Income/Fees"
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="form-group">
-                          <div className="row">
-                            <div className="col-lg-3">
-                              <label>
-                                Upload Income File Front<span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                className="form-control"
-                                name="incomeFileFrontImg"
-                                id="income_file_front"
-                                onChange={(e) => imageHandler(e, "incomeFront")}
-                                required
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <img
-                                id="income_file_front_prev"
-                                src={`http://localhost:8088${studentInformation.familyDetails.incomeFileFrontImg}`}
-                                alt="Upload Income File Front"
-                                style={{ height: "100px", width: "100px" }}
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <label>
-                                Upload Income File Back<span>*</span>
-                              </label>
-                              <input
-                                type="file"
-                                className="form-control"
-                                name="incomeFileBackImg"
-                                id="income_file_back"
-                                onChange={(e) => imageHandler(e, "incomeBack")}
-                                required
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <img
-                                id="income_file_back_prev"
-                                src={`http://localhost:8088${studentInformation.familyDetails.incomeFileBackImg}`}
-                                alt="Upload Income File Back"
-                                style={{ height: "100px", width: "100px" }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="form-group">
-                          {/* relition person disabled */}
-                          <div className="row">
-                            <div className="col-lg-3">
-                              <label>
-                                He / She / Disabled / Handicapped?{" "}
-                                <span>*</span>
-                              </label>
-                              <select
-                                className="form-control"
-                                name="familyDetails.handiCapped"
-                                value={
-                                  studentInformation.familyDetails.handiCapped
-                                }
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option value="">--select--</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                              </select>
-                            </div>
-                            {studentInformation?.familyDetails.handiCapped ===
-                              "Yes" && (
-                              <>
-                                {/* handicaped img one */}
-                                <div className="col-lg-3">
-                                  <label>
-                                    Handicapped File One <span>*</span>
-                                  </label>
-                                  <input
-                                    type="file"
-                                    className="form-control"
-                                    name="handiCapFileOneImg"
-                                    id="handicapped_file_one"
-                                    onChange={(e) =>
-                                      imageHandler(e, "handicapedFront")
-                                    }
-                                    required
-                                  />
+                          { studentInformation.familyDetails.parentStatus !==
+                            "General" &&
+                            studentInformation.familyDetails.parentStatus !==
+                              "" && (
+                              <div class="form-group">
+                                <div class="row">
+                                  {/* parent status img 1 */}
+                                  <div class="col-lg-3">
+                                    <label>
+                                      Parent Status File One <span>*</span>
+                                    </label>
+                                    <input
+                                      type="file"
+                                      class="form-control"
+                                      name="parentStatusOneImg"
+                                      onChange={(e) =>
+                                        imageHandler(e, "parentStatusOne")
+                                      }
+                                      id="parent_stauts_file_one"
+                                      required
+                                    />
+                                  </div>
+                                  {/* shoe status img one */}
+                                  <div class="col-lg-3">
+                                    <img
+                                      id="parent_stauts_file_one_prev"
+                                      src={`http://localhost:8088${ studentInformation.familyDetails.parentStatusOneImg}`}
+                                      alt="Upload Parent Status File One"
+                                      style={{ height: "100px", width: "100px" }}
+                                    />
+                                  </div>
+                                  {/* Parent Status File Two img */}
+                                  <div class="col-lg-3">
+                                    <label>
+                                      Parent Status File Two <span>*</span>
+                                    </label>
+                                    <input
+                                      type="file"
+                                      class="form-control"
+                                      name="parentStatusTwoImg"
+                                      onChange={(e) =>
+                                        imageHandler(e, "parentStatusTwo")
+                                      }
+                                      id="parent_stauts_file_two"
+                                      required
+                                    />
+                                  </div>
+                                  {/* shoe status img two */}
+                                  <div class="col-lg-3">
+                                    <img
+                                      id="parent_stauts_file_two_prev"
+                                      src={`http://localhost:8088${ studentInformation.familyDetails.parentStatusTwoImg}`}
+                                      alt="Upload Parent Status File Two"
+                                      style={{ height: "100px", width: "100px" }}
+                                    />
+                                  </div>
                                 </div>
-                                {/* handicapped img one show */}
-                                <div className="col-lg-2">
-                                  <img
-                                    id="handicapped_file_one_prev"
-                                    src={`http://localhost:8088${studentInformation.familyDetails.handiCapFileOneImg}`}
-                                    alt="Handicapped File 1"
-                                    style={{ height: "100px", width: "100px" }}
-                                  />
-                                </div>
-                                {/* handicaped img two */}
-                                <div className="col-lg-2">
-                                  <label>
-                                    Handicapped File Two <span>*</span>
-                                  </label>
-                                  <input
-                                    type="file"
-                                    className="form-control"
-                                    name="handiCapFileTwoImg"
-                                    id="handicapped_file_two"
-                                    onChange={(e) =>
-                                      imageHandler(e, "handicapedBack")
-                                    }
-                                    required
-                                  />
-                                </div>
-                                {/* handicaped img two show */}
-                                <div className="col-lg-2">
-                                  <img
-                                    id="handicapped_file_two_prev"
-                                    src={`http://localhost:8088${studentInformation.familyDetails.handiCapFileTwoImg}`}
-                                    alt="Handicapped File 2"
-                                    style={{ height: "100px", width: "100px" }}
-                                  />
-                                </div>
-                              </>
+                              </div>
                             )}
+  
+                          <div class="form-group">
+                            <div class="row">
+                              {/* Relation With Student */}
+                              <div class="col-lg-3">
+                                <label>
+                                  Relation With Student <span>*</span>
+                                </label>
+                                <select
+                                  class="form-control"
+                                name="familyDetails.relationWithStudent"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationWithStudent
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                >
+                                  <option value="">--select--</option>
+                                  <option value="Aunty">Aunty</option>
+                                  <option value="Brother">Brother</option>
+                                  <option value="Cousin Brother">
+                                    Cousin Brother
+                                  </option>
+                                  <option value="Cousin Sister">
+                                    Cousin Sister
+                                  </option>
+                                  <option value="Father">Father</option>
+                                  <option value="Grand Father">
+                                    Grand Father
+                                  </option>
+                                  <option value="Grand Mother">
+                                    Grand Mother
+                                  </option>
+                                  <option value="Mother">Mother</option>
+                                  <option value="Sister">Sister</option>
+                                  <option value="Uncle">Uncle</option>
+                                </select>
+                              </div>
+                              {/* relation person name */}
+                              <div class="col-lg-3">
+                                <label>
+                                  Enter Person Name <span>*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                name="familyDetails.relationPersonName"
+                                  placeholder="Enter Person Name"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationPersonName
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                  required
+                                />
+                              </div>
+                              {/* Marital Status */}
+                              <div class="col-lg-3">
+                                <label>
+                                  Marital Status <span>*</span>
+                                </label>
+                                <select
+                                  class="form-control"
+                                name="familyDetails.relationPersonMaritalStatus"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationPersonMaritalStatus
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                >
+                                  <option value="">--select--</option>
+                                  <option value="Divorce">Divorce</option>
+                                  <option value="Married">Married</option>
+                                  <option value="Separated">Separated</option>
+                                  <option value="Unmarried">Unmarried</option>
+                                  <option value="Widow">Widow</option>
+                                </select>
+                              </div>
+                              {/* relation Person DOB */}
+                              <div class="col-lg-3">
+                                <label>
+                                  DOB <span>*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  class="form-control"
+                                  placeholder="Enter DOB"
+                                name="familyDetails.relationPersonDOB"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationPersonDOB
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                  required
+                                />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="form-group">
-                          <div className="row">
-                            <div className="col-lg-3">
-                              <label>
-                                Name of the city (If any) <span>*</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
+                          <div class="form-group">
+                            <div class="row">
+                              {/* relation Person gender */}
+                              <div class="col-lg-3">
+                                <label>
+                                  Gender <span>*</span>
+                                </label>
+                                <label class="radio-inline">
+                                  <input
+                                    type="radio"
+                                   name="familyDetails.relationPersonGender"
+                                    onChange={(e) => handleChange(e)}
+                                    id="gender_radio"
+                                    value="Male"
+                                    checked={
+                                      studentInformation.familyDetails.relationPersonGender === "Male"
+                                    }
+                                  />
+                                  Male
+                                </label>
+                                <label class="radio-inline">
+                                  <input
+                                    type="radio"
+                                  name="familyDetails.relationPersonGender"
+                                    onChange={(e) => handleChange(e)}
+                                    id="gender_radio2"
+                                    value="Female"
+                                    checked={
+                                       studentInformation.familyDetails
+                                        .relationPersonGender === "Female"
+                                    }
+                                  />
+                                  Female
+                                </label>
+                                <label class="radio-inline">
+                                  <input
+                                    type="radio"
+                                  name="familyDetails.relationPersonGender"
+                                    id="gender_radio3"
+                                    value="Transgender"
+                                    checked={
+                                       studentInformation.familyDetails
+                                        .relationPersonGender === "Transgender"
+                                    }
+                                  />
+                                  Transgender
+                                </label>
+                              </div>
+  
+                              {/* relation personaadhar card no */}
+                              <div class="col-lg-3">
+                                <label>
+                                  Aadhar Card No <span>*</span>
+                                </label>
+                                <input
+                                  type="number"
+                                  class="form-control"
+                                name="familyDetails.relationPersonAadhar"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationPersonAadhar
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                  placeholder="Enter Aadhar Card No"
+                                  required
+                                />
+                              </div>
+                              <div class="col-lg-3">
+                                <label>
+                                  Age <span>*</span>
+                                </label>
+                                <input
+                                  type="number"
+                                  class="form-control"
+                                name="familyDetails.relationPersonAge"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationPersonAge
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                  placeholder="Enter Age"
+                                  required
+                                />
+                              </div>
+                            </div>
+                          </div>
+  
+                          <div className="form-group">
+                            <div className="row">
+                              {/* relation person education  */}
+                              <div className="col-lg-3">
+                                <label>
+                                  Education <span>*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                name="familyDetails.relationPersonEducation"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationPersonEducation
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                  placeholder="Enter Education"
+                                  required
+                                />
+                              </div>
+                              {/* relation Person Occupation */}
+                              <div className="col-lg-3">
+                                <label>
+                                  Occupation <span>*</span>
+                                </label>
+                                <select
+                                  className="form-control"
+                                name="familyDetails.relationPersonOccupation"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationPersonOccupation
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                >
+                                  <option value="NA" selected="selected">
+                                    --select--
+                                  </option>
+                                  <option value="Business">Business</option>
+                                  <option value="Hawker">Hawker</option>
+                                  <option value="House Wife">House Wife</option>
+                                  <option value="Others">Others</option>
+                                  <option value="Self Employed">
+                                    Self Employed
+                                  </option>
+                                  <option value="Service">Service</option>
+                                  <option value="Student">Student</option>
+                                  <option value="Unemployed">Unemployed</option>
+                                </select>
+                              </div>
+                              {/* relation Person Occupation Details */}
+                              <div className="col-lg-3">
+                                <label>
+                                  Occupation Details <span>*</span>
+                                </label>
+                                <textarea
+                                  className="form-control"
+                                name="familyDetails.relationPersonOccupationDetails"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationPersonOccupationDetails
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                  placeholder="Enter Occupation Details"
+                                  required
+                                ></textarea>
+                              </div>
+                              {/* relation person monthly income */}
+                              <div className="col-lg-3">
+                                <label>
+                                  Monthly Income/Fees <span>*</span>
+                                </label>
+                                <input
+                                  type="number"
+                                  className="form-control"
+                                name="familyDetails.relationPersonMonthlyIncome"
+                                  value={
+                                     studentInformation.familyDetails
+                                      .relationPersonMonthlyIncome
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                  placeholder="Enter Monthly Income/Fees"
+                                  required
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            <div className="row">
+                              <div className="col-lg-3">
+                                <label>
+                                  Upload Income File Front<span>*</span>
+                                </label>
+                                <input
+                                  type="file"
+                                  className="form-control"
+                                  name="incomeFileFrontImg"
+                                  id="income_file_front"
+                                  onChange={(e) => imageHandler(e, "incomeFront")}
+                                  required
+                                />
+                              </div>
+                              <div className="col-lg-3">
+                                <img
+                                  id="income_file_front_prev"
+                                  src={`http://localhost:8088${ studentInformation.familyDetails.incomeFileFrontImg}`}
+                                  alt="Upload Income File Front"
+                                  style={{ height: "100px", width: "100px" }}
+                                />
+                              </div>
+                              <div className="col-lg-3">
+                                <label>
+                                  Upload Income File Back<span>*</span>
+                                </label>
+                                <input
+                                  type="file"
+                                  className="form-control"
+                                  name="incomeFileBackImg"
+                                  id="income_file_back"
+                                  onChange={(e) => imageHandler(e, "incomeBack")}
+                                  required
+                                />
+                              </div>
+                              <div className="col-lg-3">
+                                <img
+                                  id="income_file_back_prev"
+                                  src={`http://localhost:8088${ studentInformation.familyDetails.incomeFileBackImg}`}
+                                  alt="Upload Income File Back"
+                                  style={{ height: "100px", width: "100px" }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            {/* relition person disabled */}
+                            <div className="row">
+                              <div className="col-lg-3">
+                                <label>
+                                  He / She / Disabled / Handicapped?{" "}
+                                  <span>*</span>
+                                </label>
+                                <select
+                                  className="form-control"
+                                name="familyDetails.handiCapped"
+                                  value={
+                                    studentInformation.familyDetails.handiCapped
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                >
+                                  <option value="">--select--</option>
+                                  <option value="Yes">Yes</option>
+                                  <option value="No">No</option>
+                                </select>
+                              </div>
+                              {studentInformation?.familyDetails.handiCapped ===
+                                "Yes" && (
+                                <>
+                                  {/* handicaped img one */}
+                                  <div className="col-lg-3">
+                                    <label>
+                                      Handicapped File One <span>*</span>
+                                    </label>
+                                    <input
+                                      type="file"
+                                      className="form-control"
+                                      name="handiCapFileOneImg"
+                                      id="handicapped_file_one"
+                                      onChange={(e) =>
+                                        imageHandler(e, "handicapedFront")
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                  {/* handicapped img one show */}
+                                  <div className="col-lg-2">
+                                    <img
+                                      id="handicapped_file_one_prev"
+                                      src={`http://localhost:8088${ studentInformation.familyDetails.handiCapFileOneImg}`}
+                                      alt="Handicapped File 1"
+                                      style={{ height: "100px", width: "100px" }}
+                                    />
+                                  </div>
+                                  {/* handicaped img two */}
+                                  <div className="col-lg-2">
+                                    <label>
+                                      Handicapped File Two <span>*</span>
+                                    </label>
+                                    <input
+                                      type="file"
+                                      className="form-control"
+                                      name="handiCapFileTwoImg"
+                                      id="handicapped_file_two"
+                                      onChange={(e) =>
+                                        imageHandler(e, "handicapedBack")
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                  {/* handicaped img two show */}
+                                  <div className="col-lg-2">
+                                    <img
+                                      id="handicapped_file_two_prev"
+                                      src={`http://localhost:8088${ studentInformation.familyDetails.handiCapFileTwoImg}`}
+                                      alt="Handicapped File 2"
+                                      style={{ height: "100px", width: "100px" }}
+                                    />
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            <div className="row">
+                              <div className="col-lg-3">
+                                <label>
+                                  Name of the city (If any) <span>*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control"
                                 name="familyDetails.personCity"
-                                value={
-                                  studentInformation.familyDetails.personCity
-                                }
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter Name of the city (If any)"
-                                required
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <label>
-                                Studying <span>*</span>
-                              </label>
-                              <select
-                                className="form-control"
+                                  value={
+                                    studentInformation.familyDetails.personCity
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                  placeholder="Enter Name of the city (If any)"
+                                  required
+                                />
+                              </div>
+                              <div className="col-lg-3">
+                                <label>
+                                  Studying <span>*</span>
+                                </label>
+                                <select
+                                  className="form-control"
                                 name="familyDetails.personStudying"
-                                value={
-                                  studentInformation.familyDetails
-                                    .personStudying
-                                }
-                                onChange={(e) => handleChange(e)}
-                              >
-                                <option value="">--select--</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                              </select>
+                                  value={
+                                     studentInformation.familyDetails
+                                      .personStudying
+                                  }
+                                  onChange={(e) => handleChange(e)}
+                                >
+                                  <option value="">--select--</option>
+                                  <option value="Yes">Yes</option>
+                                  <option value="No">No</option>
+                                </select>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                        )
+                      }
+                    
 
                     {/* ========== memon details sections ============== */}
                     {tab === "memon_information" && (
@@ -2195,7 +2142,7 @@ const StudentProfile = () => {
                                     <span>*</span>
                                   </label>
                                   <input
-                                    type="text"
+                                    type="number"
                                     class="form-control"
                                     name="jamatInfo.secretaryMobile"
                                     value={
@@ -2301,7 +2248,7 @@ const StudentProfile = () => {
                                     Pincode<span>*</span>
                                   </label>
                                   <input
-                                    type="text"
+                                    type="number"
                                     class="form-control"
                                     name="jamatInfo.memonPin"
                                     value={
@@ -2368,7 +2315,7 @@ const StudentProfile = () => {
                                     Amount Received<span>*</span>
                                   </label>
                                   <input
-                                    type="text"
+                                    type="number"
                                     class="form-control"
                                     name="jamatInfo.jamatReceiveAmount"
                                     value={
@@ -2572,16 +2519,16 @@ const StudentProfile = () => {
                             </div>
                           </div>
                         </div>
-                        {studentInformation.prevAcademicInfo.prevYearResult ===
-                          "Last To Last Year Result" && (
-                          <>
+                       
                             <div class="panel-collapse collapse show">
                               <div class="panel-body">
                                 <div class="col-sm-12">
                                   <div class="form-group">
                                     <div class="row">
                                       {/* last year result img */}
-                                      <div class="col-lg-2">
+                                      {studentInformation.prevAcademicInfo.prevYearResult === "Last Year Result" && (
+                                        <>
+                                            <div class="col-lg-2">
                                         <label>
                                           Last Year Result{" "}
                                           <span style={{ color: "red" }}>
@@ -2603,14 +2550,19 @@ const StudentProfile = () => {
                                         <img
                                           id="jamat_letter_two_prev"
                                           src={`http://localhost:8088${studentInformation.prevAcademicInfo.lastYearResultImg}`}
-                                          alt="Memon Jamat Letter 2"
+                                          alt="last year result"
                                           style={{
                                             height: "100px",
                                             width: "100px",
                                           }}
                                         />
                                       </div>
+                                        </>
+                                      )}
+                                  
                                       {/* last two year img  */}
+                                      {studentInformation.prevAcademicInfo.prevYearResult === "Last To Last Year Result" && (
+                                        <>
                                       <div class="col-lg-2">
                                         <label>
                                           Last To Last Year Result{" "}
@@ -2635,14 +2587,17 @@ const StudentProfile = () => {
                                         <img
                                           id="jamat_letter_two_prev"
                                           src={`http://localhost:8088${studentInformation.prevAcademicInfo.lastTwoYearResultImg}`}
-                                          alt="Memon Jamat Letter 2"
+                                          alt="last to last year result"
                                           style={{
                                             height: "100px",
                                             width: "100px",
                                           }}
                                         />
                                       </div>
+                                      </>)}
                                       {/* two year back result img */}
+                                      {studentInformation.prevAcademicInfo.prevYearResult === "2 Year Back Result" && (
+                                        <>
                                       <div class="col-lg-2">
                                         <label>
                                           2 Year Back Result{" "}
@@ -2667,13 +2622,14 @@ const StudentProfile = () => {
                                         <img
                                           id="jamat_letter_two_prev"
                                           src={`http://localhost:8088${studentInformation.prevAcademicInfo.TwoYearBackResultImg}`}
-                                          alt="Memon Jamat Letter 2"
+                                          alt="2 year back result"
                                           style={{
                                             height: "100px",
                                             width: "100px",
                                           }}
                                         />
                                       </div>
+                                      </>)}
                                     </div>
                                   </div>
                                   <div class="form-group">
@@ -3348,7 +3304,7 @@ const StudentProfile = () => {
                                           <span style={{ color: "red" }}></span>
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           class="form-control number"
                                           placeholder="Pincode"
                                           data-inputmask="'mask': ['999999']"
@@ -3452,7 +3408,7 @@ const StudentProfile = () => {
                                           <span style={{ color: "red" }}></span>
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           class="form-control"
                                           id="txt6LandlineNumber"
                                           placeholder="Landline Number"
@@ -3474,7 +3430,7 @@ const StudentProfile = () => {
                                           </span>
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           class="form-control number"
                                           id="txt6scAlterNumber"
                                           placeholder="School/ College / Institute Contact number"
@@ -3493,7 +3449,7 @@ const StudentProfile = () => {
                                           <span style={{ color: "red" }}></span>
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           class="form-control number"
                                           id="txt6LandlineNumber_Step6"
                                           placeholder="Mobile Number"
@@ -3537,7 +3493,7 @@ const StudentProfile = () => {
                                         <img
                                           id="jamat_letter_two_prev"
                                           src={`http://localhost:8088${studentInformation.prevAcademicInfo.bonafideCertificateFrontImg}`}
-                                          alt="Memon Jamat Letter 2"
+                                          alt="bonafide Certificate Front Image"
                                           style={{
                                             height: "100px",
                                             width: "100px",
@@ -3579,8 +3535,7 @@ const StudentProfile = () => {
                                 </div>
                               </div>
                             </div>
-                          </>
-                        )}
+                         
                       </div>
                     )}
 
@@ -3647,74 +3602,95 @@ const StudentProfile = () => {
                                           </span>
                                         </th>
                                         <th>
-                                        <button
-  type="button"
-  className="btn btn-primary"
-  onClick={(e) => {
-    // Clone the existing student information
-    let updated = JSON.parse(JSON.stringify(studentInformation));
-    
-    // Get the last trust detail
-    const lastTrust = updated.othertrustSupport.trustDetails[updated.othertrustSupport.trustDetails.length - 1];
-    
-    // Validation checks
-    if (!lastTrust.trustName) {
-      toast.error("Trust Name is required");
-      return;
-    }
-    if (lastTrust.currentYearAmount <= 0) {
-      toast.error("Current year amount is required");
-      return;
-    }
-    if (lastTrust.lastYearAmount <= 0) {
-      toast.error("Last year amount is required");
-      return;
-    }
-    if (!lastTrust.trustState) {
-      toast.error("State is required");
-      return;
-    }
-    if (!lastTrust.trustCity) {
-      toast.error("City is required");
-      return;
-    }
-    
-    // If all validations pass, add a new empty object
-    setStudentInformation((prev) => ({
-      ...prev,
-      othertrustSupport: {
-        ...prev.othertrustSupport,
-        trustDetails: [
-          ...prev.othertrustSupport.trustDetails,
-          {
-            trustName: "",
-            currentYearAmount: 0,
-            lastYearAmount: 0,
-            trustState: "",
-            trustCity: "",
-          },
-        ],
-      },
-    }));
-  }}
->
-  <i className="fa-solid fa-plus"></i>
-</button>
+                                          <button
+                                            type="button"
+                                            className="btn btn-primary"
+                                            onClick={(e) => {
+                                              // Clone the existing student information
+                                              let updated = JSON.parse(
+                                                JSON.stringify(
+                                                  studentInformation
+                                                )
+                                              );
 
+                                              // Get the last trust detail
+                                              const lastTrust =
+                                                updated.othertrustSupport
+                                                  .trustDetails[
+                                                  updated.othertrustSupport
+                                                    .trustDetails.length - 1
+                                                ];
+
+                                              // Validation checks
+                                              if (!lastTrust.trustName) {
+                                                toast.error(
+                                                  "Trust Name is required"
+                                                );
+                                                return;
+                                              }
+                                              if (
+                                                lastTrust.currentYearAmount <= 0
+                                              ) {
+                                                toast.error(
+                                                  "Current year amount is required"
+                                                );
+                                                return;
+                                              }
+                                              if (
+                                                lastTrust.lastYearAmount <= 0
+                                              ) {
+                                                toast.error(
+                                                  "Last year amount is required"
+                                                );
+                                                return;
+                                              }
+                                              if (!lastTrust.trustState) {
+                                                toast.error(
+                                                  "State is required"
+                                                );
+                                                return;
+                                              }
+                                              if (!lastTrust.trustCity) {
+                                                toast.error("City is required");
+                                                return;
+                                              }
+
+                                              // If all validations pass, add a new empty object
+                                              setStudentInformation((prev) => ({
+                                                ...prev,
+                                                othertrustSupport: {
+                                                  ...prev.othertrustSupport,
+                                                  trustDetails: [
+                                                    ...prev.othertrustSupport
+                                                      .trustDetails,
+                                                    {
+                                                      trustName: "",
+                                                      currentYearAmount: 0,
+                                                      lastYearAmount: 0,
+                                                      trustState: "",
+                                                      trustCity: "",
+                                                    },
+                                                  ],
+                                                },
+                                              }));
+                                            }}
+                                          >
+                                            <i className="fa-solid fa-plus"></i>
+                                          </button>
                                         </th>
                                       </tr>
                                     </thead>
                                     <tbody>
                                       {" "}
-                                      {console.log(
+                                      {/* {console.log(
                                         "studentInformation.othertrustSupport.trustDetails",
                                         studentInformation.othertrustSupport
                                           .trustDetails
-                                      )}
+                                      )} */}
                                       {studentInformation.othertrustSupport.trustDetails.map(
                                         (trust, index) => (
                                           <tr key={index}>
-                                            <td>1 {trust.trustCity}</td>
+                                            <td>{index+1}</td>
                                             <td>
                                               <input
                                                 type="text"
@@ -3729,7 +3705,7 @@ const StudentProfile = () => {
                                             </td>
                                             <td>
                                               <input
-                                                type="text"
+                                                type="number"
                                                 class="form-control amount allownumericwithdecimal"
                                                 placeholder="Amount received current year"
                                                 name={`othertrustSupport.trustDetails.${index}.currentYearAmount`}
@@ -3741,7 +3717,7 @@ const StudentProfile = () => {
                                             </td>
                                             <td>
                                               <input
-                                                type="text"
+                                                type="number"
                                                 class="form-control amount allownumericwithdecimal"
                                                 id="txt8amt_received_yr_1"
                                                 placeholder="Amount received last year"
@@ -3776,15 +3752,21 @@ const StudentProfile = () => {
                                             </td>
                                             <td>
                                               <CityDropdown
-                                              
-                                              state={trust.trustState}
-                                              value={trust.trustCity}
-                                              onChange={(e)=>{
-                                                let updated = JSON.parse(JSON.stringify(studentInformation))
-                                                updated.othertrustSupport.trustDetails[index].trustCity=e.target.value
-                                                setStudentInformation(updated)
-                                              }}
-
+                                                state={trust.trustState}
+                                                value={trust.trustCity}
+                                                onChange={(e) => {
+                                                  let updated = JSON.parse(
+                                                    JSON.stringify(
+                                                      studentInformation
+                                                    )
+                                                  );
+                                                  updated.othertrustSupport.trustDetails[
+                                                    index
+                                                  ].trustCity = e.target.value;
+                                                  setStudentInformation(
+                                                    updated
+                                                  );
+                                                }}
                                               />
                                             </td>
                                             <td>
@@ -3794,7 +3776,7 @@ const StudentProfile = () => {
                                                 <button
                                                   type="button"
                                                   className="btn btn-danger"
-                                                  onClick={() => {                                                  
+                                                  onClick={() => {
                                                     setStudentInformation(
                                                       (prev) => ({
                                                         ...prev,
@@ -3880,7 +3862,7 @@ const StudentProfile = () => {
                                       {studentInformation.othertrustSupport.otherContribution.map(
                                         (contribution, index) => (
                                           <tr key={index}>
-                                            <td>1</td>
+                                            <td>{index+1}</td>
                                             <td>
                                               <input
                                                 type="text"
@@ -3897,7 +3879,7 @@ const StudentProfile = () => {
                                             </td>
                                             <td>
                                               <input
-                                                type="text"
+                                                type="number"
                                                 class="form-control amount allownumericwithdecimal"
                                                 placeholder="Amount received current year"
                                                 name={`othertrustSupport.otherContribution.${index}.contributionCurrentyearAmunt`}
@@ -3911,7 +3893,7 @@ const StudentProfile = () => {
                                             </td>
                                             <td>
                                               <input
-                                                type="text"
+                                                type="number"
                                                 class="form-control amount allownumericwithdecimal"
                                                 id="txt8amt_received_yr_1"
                                                 placeholder="Amount received last year"
@@ -3949,7 +3931,7 @@ const StudentProfile = () => {
                                               </select>
                                             </td>
                                             <td>
-                                              <select
+                                              {/* <select
                                                 class="form-control"
                                                 name={`othertrustSupport.otherContribution.${index}.contributionCity`}
                                                 value={
@@ -3972,7 +3954,25 @@ const StudentProfile = () => {
                                                     </option>
                                                   )
                                                 )}
-                                              </select>
+                                              </select> */}
+
+                                              <CityDropdown
+                                                state={contribution.contributionState}
+                                                value={contribution.contributionCity}
+                                                onChange={(e) => {
+                                                  let updated = JSON.parse(
+                                                    JSON.stringify(
+                                                      studentInformation
+                                                    )
+                                                  );
+                                                  updated.othertrustSupport.otherContribution[
+                                                    index
+                                                  ].contributionCity = e.target.value;
+                                                  setStudentInformation(
+                                                    updated
+                                                  );
+                                                }}
+                                              />
                                             </td>
                                             <td>
                                               {studentInformation
@@ -4056,7 +4056,7 @@ const StudentProfile = () => {
                                     <span style={{ color: "red" }}></span>
                                   </label>
                                   <input
-                                    type="text"
+                                    type="number"
                                     class="form-control amount allownumericwithdecimal"
                                     placeholder=""
                                     name="othertrustSupport.scholarAmount"
@@ -4073,7 +4073,7 @@ const StudentProfile = () => {
                                     Year <span style={{ color: "red" }}></span>
                                   </label>
                                   <input
-                                    type="text"
+                                    type="number"
                                     class="form-control"
                                     placeholder=""
                                     name="othertrustSupport.scholarYear"
@@ -4161,7 +4161,7 @@ const StudentProfile = () => {
                               name="organizationSupportFamily.receivedSupport"
                               value={
                                 studentInformation.organizationSupportFamily
-                                  .receivedSupport
+                                  .receivedSupport || organizationSupport?.receivedSupport
                               }
                               onChange={(e) => handleChange(e)}
                             >
@@ -4172,7 +4172,7 @@ const StudentProfile = () => {
                           </div>
                         </div>
                         {studentInformation.organizationSupportFamily
-                          .receivedSupport === "Yes" && (
+                          .receivedSupport === "Yes" || organizationSupport?.receivedSupport === "Yes" && (
                           <>
                             <div class="row" id="txt9ReceivedsiblingYes">
                               <div class="col-sm-12 topMargin">
@@ -4203,7 +4203,7 @@ const StudentProfile = () => {
                                         );
                                         return (
                                           <tr key={index}>
-                                            <td>1</td>
+                                            <td>{index +1}</td>
                                             <td>
                                               <input
                                                 type="text"
@@ -4243,7 +4243,7 @@ const StudentProfile = () => {
                                             </td>
                                             <td>
                                               <input
-                                                type="text"
+                                                type="number"
                                                 class="form-control amount allownumericwithdecimal"
                                                 placeholder=""
                                                 name={`organizationSupportFamily.supportFamilyDetails.${index}.amountReceived`}
@@ -4333,7 +4333,7 @@ const StudentProfile = () => {
                                             </td>
                                             <td>
                                               <input
-                                                type="text"
+                                                type="number"
                                                 class="form-control"
                                                 placeholder=""
                                                 name={`organizationSupportFamily.supportFamilyDetails.${index}.howManyYearsGet`}
@@ -4403,9 +4403,9 @@ const StudentProfile = () => {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {studentInformation.organizationSupportFamily.supportFamilyDetails.map(
+                                    {organizationSupport && organizationSupport?.supportFamilyDetails?.map(
                                       (item, index) => {
-                                        console.log("iytem", item)
+                                        console.log("iytem", item);
                                         return (
                                           <tr id="13442">
                                             <td>{index + 1}</td>
@@ -4416,7 +4416,7 @@ const StudentProfile = () => {
                                             <td>{item?.financialYear}</td>
                                             <td>{item?.howManyYearsGet}</td>
                                             <td>
-                                            <i className="fa-solid fa-trash"></i>
+                                              <i className="fa-solid fa-trash"></i>
                                             </td>
                                           </tr>
                                         );
@@ -4475,7 +4475,7 @@ const StudentProfile = () => {
                                       (support, index) => {
                                         return (
                                           <tr>
-                                            <td>1</td>
+                                            <td>{index + 1}</td>
                                             <td>
                                               <input
                                                 type="text"
@@ -4542,7 +4542,7 @@ const StudentProfile = () => {
                                             </td>
                                             <td>
                                               <input
-                                                type="text"
+                                                type="number"
                                                 class="form-control amount allownumericwithdecimal"
                                                 placeholder=""
                                                 name={`organizationSupportFamily.otherSupport.${index}.amountreceived`}
@@ -6296,10 +6296,26 @@ const StudentProfile = () => {
                       id="submit-btn"
                       className="btn btn-default"
                       onClick={(e) => handleSubmit(e, "saveAsDraft")}
+                      style={{display : buttonShow ? "none" : "block"}}
                     >
+
                       Save
                     </button>
+
+                    {tab === "family_details" && (
+                   
+                   <button
+                       type="submit"
+                       id="submit-btn"
+                       className="btn btn-default"
+                       onClick={(e) => handleAddFamilyMember(e)}
+                     >
+                      {buttonShow ? "Update" : "Add"} member
+                     </button>
+                   )}
                   </div>
+                  
+
                 </div>
               </div>
             </div>
@@ -6328,54 +6344,31 @@ const StudentProfile = () => {
                             <th>Age</th>
                             <th>Income/Fees</th>
                             <th>Occupation Details</th>
-                            <th>Delete</th>
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr className="odd gradeX">
-                            <td>Trident</td>
-                            <td>Internet Explorer 4.0</td>
-                            <td>Win 95+</td>
-                            <td>4</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                          </tr>
-                          <tr className="odd gradeX">
-                            <td>Trident</td>
-                            <td>Internet Explorer 4.0</td>
-                            <td>Win 95+</td>
-                            <td>4</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                          </tr>
-                          <tr className="odd gradeX">
-                            <td>Trident</td>
-                            <td>Internet Explorer 4.0</td>
-                            <td>Win 95+</td>
-                            <td>4</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                          </tr>
-                          <tr className="odd gradeX">
-                            <td>Trident</td>
-                            <td>Internet Explorer 4.0</td>
-                            <td>Win 95+</td>
-                            <td>4</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                          </tr>
+                          {allFamilyDetails &&
+                            allFamilyDetails?.map((item, index) => {
+                              console.log("familyDetailsAddress", item);
+                              return (
+                                <tr className="odd gradeX" key={index}>
+                                  <td>{index + 1}</td>
+                                  <td>{item?.relationPersonName}</td>
+                                  <td>{item?.relationWithStudent}</td>
+                                  <td>{item.relationPersonGender}</td>
+                                  <td>{item.relationPersonMaritalStatus}</td>
+                                  <td>{item.relationPersonAge}</td>
+                                  <td>{item.relationPersonMonthlyIncome}</td>
+                                  <td>{item.relationPersonOccupation}</td>
+                                  <td style={{ textAlign: "center" }}>
+                                    <i className="fas fa-edit table_edit_icon" 
+                                    onClick={(e) => handleStore(e,item, setbuttonSchow(true))}></i>
+                                    <i className="fa-solid fa-trash table_delete_icon"></i>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                         </tbody>
                       </table>
                     </div>

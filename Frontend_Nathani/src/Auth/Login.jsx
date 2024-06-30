@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import logo from "../images/NATHANI_LOGO.png";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 
 const Login = () => {
   const initial = {
     email: "",
     password: "",
   };
-
+const {getStudentData} = useContext(GlobalContext)
   const [loginData, setLoginData] = useState(initial);
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
@@ -55,8 +56,10 @@ const Login = () => {
       if (handleValidation()) {
         const data = loginData;
         const res = await axios.post("http://localhost:8088/api/v1/user/login", data);
+        console.log("loginData", res.data)
         if (res && res.data.status) {
           toast.success(res.data.message);
+          getStudentData()
           localStorage.setItem("Authorization", res.data.token);
           localStorage.setItem("userType", res.data.userType);
           localStorage.setItem("aadharNO" , res.data.data.aadharNo )

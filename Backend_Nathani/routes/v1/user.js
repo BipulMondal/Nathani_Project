@@ -4,7 +4,7 @@ const path = require('path');
 const multer = require('multer');
 const userController = require('../../controllers/Auth/UserAuthentication');
 const studentController = require('../../controllers/Student/StudentInfo');
-const countryStateCityController = require('../../controllers/CountyStateCity/CountryStateCity')
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -49,10 +49,9 @@ router.post('/upload', upload.single('image'), (req, res) => {
 router.post('/registration', userController.register);
 router.post('/login', userController.login);
 router.post('/add_Student_data', studentController.addStudentDetails);
-router.post('/add_new_Student_data', studentController.addNewStudentDetails);
 router.post('/get_Student_data', studentController.getSingleStudentData);
-router.get('/get_country_state_city', countryStateCityController.getCountryStateCity)
-// router.post('/post_state_country', countryStateCityController.postData)
+
 router.post('/get_student_addedBy', studentController.getStudentsDetailsAddedBy)
+router.post("/add_family/:id", studentController.addFamilyMember)
 
 module.exports = router;

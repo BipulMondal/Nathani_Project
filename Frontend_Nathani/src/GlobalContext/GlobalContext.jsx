@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
-import axios from "axios"
-const baseUrl = "http://localhost:8088/api/v1/user/"
+import axios from "axios";
+const baseUrl = "http://localhost:8088/api/v1/user/";
 
 const GlobalContext = createContext();
 
@@ -42,28 +42,28 @@ const GlobalProvider = ({ children }) => {
       refferedBy: "",
       refMobileNo: "",
     },
-    familyDetails: [{
-      parentStatus: "",
-      parentStatusOneImg: "",
-      parentStatusTwoImg: "",
-      relationWithStudent: "",
-      relationPersonName: "",
-      relationPersonMaritalStatus: "",
-      relationPersonDOB: "",
-      relationPersongender: "",
-      relationPersonAadhar: "",
-      relationPersonEducation: "",
-      relationPersonOccupation: "",
-      relationPersonOccupationDetails: "",
-      relationPersonMonthlyIncome: 0,
-      incomeFileFrontImg: "",
-      incomeFileBackImg: "",
-      handiCapped: "",
-      handiCapFileOneImg: "",
-      handiCapFileTwoImg: "",
-      personCity: "",
-      personStudying: "",
-    }],
+    familyDetails:  {
+        parentStatus: "",
+        parentStatusOneImg: "",
+        parentStatusTwoImg: "",
+        relationWithStudent: "",
+        relationPersonName: "",
+        relationPersonMaritalStatus: "",
+        relationPersonDOB: "",
+        relationPersonGender: "",
+        relationPersonAadhar: "",
+        relationPersonEducation: "",
+        relationPersonOccupation: "",
+        relationPersonOccupationDetails: "",
+        relationPersonMonthlyIncome: 0,
+        incomeFileFrontImg: "",
+        incomeFileBackImg: "",
+        handiCapped: "",
+        handiCapFileOneImg: "",
+        handiCapFileTwoImg: "",
+        personCity: "",
+        personStudying: "",
+      },
     jamatInfo: {
       ifMemon: "",
       ifMotherMomen: "",
@@ -187,90 +187,60 @@ const GlobalProvider = ({ children }) => {
     studentCode: "",
     isConfirm: false,
   };
-  
+
   const [studentInformation, setStudentInformation] = useState(initialState);
   const [openModal, setOpenModal] = useState(false);
-  const [countryState, setCountryState] = useState(null);
-  const [isLoading, setIsLoading] = useState(false)
+  const [allFamilyDetails, setAllFamilyDetails] = useState(null);
+  const [academicInfo, setAcademicInfo] = useState(null);
+  const [organizationSupport, setorganizationSupport] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const aadharNo = localStorage.getItem("aadharNO");
   const userType = localStorage.getItem("userType");
-
+  const token = localStorage.getItem("Authorization")
 
   const updateModal = () => {
     setOpenModal(false);
   };
 
-  console.log("sdddd", baseUrl+"get_country_state_city")
+  console.log("sdddd", token);
 
   const getStudentData = async () => {
     const data = {
       aadharNo: aadharNo,
     };
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const res = await axios.post(
         "http://localhost:8088/api/v1/user/get_Student_data",
         data
       );
-        console.log("res?.data?.existStudent", res?.data?.existStudent)
+      console.log("res_data_existStudent", res?.data?.existStudent);
       if (res && res.data.status && userType === "Student") {
-        setStudentInformation(res?.data?.existStudent);
-        setIsLoading(false)
+        localStorage.setItem("id" , res?.data?.existStudent?._id)
+        setStudentInformation((prev) => ({
+          ...prev,
+          studentInfo: res?.data?.existStudent.studentInfo,
+          jamatInfo: res?.data?.existStudent.jamatInfo,
+          othertrustSupport: res?.data?.existStudent.othertrustSupport,
+          familyDeclaration: res?.data?.existStudent?.familyDeclaration,
+        }));
+        setAllFamilyDetails(res?.data?.existStudent?.familyDetails);
+        setAcademicInfo(res?.data?.existStudent?.prevAcademicInfo);
+        setorganizationSupport(
+          res?.data?.existStudent?.organizationSupportFamily
+        );
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error fetching student data:", error);
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
-  // const getStudentData = async () => {
-  //   const data = {
-  //     aadharNo: aadharNo,
-  //   };
-  //   try {
-  //     setIsLoading(true);
-  //     const res = await axios.post(
-  //       "http://localhost:8088/api/v1/user/get_Student_data",
-  //       data
-  //     );
-  //     console.log("res?.data?.existStudent", res?.data?.existStudent);
-  //     if (res && res.data.status && userType === "Student") {
-  //       const updatedData = res.data.existStudent;
-  //       updatedData.organizationSupportFamily.supportFamilyDetails = [
-  //         {
-  //           memberName: "",
-  //           memberId: "",
-  //           course: "",
-  //           amountReceived: 0,
-  //           financialYear: "",
-  //           howManyYearsGet: 0,
-  //         },
-  //       ];
-  //       updatedData.organizationSupportFamily.otherSupport = [
-  //         {
-  //           memberName: "",
-  //           memberId: "",
-  //           scheme: "",
-  //           amountreceived: 0,
-  //           financialYear: "",
-  //         },
-  //       ];
-  //       setStudentInformation(updatedData);
-  //       setIsLoading(false);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching student data:", error);
-  //     setIsLoading(false);
-  //   }
-  // };
-
-
   useEffect(() => {
-    getStudentData();
-
-    if (localStorage.getItem("aadharNO") && userType === "Student") {
+    if (token && userType === "Student") {
+      getStudentData();
       const aadharNo = localStorage.getItem("aadharNO");
-
       setStudentInformation((prev) => ({
         ...prev,
         studentInfo: {
@@ -279,12 +249,26 @@ const GlobalProvider = ({ children }) => {
         },
       }));
     }
-  }, []);
-
-
+  }, [token]);
 
   return (
-    <GlobalContext.Provider value={{openModal, setOpenModal, updateModal, getStudentData, isLoading,studentInformation, setStudentInformation }}>
+    <GlobalContext.Provider
+      value={{
+        openModal,
+        setOpenModal,
+        updateModal,
+        getStudentData,
+        isLoading,
+        studentInformation,
+        setStudentInformation,
+        allFamilyDetails,
+        setAllFamilyDetails,
+        academicInfo,
+        setAcademicInfo,
+        organizationSupport,
+        setorganizationSupport
+      }}
+    >
       {children}
     </GlobalContext.Provider>
   );
