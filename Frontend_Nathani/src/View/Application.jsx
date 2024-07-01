@@ -685,7 +685,7 @@ const Application = () => {
                       </div>
                     </div>
                     <br />
-                    {/* <div class="form-group">
+                    <div class="form-group">
                       <div
                         class="row"
                         style={{display: "flex" , justifyContent: "center"}}
@@ -698,7 +698,7 @@ const Application = () => {
                           Save
                         </button>
                       </div>
-                    </div> */}
+                    </div>
                   </form>
                   <div className="center">
                     <button
