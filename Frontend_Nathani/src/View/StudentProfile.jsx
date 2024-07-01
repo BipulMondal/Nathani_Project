@@ -4416,7 +4416,7 @@ console.log("ressssss", res)
                                             <td>{item?.financialYear}</td>
                                             <td>{item?.howManyYearsGet}</td>
                                             <td>
-                                              <i className="fa-solid fa-trash"></i>
+                                              <i className="fa-solid fa-trash table_delete_icon"></i>
                                             </td>
                                           </tr>
                                         );
@@ -4444,7 +4444,7 @@ console.log("ressssss", res)
                               name="organizationSupportFamily.memberReceiveSupport"
                               value={
                                 studentInformation.organizationSupportFamily
-                                  .memberReceiveSupport
+                                  .memberReceiveSupport || organizationSupport?.memberReceiveSupport
                               }
                               onChange={(e) => handleChange(e)}
                             >
@@ -4455,7 +4455,7 @@ console.log("ressssss", res)
                           </div>
                         </div>
                         {studentInformation.organizationSupportFamily
-                          .memberReceiveSupport === "Yes" && (
+                          .memberReceiveSupport === "Yes" || organizationSupport?.memberReceiveSupport === "Yes" && (
                           <>
                             <div class="row" id="txt9ReceivedEductionYes">
                               <div class="col-sm-12 topMargin">
@@ -4674,7 +4674,24 @@ console.log("ressssss", res)
                                       <th id="4rth">Delete </th>
                                     </tr>
                                   </thead>
-                                  <tbody></tbody>
+                                  <tbody>
+                                  {organizationSupport && organizationSupport?.otherSupport?.map(
+                                      (item, index) => {
+                                        console.log("sfsds", item);
+                                        return (
+                                          <tr >
+                                          <td>{index + 1}</td>
+                                          <td>{item?.memberName}</td>
+                                          <td>{item?.memberId}</td>
+                                          <td>{item?.scheme}</td>
+                                          <td>{item?.amountreceived}</td>
+                                          <td>{item?.financialYear}</td>
+                                          <td>
+                                            <i className="fa-solid fa-trash table_delete_icon"></i>
+                                          </td>
+                                        </tr>
+                                        )})}
+                                  </tbody>
                                 </table>
                               </div>
                             </div>
@@ -4720,12 +4737,15 @@ console.log("ressssss", res)
                                 readonly=""
                                 class="form-control"
                                 placeholder="Course Name"
-                                name="familyDeclaration.courseName"
-                                value={
-                                  studentInformation.familyDeclaration
-                                    .courseName
-                                }
-                                onChange={(e) => handleChange(e)}
+                                // name="familyDeclaration.courseName"
+                                // value={
+                                //   studentInformation.familyDeclaration
+                                //     .courseName
+                                // }
+                                // name="studentInfo.firstName"
+                                disabled
+                              
+                                // onChange={(e) => handleChange(e)}
                               />
                               course for which we have applied for scholarship.
                             </p>
@@ -4769,12 +4789,16 @@ console.log("ressssss", res)
                               class="form-control"
                               placeholder="Name of applicant"
                               readonly=""
-                              name="familyDeclaration.applicantName"
+                              // name="familyDeclaration.applicantName"
+                              // value={
+                              //   studentInformation.familyDeclaration
+                              //     .applicantName
+                              // }
+                              // onChange={(e) => handleChange(e)}
+                              disabled
                               value={
-                                studentInformation.familyDeclaration
-                                  .applicantName
+                                studentInformation.studentInfo.firstName +  studentInformation.studentInfo.lastName                               
                               }
-                              onChange={(e) => handleChange(e)}
                             />
                           </div>
                           {/* Name of Parent/Guardian */}
@@ -6383,7 +6407,7 @@ console.log("ressssss", res)
               <div class="col-lg-12">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    Family Member Information Table
+                    Prev Year Academic Details
                   </div>
                   <div class="panel-body">
                     <div class="dataTable_wrapper">
@@ -6408,62 +6432,27 @@ console.log("ressssss", res)
                           </tr>
                         </thead>
                         <tbody>
-                          <tr class="odd gradeX">
-                            <td>1</td>
-                            <td>Internet Explorer 4.0</td>
-                            <td>Win 95+</td>
-                            <td>4</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                          </tr>
-                          <tr class="odd gradeX">
-                            <td>2</td>
-                            <td>Internet Explorer 4.0</td>
-                            <td>Win 95+</td>
-                            <td>4</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                          </tr>
-                          <tr class="odd gradeX">
-                            <td>3</td>
-                            <td>Internet Explorer 4.0</td>
-                            <td>Win 95+</td>
-                            <td>4</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                          </tr>
-                          <tr class="odd gradeX">
-                            <td>4</td>
-                            <td>Internet Explorer 4.0</td>
-                            <td>Win 95+</td>
-                            <td>4</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                            <td>X</td>
-                          </tr>
+                          {academicInfo && academicInfo?.map((item, index) => {
+                            console.log("academicacadc", item)
+                            return(
+                              <tr class="odd gradeX">
+                              <td>{index + 1}</td>
+                              <td>Internet Explorer 4.0</td>
+                              <td>Win 95+</td>
+                              <td>4</td>
+                              <td>{item?.instructionMedium}</td>
+                              <td>X</td>
+                              <td>X</td>
+                              <td>X</td>
+                              <td>X</td>
+                              <td>X</td>
+                              <td>X</td>
+                              <td>X</td>
+                            </tr>
+                            )
+                          })}
+                         
+                         
                         </tbody>
                       </table>
                     </div>

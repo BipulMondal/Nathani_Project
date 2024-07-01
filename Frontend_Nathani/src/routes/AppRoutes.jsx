@@ -6,6 +6,7 @@ import Login from "../Auth/Login";
 import Registar from "../Auth/Registar";
 import Dashboard from "../View/Dashboard";
 import PrintForm from "../View/PrintForm";
+import Application from "../View/Application";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const AppRoutes = () => {
       <Route element={<Layout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/studentProfile" element={<StudentProfile />} />
+        <Route path="/application" element={<Application />} />
         <Route path="/studentProfile/print" element={<PrintForm />} />
       </Route>
       <Route path="/register" element={<Registar />} />

@@ -170,7 +170,7 @@ const studentSchema = new mongoose.Schema({
         memberId: { type: String },
         scheme: { type: String },
         amountreceived: { type: Number },
-        financialYear: { type: Date },
+        financialYear: { type: String },
       },
     ],
   },
