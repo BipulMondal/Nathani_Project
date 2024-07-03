@@ -7,7 +7,7 @@ const studentModal = require("../../models/StudentInfo");
 
 const addStudentDetails = async (req, res) => {
   try {
-    let AadharNo =  req.body.studentInfo.aadharNo;
+    let AadharNo =  req.body.aadharNo;
     const check = await studentModal.findOne({
       _id: new mongoose.Types.ObjectId(req.body._id),
       saveAsDraft: true,

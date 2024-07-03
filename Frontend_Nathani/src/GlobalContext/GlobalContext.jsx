@@ -42,7 +42,7 @@ const GlobalProvider = ({ children }) => {
       refferedBy: "",
       refMobileNo: "",
     },
-    familyDetails:  {
+    familyDetails:  [{
         parentStatus: "",
         parentStatusOneImg: "",
         parentStatusTwoImg: "",
@@ -63,7 +63,7 @@ const GlobalProvider = ({ children }) => {
         handiCapFileTwoImg: "",
         personCity: "",
         personStudying: "",
-      },
+      }],
     jamatInfo: {
       ifMemon: "",
       ifMotherMomen: "",
@@ -189,6 +189,9 @@ const GlobalProvider = ({ children }) => {
   };
 
   const [studentInformation, setStudentInformation] = useState(initialState);
+  console.log("globalstudentInformation", studentInformation)
+  const [modifiedData, setModifiedData] = useState({});
+  const [originalData, setOriginalData] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const [allFamilyDetails, setAllFamilyDetails] = useState(null);
   const [academicInfo, setAcademicInfo] = useState(null);
@@ -217,18 +220,20 @@ const GlobalProvider = ({ children }) => {
       console.log("res_data_existStudent", res?.data?.existStudent);
       if (res && res.data.status && userType === "Student") {
         localStorage.setItem("id" , res?.data?.existStudent?._id)
-        setStudentInformation((prev) => ({
-          ...prev,
-          studentInfo: res?.data?.existStudent.studentInfo,
-          jamatInfo: res?.data?.existStudent.jamatInfo,
-          othertrustSupport: res?.data?.existStudent.othertrustSupport,
-          familyDeclaration: res?.data?.existStudent?.familyDeclaration,
-        }));
-        setAllFamilyDetails(res?.data?.existStudent?.familyDetails);
-        setAcademicInfo(res?.data?.existStudent?.prevAcademicInfo);
-        setorganizationSupport(
-          res?.data?.existStudent?.organizationSupportFamily
-        );
+        // setStudentInformation((prev) => ({
+        //   ...prev,
+        //   studentInfo: res?.data?.existStudent.studentInfo,
+        //   jamatInfo: res?.data?.existStudent.jamatInfo,
+        //   othertrustSupport: res?.data?.existStudent.othertrustSupport,
+        //   familyDeclaration: res?.data?.existStudent?.familyDeclaration,
+        // }));
+        // setAllFamilyDetails(res?.data?.existStudent?.familyDetails);
+        // setAcademicInfo(res?.data?.existStudent?.prevAcademicInfo);
+        // setorganizationSupport(
+        //   res?.data?.existStudent?.organizationSupportFamily
+        // );
+
+        setStudentInformation(res?.data?.existStudent)
         setIsLoading(false);
       }
     } catch (error) {
@@ -236,6 +241,56 @@ const GlobalProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const keys = name.split(".");
+
+    const updateNestedObject = (object, keys, value) => {
+      const newObject = { ...object };
+      let nestedObject = newObject;
+      for (let i = 0; i < keys.length - 1; i++) {
+        const key = keys[i];
+        if (Array.isArray(nestedObject[key])) {
+          const index = parseInt(keys[i + 1], 10);
+          nestedObject[key] = [...nestedObject[key]];
+          nestedObject = nestedObject[key][index];
+          i++;
+        } else {
+          nestedObject[key] = { ...nestedObject[key] };
+          nestedObject = nestedObject[key];
+        }
+      }
+      nestedObject[keys[keys.length - 1]] = value;
+      return newObject;
+    };
+
+    if (keys.length === 1) {
+      setStudentInformation((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+      setModifiedData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    } else {
+      setStudentInformation((prevState) =>
+        updateNestedObject(prevState, keys, value)
+      );
+      setModifiedData((prevState) =>
+        updateNestedObject(prevState, keys, value)
+      );
+    }
+  };
+
+  const addFamilyMember = () => {
+    setStudentInformation((prevState) => ({
+      ...prevState,
+      familyDetails: [...prevState.familyDetails, { ...initialState.familyDetails[0] }],
+    }));
+  };
+
 
   useEffect(() => {
     if (token && userType === "Student") {
@@ -261,12 +316,18 @@ const GlobalProvider = ({ children }) => {
         isLoading,
         studentInformation,
         setStudentInformation,
+        modifiedData,
+        setModifiedData,
         allFamilyDetails,
         setAllFamilyDetails,
         academicInfo,
         setAcademicInfo,
         organizationSupport,
-        setorganizationSupport
+        setorganizationSupport,
+        originalData,
+         setOriginalData,
+         handleChange,
+         addFamilyMember
       }}
     >
       {children}
