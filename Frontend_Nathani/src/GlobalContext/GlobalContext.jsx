@@ -205,8 +205,6 @@ const GlobalProvider = ({ children }) => {
     setOpenModal(false);
   };
 
-  console.log("sdddd", token);
-
   const getStudentData = async () => {
     const data = {
       aadharNo: aadharNo,
@@ -245,7 +243,7 @@ const GlobalProvider = ({ children }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     const keys = name.split(".");
-
+  
     const updateNestedObject = (object, keys, value) => {
       const newObject = { ...object };
       let nestedObject = newObject;
@@ -264,7 +262,8 @@ const GlobalProvider = ({ children }) => {
       nestedObject[keys[keys.length - 1]] = value;
       return newObject;
     };
-
+  
+  
     if (keys.length === 1) {
       setStudentInformation((prevState) => ({
         ...prevState,
@@ -284,13 +283,66 @@ const GlobalProvider = ({ children }) => {
     }
   };
 
-  const addFamilyMember = () => {
-    setStudentInformation((prevState) => ({
-      ...prevState,
-      familyDetails: [...prevState.familyDetails, { ...initialState.familyDetails[0] }],
-    }));
-  };
+  // const addFamilyMember = async () => {
+  //   setStudentInformation((prevState) => ({
+  //     ...prevState,
+  //     familyDetails: [...prevState.familyDetails, { ...initialState.familyDetails[0] }],
+  //   }));
+    
 
+  //   try {
+  //     const data = {
+  //       ...studentInformation.familyDetails,
+  //       _id: localStorage.getItem("id"),
+  //     };
+  //     console.log("data", data);
+  //     let res = await axios.post(
+  //       `http://localhost:8088/api/v1/user/add_family/${aadharNo}`,
+  //       data
+  //     );
+  //     if (res & res.status) {
+  //       console.log("ressssss", res);
+  //     }
+  //   } catch (error) {}
+  // };
+
+  const addFamilyMember = async () => {
+    // Update the state with the new family member
+    setStudentInformation((prevState) => {
+      const updatedFamilyDetails = [
+        ...prevState.familyDetails,
+        { ...initialState.familyDetails[0] }
+      ];
+  
+      // Make the API call within the setState callback to ensure it uses the latest state
+      const updatedStudentInformation = {
+        ...prevState,
+        familyDetails: updatedFamilyDetails,
+      };
+  
+      (async () => {
+        try {
+          const data = {
+            familyDetails: updatedFamilyDetails,
+            _id: localStorage.getItem("id"),
+          };
+          console.log("data", data);
+          let res = await axios.post(
+            `http://localhost:8088/api/v1/user/add_family/${aadharNo}`,
+            data
+          );
+          if (res && res.status) {
+            console.log("ressssss", res);
+          }
+        } catch (error) {
+          console.error("Error adding family member:", error);
+        }
+      })();
+  
+      return updatedStudentInformation;
+    });
+  };
+  
 
   useEffect(() => {
     if (token && userType === "Student") {

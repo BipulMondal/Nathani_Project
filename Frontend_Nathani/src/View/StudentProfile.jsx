@@ -35,7 +35,7 @@ const StudentProfile = () => {
     handleChange,
   } = useContext(GlobalContext);
 
-  console.log("studentInformation", studentInformation);
+
 
   const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
   const [filteredCities, setFilteredCities] = useState([]);
@@ -48,6 +48,22 @@ const StudentProfile = () => {
   const aadharNo = localStorage.getItem("aadharNO");
   const userType = localStorage.getItem("userType");
   const [buttonShow, setbuttonSchow] = useState(false);
+
+  useEffect(() => {
+
+    if (userType === "Student") {
+      setModifiedData((prevState) => ({
+        ...prevState,
+        studentInfo: {
+          ...prevState.studentInfo,
+          aadharNo: localStorage.getItem("aadharNO"),
+        }
+      }))
+    }
+
+  },[])
+
+  console.log("xxxxxxxxxx", modifiedData);
 
   const tabs = [
     "student_info",
@@ -92,7 +108,7 @@ const StudentProfile = () => {
     }
   };
 
-  const imageHandler = async (e, state) => {
+  const imageHandler = async (e, state, index = null) => {
     if (e.target.files.length === 0) return;
 
     const DATA = new FormData();
@@ -106,19 +122,14 @@ const StudentProfile = () => {
       rationFront: { section: "studentInfo", key: "rationFrontImg" },
       rationBack: { section: "studentInfo", key: "rationBackImg" },
       electricityBill: { section: "studentInfo", key: "electricityBillImg" },
-      /**================================================================== */
-
       parentStatusOne: { section: "familyDetails", key: "parentStatusOneImg" },
       parentStatusTwo: { section: "familyDetails", key: "parentStatusTwoImg" },
       incomeFront: { section: "familyDetails", key: "incomeFileFrontImg" },
       incomeBack: { section: "familyDetails", key: "incomeFileBackImg" },
       handicapedFront: { section: "familyDetails", key: "handiCapFileOneImg" },
       handicapedBack: { section: "familyDetails", key: "handiCapFileTwoImg" },
-      /**================================================================== */
       jamatLetterOne: { section: "jamatInfo", key: "memonJamatLetterOne" },
       jamatLetterTwo: { section: "jamatInfo", key: "memonJamatLetterTwo" },
-      /**================================================================== */
-
       lastYearResultImg: {
         section: "prevAcademicInfo",
         key: "lastYearResultImg",
@@ -139,12 +150,10 @@ const StudentProfile = () => {
         section: "prevAcademicInfo",
         key: "bonafideCertificateBackImg",
       },
-      /**================================================================== */
       studentPhoto: { section: "familyDeclaration", key: "studentPhoto" },
       studentSign: { section: "familyDeclaration", key: "studentSign" },
       studentGuardianSign: { section: "familyDeclaration", key: "parentSign" },
-
-      //
+      // Add other mappings as needed
     };
 
     try {
@@ -162,145 +171,30 @@ const StudentProfile = () => {
         const uploadedFilePath = response.data.file;
         const { section, key } = stateToKeyMap[state];
 
-        setStudentInformation((prevInfo) => ({
-          ...prevInfo,
-          [section]: {
-            ...prevInfo[section],
-            [key]: uploadedFilePath,
-          },
-        }));
+        setStudentInformation((prevInfo) => {
+          if (section === "familyDetails" && index !== null) {
+            const updatedFamilyDetails = [...prevInfo.familyDetails];
+            updatedFamilyDetails[index][key] = uploadedFilePath;
+
+            return {
+              ...prevInfo,
+              familyDetails: updatedFamilyDetails,
+            };
+          } else {
+            return {
+              ...prevInfo,
+              [section]: {
+                ...prevInfo[section],
+                [key]: uploadedFilePath,
+              },
+            };
+          }
+        });
       }
     } catch (error) {
       console.error("Error uploading file", error);
     }
   };
-
-  // const imageHandler = async (e, state) => {
-  //   if (e.target.files.length === 0) return;
-
-  //   const DATA = new FormData();
-  //   DATA.append("image", e.target.files[0]);
-
-  //   const stateToKeyMap = {
-  //     isPhysical: { section: "studentInfo", key: "physicalChallangeImg" },
-  //     parentDeath: { section: "studentInfo", key: "parentDeathCertificateImg" },
-  //     aadharFront: { section: "studentInfo", key: "addaharFrontImg" },
-  //     aadharBack: { section: "studentInfo", key: "aadharBackImg" },
-  //     rationFront: { section: "studentInfo", key: "rationFrontImg" },
-  //     rationBack: { section: "studentInfo", key: "rationBackImg" },
-  //     electricityBill: { section: "studentInfo", key: "electricityBillImg" },
-  //     /**================================================================== */
-  //     parentStatusOne: { section: "familyDetails", key: "parentStatusOneImg" },
-  //     parentStatusTwo: { section: "familyDetails", key: "parentStatusTwoImg" },
-  //     incomeFront: { section: "familyDetails", key: "incomeFileFrontImg" },
-  //     incomeBack: { section: "familyDetails", key: "incomeFileBackImg" },
-  //     handicapedFront: { section: "familyDetails", key: "handiCapFileOneImg" },
-  //     handicapedBack: { section: "familyDetails", key: "handiCapFileTwoImg" },
-  //     /**================================================================== */
-  //     jamatLetterOne: { section: "jamatInfo", key: "memonJamatLetterOne" },
-  //     jamatLetterTwo: { section: "jamatInfo", key: "memonJamatLetterTwo" },
-  //     /**================================================================== */
-  //     lastYearResultImg: {
-  //       section: "prevAcademicInfo",
-  //       key: "lastYearResultImg",
-  //     },
-  //     lastTwoYearResultImg: {
-  //       section: "prevAcademicInfo",
-  //       key: "lastTwoYearResultImg",
-  //     },
-  //     TwoYearBackResultImg: {
-  //       section: "prevAcademicInfo",
-  //       key: "TwoYearBackResultImg",
-  //     },
-  //     bonafideCertificateFrontImg: {
-  //       section: "prevAcademicInfo",
-  //       key: "bonafideCertificateFrontImg",
-  //     },
-  //     bonafideCertificateBackImg: {
-  //       section: "prevAcademicInfo",
-  //       key: "bonafideCertificateBackImg",
-  //     },
-  //     /**================================================================== */
-  //     studentPhoto: { section: "familyDeclaration", key: "studentPhoto" },
-  //     studentSign: { section: "familyDeclaration", key: "studentSign" },
-  //     studentGuardianSign: { section: "familyDeclaration", key: "parentSign" },
-  //     //
-  //   };
-
-  //   try {
-  //     const response = await axios.post(
-  //       "http://localhost:8088/api/v1/user/upload",
-  //       DATA,
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }
-  //     );
-
-  //     if (response && response.data.status && stateToKeyMap[state]) {
-  //       const uploadedFilePath = response.data.file;
-  //       const { section, key } = stateToKeyMap[state];
-
-  //       setStudentInformation((prevInfo) => {
-  //         if (section === "familyDetails") {
-  //           return {
-  //             ...prevInfo,
-  //             familyDetails: prevInfo.familyDetails.map((detail, index) =>
-  //               index === 0 ? { ...detail, [key]: uploadedFilePath } : detail
-  //             ),
-  //           };
-  //         } else {
-  //           return {
-  //             ...prevInfo,
-  //             [section]: {
-  //               ...prevInfo[section],
-  //               [key]: uploadedFilePath,
-  //             },
-  //           };
-  //         }
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error uploading file", error);
-  //   }
-  // };
-
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   console.log("ducks", name, value);
-  //   const keys = name.split(".");
-
-  //   if (keys.length === 1) {
-  //     setStudentInformation((prevState) => ({
-  //       ...prevState,
-  //       [name]: value,
-  //     }));
-  //   } else {
-  //     setStudentInformation((prevState) => {
-  //       // Deep clone the previous state to prevent mutation
-  //       let nestedObject = { ...prevState };
-
-  //       // Traverse to the appropriate level in the nested object
-  //       for (let i = 0; i < keys.length - 1; i++) {
-  //         const key = keys[i];
-  //         if (Array.isArray(nestedObject[key])) {
-  //           const index = parseInt(keys[i + 1], 10);
-  //           nestedObject = nestedObject[key][index];
-  //           i++; // Skip the next key because it's an array index
-  //         } else {
-  //           nestedObject = nestedObject[key];
-  //         }
-  //       }
-
-  //       // Update the final key with the new value
-  //       const finalKey = keys[keys.length - 1];
-  //       nestedObject[finalKey] = value;
-
-  //       return { ...prevState };
-  //     });
-  //   }
-  // };
 
   const handleAddressCopy = (e) => {
     setCopyPermantAddress(e.target.checked);
@@ -488,13 +382,18 @@ const StudentProfile = () => {
         const mergedData = {
           ...originalData,
           ...modifiedData,
+
+          
+
+
           saveAsDraft: true,
           aadharNo: localStorage.getItem("aadharNO"),
           _id: localStorage.getItem("id"),
           addedBy: localStorage.getItem("addedBy"),
         };
 
-        console.log("mergedData", mergedData);
+        console.log("mergedData", modifiedData);
+        return false
 
         if (!studentInformation.studentInfo.aadharNo) {
           toast.error("Aadhar no is required");
@@ -607,23 +506,6 @@ const StudentProfile = () => {
     }));
   };
 
-  const handleAddFamilyMember = async () => {
-    try {
-      const data = {
-        ...studentInformation.familyDetails,
-        _id: localStorage.getItem("id"),
-      };
-      console.log("data", data);
-      let res = await axios.post(
-        `http://localhost:8088/api/v1/user/add_family/${aadharNo}`,
-        data
-      );
-      if (res & res.status) {
-        console.log("ressssss", res);
-      }
-    } catch (error) {}
-  };
-
   return (
     <>
       {loading && <Loader />}
@@ -686,9 +568,7 @@ const StudentProfile = () => {
                                 name="studentInfo.aadharNo"
                                 className="form-control"
                                 placeholder="Enter Aadhar No"
-                                value={
-                                  studentInformation.studentInfo.aadharNo
-                                    ? studentInformation.studentInfo.aadharNo
+                                value={studentInformation.studentInfo.aadharNo ? studentInformation.studentInfo.aadharNo
                                     : aadharNo
                                 }
                                 disabled={userType === "Student"}
@@ -1457,12 +1337,6 @@ const StudentProfile = () => {
                                       </label>
                                       <select
                                         class="form-control"
-                                        // name="familyDetails.parentStatus"
-                                        // value={
-                                        //   studentInformation.familyDetails
-                                        //     .parentStatus
-                                        // }
-
                                         name={`familyDetails.${index}.parentStatus`}
                                         value={member.parentStatus}
                                         onChange={(e) => handleChange(e)}
@@ -1485,9 +1359,9 @@ const StudentProfile = () => {
                                     </div>
                                   </div>
                                 </div>
-                                {studentInformation.familyDetails
+                                {studentInformation.familyDetails[0]
                                   .parentStatus !== "General" &&
-                                  studentInformation.familyDetails
+                                  studentInformation.familyDetails[0]
                                     .parentStatus !== "" && (
                                     <div class="form-group">
                                       <div class="row">
@@ -1497,7 +1371,7 @@ const StudentProfile = () => {
                                             Parent Status File One{" "}
                                             <span>*</span>
                                           </label>
-                                          <input
+                                          {/* <input
                                             type="file"
                                             class="form-control"
                                             name="parentStatusOneImg"
@@ -1506,13 +1380,37 @@ const StudentProfile = () => {
                                             }
                                             id="parent_stauts_file_one"
                                             required
+                                          /> */}
+
+                                          <input
+                                            type="file"
+                                            className="form-control"
+                                            name={`familyDetails.${index}.parentStatusOneImg`}
+                                            onChange={(e) =>
+                                              imageHandler(
+                                                e,
+                                                "parentStatusOne",
+                                                index
+                                              )
+                                            }
+                                            id={`parent_status_file_one_${index}`}
+                                            required
                                           />
                                         </div>
                                         {/* shoe status img one */}
                                         <div class="col-lg-3">
-                                          <img
+                                          {/* <img
                                             id="parent_stauts_file_one_prev"
                                             src={`http://localhost:8088${studentInformation.familyDetails.parentStatusOneImg}`}
+                                            alt="Upload Parent Status File One"
+                                            style={{
+                                              height: "100px",
+                                              width: "100px",
+                                            }}
+                                          /> */}
+                                          <img
+                                            id={`parent_status_file_one_prev_${index}`}
+                                            src={`http://localhost:8088${member.parentStatusOneImg}`}
                                             alt="Upload Parent Status File One"
                                             style={{
                                               height: "100px",
@@ -1526,23 +1424,28 @@ const StudentProfile = () => {
                                             Parent Status File Two{" "}
                                             <span>*</span>
                                           </label>
+
                                           <input
                                             type="file"
-                                            class="form-control"
-                                            name="parentStatusTwoImg"
+                                            className="form-control"
+                                            name={`familyDetails.${index}.parentStatusTwoImg`}
                                             onChange={(e) =>
-                                              imageHandler(e, "parentStatusTwo")
+                                              imageHandler(
+                                                e,
+                                                "parentStatusTwo",
+                                                index
+                                              )
                                             }
-                                            id="parent_stauts_file_two"
+                                            id={`parent_stauts_file_two_prev${index}`}
                                             required
                                           />
                                         </div>
-                                        {/* shoe status img two */}
+                                        {/* show status img two */}
                                         <div class="col-lg-3">
                                           <img
-                                            id="parent_stauts_file_two_prev"
-                                            src={`http://localhost:8088${studentInformation.familyDetails.parentStatusTwoImg}`}
-                                            alt="Upload Parent Status File Two"
+                                            id={`parent_status_file_one_prev_${index}`}
+                                            src={`http://localhost:8088${member.parentStatusTwoImg}`}
+                                            alt="Upload Parent Status File One"
                                             style={{
                                               height: "100px",
                                               width: "100px",
@@ -1562,11 +1465,13 @@ const StudentProfile = () => {
                                       </label>
                                       <select
                                         class="form-control"
-                                        name="familyDetails.relationWithStudent"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .relationWithStudent
-                                        }
+                                        // name="familyDetails.relationWithStudent"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationWithStudent
+                                        // }
+                                        name={`familyDetails.${index}.relationWithStudent`}
+                                        value={member.relationWithStudent}
                                         onChange={(e) => handleChange(e)}
                                       >
                                         <option value="">--select--</option>
@@ -1598,12 +1503,14 @@ const StudentProfile = () => {
                                       <input
                                         type="text"
                                         class="form-control"
-                                        name="familyDetails.relationPersonName"
                                         placeholder="Enter Person Name"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .relationPersonName
-                                        }
+                                        // name="familyDetails.relationPersonName"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationPersonName
+                                        // }
+                                        name={`familyDetails.${index}.relationPersonName`}
+                                        value={member.relationPersonName}
                                         onChange={(e) => handleChange(e)}
                                         required
                                       />
@@ -1615,10 +1522,14 @@ const StudentProfile = () => {
                                       </label>
                                       <select
                                         class="form-control"
-                                        name="familyDetails.relationPersonMaritalStatus"
+                                        // name="familyDetails.relationPersonMaritalStatus"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationPersonMaritalStatus
+                                        // }
+                                        name={`familyDetails.${index}.relationPersonMaritalStatus`}
                                         value={
-                                          studentInformation.familyDetails
-                                            .relationPersonMaritalStatus
+                                          member.relationPersonMaritalStatus
                                         }
                                         onChange={(e) => handleChange(e)}
                                       >
@@ -1643,11 +1554,13 @@ const StudentProfile = () => {
                                         type="date"
                                         class="form-control"
                                         placeholder="Enter DOB"
-                                        name="familyDetails.relationPersonDOB"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .relationPersonDOB
-                                        }
+                                        // name="familyDetails.relationPersonDOB"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationPersonDOB
+                                        // }
+                                        name={`familyDetails.${index}.relationPersonDOB`}
+                                        value={member.relationPersonDOB}
                                         onChange={(e) => handleChange(e)}
                                         required
                                       />
@@ -1664,42 +1577,33 @@ const StudentProfile = () => {
                                       <label class="radio-inline">
                                         <input
                                           type="radio"
-                                          name="familyDetails.relationPersonGender"
+                                          name={`familyDetails.${index}.relationPersonGender`}
                                           onChange={(e) => handleChange(e)}
                                           id="gender_radio"
                                           value="Male"
-                                          checked={
-                                            studentInformation.familyDetails
-                                              .relationPersonGender === "Male"
-                                          }
+                                          checked={member.relationPersonGender === "Male"}
                                         />
                                         Male
                                       </label>
                                       <label class="radio-inline">
                                         <input
                                           type="radio"
-                                          name="familyDetails.relationPersonGender"
+                                          name={`familyDetails.${index}.relationPersonGender`}
                                           onChange={(e) => handleChange(e)}
                                           id="gender_radio2"
                                           value="Female"
-                                          checked={
-                                            studentInformation.familyDetails
-                                              .relationPersonGender === "Female"
-                                          }
+                                          checked={member.relationPersonGender === "Female"}
                                         />
                                         Female
                                       </label>
                                       <label class="radio-inline">
                                         <input
                                           type="radio"
-                                          name="familyDetails.relationPersonGender"
+                                          name={`familyDetails.${index}.relationPersonGender`}
                                           id="gender_radio3"
                                           value="Transgender"
-                                          checked={
-                                            studentInformation.familyDetails
-                                              .relationPersonGender ===
-                                            "Transgender"
-                                          }
+                                          onChange={(e) => handleChange(e)}
+                                          checked={member.relationPersonGender === "Transgender"}
                                         />
                                         Transgender
                                       </label>
@@ -1713,11 +1617,13 @@ const StudentProfile = () => {
                                       <input
                                         type="number"
                                         class="form-control"
-                                        name="familyDetails.relationPersonAadhar"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .relationPersonAadhar
-                                        }
+                                        // name="familyDetails.relationPersonAadhar"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationPersonAadhar
+                                        // }
+                                        name={`familyDetails.${index}.relationPersonAadhar`}
+                                        value={member.relationPersonAadhar}
                                         onChange={(e) => handleChange(e)}
                                         placeholder="Enter Aadhar Card No"
                                         required
@@ -1730,11 +1636,13 @@ const StudentProfile = () => {
                                       <input
                                         type="number"
                                         class="form-control"
-                                        name="familyDetails.relationPersonAge"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .relationPersonAge
-                                        }
+                                        // name="familyDetails.relationPersonAge"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationPersonAge
+                                        // }
+                                        name={`familyDetails.${index}.relationPersonAge`}
+                                        value={member.relationPersonAge}
                                         onChange={(e) => handleChange(e)}
                                         placeholder="Enter Age"
                                         required
@@ -1753,11 +1661,13 @@ const StudentProfile = () => {
                                       <input
                                         type="text"
                                         className="form-control"
-                                        name="familyDetails.relationPersonEducation"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .relationPersonEducation
-                                        }
+                                        // name="familyDetails.relationPersonEducation"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationPersonEducation
+                                        // }
+                                        name={`familyDetails.${index}.relationPersonEducation`}
+                                        value={member.relationPersonEducation}
                                         onChange={(e) => handleChange(e)}
                                         placeholder="Enter Education"
                                         required
@@ -1770,11 +1680,13 @@ const StudentProfile = () => {
                                       </label>
                                       <select
                                         className="form-control"
-                                        name="familyDetails.relationPersonOccupation"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .relationPersonOccupation
-                                        }
+                                        // name="familyDetails.relationPersonOccupation"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationPersonOccupation
+                                        // }
+                                        name={`familyDetails.${index}.relationPersonOccupation`}
+                                        value={member.relationPersonOccupation}
                                         onChange={(e) => handleChange(e)}
                                       >
                                         <option value="NA" selected="selected">
@@ -1805,10 +1717,14 @@ const StudentProfile = () => {
                                       </label>
                                       <textarea
                                         className="form-control"
-                                        name="familyDetails.relationPersonOccupationDetails"
+                                        // name="familyDetails.relationPersonOccupationDetails"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationPersonOccupationDetails
+                                        // }
+                                        name={`familyDetails.${index}.relationPersonOccupationDetails`}
                                         value={
-                                          studentInformation.familyDetails
-                                            .relationPersonOccupationDetails
+                                          member.relationPersonOccupationDetails
                                         }
                                         onChange={(e) => handleChange(e)}
                                         placeholder="Enter Occupation Details"
@@ -1823,10 +1739,14 @@ const StudentProfile = () => {
                                       <input
                                         type="number"
                                         className="form-control"
-                                        name="familyDetails.relationPersonMonthlyIncome"
+                                        // name="familyDetails.relationPersonMonthlyIncome"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .relationPersonMonthlyIncome
+                                        // }
+                                        name={`familyDetails.${index}.relationPersonMonthlyIncome`}
                                         value={
-                                          studentInformation.familyDetails
-                                            .relationPersonMonthlyIncome
+                                          member.relationPersonMonthlyIncome
                                         }
                                         onChange={(e) => handleChange(e)}
                                         placeholder="Enter Monthly Income/Fees"
@@ -1844,18 +1764,24 @@ const StudentProfile = () => {
                                       <input
                                         type="file"
                                         className="form-control"
-                                        name="incomeFileFrontImg"
-                                        id="income_file_front"
+                                        // name="incomeFileFrontImg"
+                                        // id="income_file_front"
+                                        // onChange={(e) =>
+                                        //   imageHandler(e, "incomeFront")
+                                        // }
+
+                                        name={`familyDetails.${index}.incomeFileFrontImg`}
                                         onChange={(e) =>
-                                          imageHandler(e, "incomeFront")
+                                          imageHandler(e, "incomeFront", index)
                                         }
+                                        id={`income_file_front_prev${index}`}
                                         required
                                       />
                                     </div>
                                     <div className="col-lg-3">
                                       <img
                                         id="income_file_front_prev"
-                                        src={`http://localhost:8088${studentInformation.familyDetails.incomeFileFrontImg}`}
+                                        src={`http://localhost:8088${member.incomeFileFrontImg}`}
                                         alt="Upload Income File Front"
                                         style={{
                                           height: "100px",
@@ -1870,18 +1796,18 @@ const StudentProfile = () => {
                                       <input
                                         type="file"
                                         className="form-control"
-                                        name="incomeFileBackImg"
-                                        id="income_file_back"
+                                        name={`familyDetails.${index}.incomeFileBackImg`}
                                         onChange={(e) =>
-                                          imageHandler(e, "incomeBack")
+                                          imageHandler(e, "incomeBack", index)
                                         }
+                                        id={`income_file_back_prev${index}`}
                                         required
                                       />
                                     </div>
                                     <div className="col-lg-3">
                                       <img
                                         id="income_file_back_prev"
-                                        src={`http://localhost:8088${studentInformation.familyDetails.incomeFileBackImg}`}
+                                        src={`http://localhost:8088${member.incomeFileBackImg}`}
                                         alt="Upload Income File Back"
                                         style={{
                                           height: "100px",
@@ -1901,11 +1827,13 @@ const StudentProfile = () => {
                                       </label>
                                       <select
                                         className="form-control"
-                                        name="familyDetails.handiCapped"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .handiCapped
-                                        }
+                                        // name="familyDetails.handiCapped"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .handiCapped
+                                        // }
+                                        name={`familyDetails.${index}.handiCapped`}
+                                        value={member.handiCapped}
                                         onChange={(e) => handleChange(e)}
                                       >
                                         <option value="">--select--</option>
@@ -1913,8 +1841,7 @@ const StudentProfile = () => {
                                         <option value="No">No</option>
                                       </select>
                                     </div>
-                                    {studentInformation?.familyDetails
-                                      .handiCapped === "Yes" && (
+                                    {member.handiCapped === "Yes" && (
                                       <>
                                         {/* handicaped img one */}
                                         <div className="col-lg-3">
@@ -1924,11 +1851,11 @@ const StudentProfile = () => {
                                           <input
                                             type="file"
                                             className="form-control"
-                                            name="handiCapFileOneImg"
-                                            id="handicapped_file_one"
+                                            name={`familyDetails.${index}.handiCapFileOneImg`}
                                             onChange={(e) =>
-                                              imageHandler(e, "handicapedFront")
+                                              imageHandler(e, "handicapedFront", index)
                                             }
+                                            id={`handicapped_file_one_prev${index}`}
                                             required
                                           />
                                         </div>
@@ -1936,7 +1863,7 @@ const StudentProfile = () => {
                                         <div className="col-lg-2">
                                           <img
                                             id="handicapped_file_one_prev"
-                                            src={`http://localhost:8088${studentInformation.familyDetails.handiCapFileOneImg}`}
+                                            src={`http://localhost:8088${member.handiCapFileOneImg}`}
                                             alt="Handicapped File 1"
                                             style={{
                                               height: "100px",
@@ -1952,11 +1879,11 @@ const StudentProfile = () => {
                                           <input
                                             type="file"
                                             className="form-control"
-                                            name="handiCapFileTwoImg"
-                                            id="handicapped_file_two"
+                                            name={`familyDetails.${index}.handiCapFileTwoImg`}
                                             onChange={(e) =>
-                                              imageHandler(e, "handicapedBack")
+                                              imageHandler(e, "handicapedBack", index)
                                             }
+                                            id={`handicapped_file_two_prev${index}`}
                                             required
                                           />
                                         </div>
@@ -1964,7 +1891,7 @@ const StudentProfile = () => {
                                         <div className="col-lg-2">
                                           <img
                                             id="handicapped_file_two_prev"
-                                            src={`http://localhost:8088${studentInformation.familyDetails.handiCapFileTwoImg}`}
+                                            src={`http://localhost:8088${member.handiCapFileTwoImg}`}
                                             alt="Handicapped File 2"
                                             style={{
                                               height: "100px",
@@ -1985,11 +1912,13 @@ const StudentProfile = () => {
                                       <input
                                         type="text"
                                         className="form-control"
-                                        name="familyDetails.personCity"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .personCity
-                                        }
+                                        // name="familyDetails.personCity"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .personCity
+                                        // }
+                                        name={`familyDetails.${index}.personCity`}
+                                        value={member.personCity}
                                         onChange={(e) => handleChange(e)}
                                         placeholder="Enter Name of the city (If any)"
                                         required
@@ -2001,11 +1930,13 @@ const StudentProfile = () => {
                                       </label>
                                       <select
                                         className="form-control"
-                                        name="familyDetails.personStudying"
-                                        value={
-                                          studentInformation.familyDetails
-                                            .personStudying
-                                        }
+                                        // name="familyDetails.personStudying"
+                                        // value={
+                                        //   studentInformation.familyDetails
+                                        //     .personStudying
+                                        // }
+                                        name={`familyDetails.${index}.personStudying`}
+                                        value={member.personStudying}
                                         onChange={(e) => handleChange(e)}
                                       >
                                         <option value="">--select--</option>
