@@ -34,7 +34,9 @@ const StudentProfile = () => {
     addFamilyMember,
     handleChange,
   } = useContext(GlobalContext);
-
+  console.log("studentInformation", studentInformation);
+  console.log("originalData", originalData);
+  console.log("modifiedData", modifiedData);
 
 
   const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
@@ -50,20 +52,16 @@ const StudentProfile = () => {
   const [buttonShow, setbuttonSchow] = useState(false);
 
   useEffect(() => {
-
     if (userType === "Student") {
       setModifiedData((prevState) => ({
         ...prevState,
         studentInfo: {
           ...prevState.studentInfo,
           aadharNo: localStorage.getItem("aadharNO"),
-        }
-      }))
+        },
+      }));
     }
-
-  },[])
-
-  console.log("xxxxxxxxxx", modifiedData);
+  }, []);
 
   const tabs = [
     "student_info",
@@ -382,9 +380,7 @@ const StudentProfile = () => {
         const mergedData = {
           ...originalData,
           ...modifiedData,
-
-          
-
+          familyDetails: modifiedData.familyDetails || originalData.familyDetails,
 
           saveAsDraft: true,
           aadharNo: localStorage.getItem("aadharNO"),
@@ -392,9 +388,8 @@ const StudentProfile = () => {
           addedBy: localStorage.getItem("addedBy"),
         };
 
-        console.log("mergedData", modifiedData);
-        return false
-
+        console.log("mergedData", mergedData);
+return
         if (!studentInformation.studentInfo.aadharNo) {
           toast.error("Aadhar no is required");
           return false;
@@ -467,33 +462,6 @@ const StudentProfile = () => {
     }
   };
 
-  useEffect(() => {
-    if (studentInformation.studentInfo.state) {
-      const cities = filterCity(studentInformation.studentInfo.state);
-      setFilteredCities(cities);
-    }
-    if (studentInformation.jamatInfo.memonState) {
-      const cities = filterCity(studentInformation.jamatInfo.memonState);
-      setMemonCities(cities);
-    }
-    if (studentInformation.prevAcademicInfo.instituteState) {
-      const cities = filterCity(
-        studentInformation.prevAcademicInfo.instituteState
-      );
-      setAcademicCity(cities);
-    }
-    if (studentInformation.othertrustSupport.trustDetails[0].trustState) {
-      const cities = filterCity(
-        studentInformation.othertrustSupport.trustDetails[0].trustState
-      );
-      setOthertrustCity(cities);
-    }
-  }, [
-    studentInformation.jamatInfo.memonState,
-    studentInformation.studentInfo.state,
-    studentInformation.prevAcademicInfo.instituteState,
-    studentInformation.othertrustSupport.trustDetails[0].trustCity,
-  ]);
 
   const handleStore = (e, item, state) => {
     console.log("sdsdsdsdsdsd", item, state);
@@ -568,7 +536,9 @@ const StudentProfile = () => {
                                 name="studentInfo.aadharNo"
                                 className="form-control"
                                 placeholder="Enter Aadhar No"
-                                value={studentInformation.studentInfo.aadharNo ? studentInformation.studentInfo.aadharNo
+                                value={
+                                  studentInformation.studentInfo.aadharNo
+                                    ? studentInformation.studentInfo.aadharNo
                                     : aadharNo
                                 }
                                 disabled={userType === "Student"}
@@ -677,6 +647,7 @@ const StudentProfile = () => {
                                 value={moment(
                                   studentInformation.studentInfo.dob
                                 ).format("YYYY-MM-DD")}
+                                max={new Date().toISOString().split("T")[0]}
                                 placeholder="Enter Date Of Birth"
                                 onChange={(e) => handleChange(e)}
                                 required
@@ -866,9 +837,13 @@ const StudentProfile = () => {
                                   onChange={handleAddressCopy}
                                   checked={
                                     studentInformation.studentInfo
-                                      .currentAddress ===
+                                      .currentAddress &&
                                     studentInformation.studentInfo
-                                      .parmanentAddress
+                                      .parmanentAddress &&
+                                    studentInformation.studentInfo
+                                      .currentAddress ===
+                                      studentInformation.studentInfo
+                                        .parmanentAddress
                                   }
                                 />
                                 <label className="form-check-label"></label>
@@ -914,16 +889,14 @@ const StudentProfile = () => {
                               <label className="form-label">
                                 Country <span>*</span>
                               </label>
-                              <select
-                                className="form-select"
+                              <input
+                                type="text"
+                                className="form-control"
                                 name="studentInfo.country"
                                 value={studentInformation.studentInfo.country}
                                 onChange={(e) => handleChange(e)}
-                              >
-                                {/* <option value="">--Select Country--</option>
-                                <option value="Yes">Yes</option> */}
-                                <option value="India">India</option>
-                              </select>
+                                placeholder="Enter Country"
+                              />
                             </div>
                             {/* state */}
                             <div className="col-lg-3">
@@ -934,7 +907,6 @@ const StudentProfile = () => {
                                 className="form-select"
                                 name="studentInfo.state"
                                 value={studentInformation.studentInfo.state}
-                                // onChange={(e) => handleChange(e)}
                                 onChange={(e) => {
                                   handleStateChange(e);
                                 }}
@@ -953,29 +925,17 @@ const StudentProfile = () => {
                               <label className="form-label">
                                 City <span>*</span>
                               </label>
-                              {/* <input
-                                type="text"
-                                className="form-control"
-                                name="studentInfo.city"
+                              <CityDropdown
+                                state={studentInformation.studentInfo.state}
                                 value={studentInformation.studentInfo.city}
-                                onChange={(e) => handleChange(e)}
-                                placeholder="Enter City"
-                              /> */}
-                              <select
-                                className="form-select"
-                                id="studentInfo.city"
-                                name="studentInfo.city"
-                                value={studentInformation.studentInfo.city}
-                                onChange={(e) => handleChange(e)}
-                                required
-                              >
-                                <option value="">--select--</option>
-                                {filteredCities.map((city) => (
-                                  <option key={city} value={city}>
-                                    {city}
-                                  </option>
-                                ))}
-                              </select>
+                                onChange={(e) => {
+                                  let updated = JSON.parse(
+                                    JSON.stringify(studentInformation)
+                                  );
+                                  updated.studentInfo.city = e.target.value;
+                                  setStudentInformation(updated);
+                                }}
+                              />
                             </div>
                           </div>
                         </div>
@@ -1554,14 +1514,10 @@ const StudentProfile = () => {
                                         type="date"
                                         class="form-control"
                                         placeholder="Enter DOB"
-                                        // name="familyDetails.relationPersonDOB"
-                                        // value={
-                                        //   studentInformation.familyDetails
-                                        //     .relationPersonDOB
-                                        // }
                                         name={`familyDetails.${index}.relationPersonDOB`}
                                         value={member.relationPersonDOB}
                                         onChange={(e) => handleChange(e)}
+                                        max={new Date().toISOString().split('T')[0]}
                                         required
                                       />
                                     </div>
@@ -1581,7 +1537,10 @@ const StudentProfile = () => {
                                           onChange={(e) => handleChange(e)}
                                           id="gender_radio"
                                           value="Male"
-                                          checked={member.relationPersonGender === "Male"}
+                                          checked={
+                                            member.relationPersonGender ===
+                                            "Male"
+                                          }
                                         />
                                         Male
                                       </label>
@@ -1592,7 +1551,10 @@ const StudentProfile = () => {
                                           onChange={(e) => handleChange(e)}
                                           id="gender_radio2"
                                           value="Female"
-                                          checked={member.relationPersonGender === "Female"}
+                                          checked={
+                                            member.relationPersonGender ===
+                                            "Female"
+                                          }
                                         />
                                         Female
                                       </label>
@@ -1603,7 +1565,10 @@ const StudentProfile = () => {
                                           id="gender_radio3"
                                           value="Transgender"
                                           onChange={(e) => handleChange(e)}
-                                          checked={member.relationPersonGender === "Transgender"}
+                                          checked={
+                                            member.relationPersonGender ===
+                                            "Transgender"
+                                          }
                                         />
                                         Transgender
                                       </label>
@@ -1853,7 +1818,11 @@ const StudentProfile = () => {
                                             className="form-control"
                                             name={`familyDetails.${index}.handiCapFileOneImg`}
                                             onChange={(e) =>
-                                              imageHandler(e, "handicapedFront", index)
+                                              imageHandler(
+                                                e,
+                                                "handicapedFront",
+                                                index
+                                              )
                                             }
                                             id={`handicapped_file_one_prev${index}`}
                                             required
@@ -1881,7 +1850,11 @@ const StudentProfile = () => {
                                             className="form-control"
                                             name={`familyDetails.${index}.handiCapFileTwoImg`}
                                             onChange={(e) =>
-                                              imageHandler(e, "handicapedBack", index)
+                                              imageHandler(
+                                                e,
+                                                "handicapedBack",
+                                                index
+                                              )
                                             }
                                             id={`handicapped_file_two_prev${index}`}
                                             required
@@ -1973,10 +1946,7 @@ const StudentProfile = () => {
                                   onChange={(e) => handleChange(e)}
                                   id="if_memon_yes"
                                   value="Yes"
-                                  checked={
-                                    studentInformation.jamatInfo.ifMemon ===
-                                    "Yes"
-                                  }
+                                  checked={studentInformation.jamatInfo.ifMemon ==="Yes"}
                                 />{" "}
                                 Yes
                               </label>
@@ -2222,7 +2192,7 @@ const StudentProfile = () => {
                                   <label>
                                     City<span>*</span>
                                   </label>
-                                  <select
+                                  {/* <select
                                     className="form-select"
                                     id="jamatInfo.memonCity"
                                     name="jamatInfo.memonCity"
@@ -2238,7 +2208,24 @@ const StudentProfile = () => {
                                         {city}
                                       </option>
                                     ))}
-                                  </select>
+                                  </select> */}
+
+                                  <CityDropdown
+                                    state={
+                                      studentInformation.jamatInfo.memonState
+                                    }
+                                    value={
+                                      studentInformation.jamatInfo.memonCity
+                                    }
+                                    onChange={(e) => {
+                                      let updated = JSON.parse(
+                                        JSON.stringify(studentInformation)
+                                      );
+                                      updated.jamatInfo.memonCity =
+                                        e.target.value;
+                                      setStudentInformation(updated);
+                                    }}
+                                  />
                                 </div>
                                 {/* memon pin code */}
                                 <div class="col-lg-3">

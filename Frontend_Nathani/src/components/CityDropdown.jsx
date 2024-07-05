@@ -8,6 +8,7 @@ function CityDropdown({ state,onChange,value,name }) {
     let cities = AllCities[state];
     setCities(cities);
   }, [state]);
+  
   return (
     <select
       class="form-control"

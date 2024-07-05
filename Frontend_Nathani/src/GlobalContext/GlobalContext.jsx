@@ -189,9 +189,9 @@ const GlobalProvider = ({ children }) => {
   };
 
   const [studentInformation, setStudentInformation] = useState(initialState);
-  console.log("globalstudentInformation", studentInformation)
   const [modifiedData, setModifiedData] = useState({});
   const [originalData, setOriginalData] = useState({});
+  // console.log("globalstudentInformation", studentInformation)
   const [openModal, setOpenModal] = useState(false);
   const [allFamilyDetails, setAllFamilyDetails] = useState(null);
   const [academicInfo, setAcademicInfo] = useState(null);
@@ -247,22 +247,24 @@ const GlobalProvider = ({ children }) => {
     const updateNestedObject = (object, keys, value) => {
       const newObject = { ...object };
       let nestedObject = newObject;
+  
       for (let i = 0; i < keys.length - 1; i++) {
         const key = keys[i];
+  
         if (Array.isArray(nestedObject[key])) {
           const index = parseInt(keys[i + 1], 10);
           nestedObject[key] = [...nestedObject[key]];
           nestedObject = nestedObject[key][index];
-          i++;
+          i++; // Skip the next key since it's the index
         } else {
           nestedObject[key] = { ...nestedObject[key] };
           nestedObject = nestedObject[key];
         }
       }
+  
       nestedObject[keys[keys.length - 1]] = value;
       return newObject;
     };
-  
   
     if (keys.length === 1) {
       setStudentInformation((prevState) => ({
@@ -282,6 +284,50 @@ const GlobalProvider = ({ children }) => {
       );
     }
   };
+  
+
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   const keys = name.split(".");
+  
+  //   const updateNestedObject = (object, keys, value) => {
+  //     const newObject = { ...object };
+  //     let nestedObject = newObject;
+  //     for (let i = 0; i < keys.length - 1; i++) {
+  //       const key = keys[i];
+  //       if (Array.isArray(nestedObject[key])) {
+  //         const index = parseInt(keys[i + 1], 10);
+  //         nestedObject[key] = [...nestedObject[key]];
+  //         nestedObject = nestedObject[key][index];
+  //         i++;
+  //       } else {
+  //         nestedObject[key] = { ...nestedObject[key] };
+  //         nestedObject = nestedObject[key];
+  //       }
+  //     }
+  //     nestedObject[keys[keys.length - 1]] = value;
+  //     return newObject;
+  //   };
+  
+  
+  //   if (keys.length === 1) {
+  //     setStudentInformation((prevState) => ({
+  //       ...prevState,
+  //       [name]: value,
+  //     }));
+  //     setModifiedData((prevState) => ({
+  //       ...prevState,
+  //       [name]: value,
+  //     }));
+  //   } else {
+  //     setStudentInformation((prevState) =>
+  //       updateNestedObject(prevState, keys, value)
+  //     );
+  //     setModifiedData((prevState) =>
+  //       updateNestedObject(prevState, keys, value)
+  //     );
+  //   }
+  // };
 
   // const addFamilyMember = async () => {
   //   setStudentInformation((prevState) => ({
