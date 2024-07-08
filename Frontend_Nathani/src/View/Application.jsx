@@ -14,18 +14,9 @@ const Application = () => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const {
-    studentInformation,
-    setStudentInformation,
-    getStudentData,
-    allFamilyDetails,
-    setAllFamilyDetails,
-    academicInfo,
-    setAcademicInfo,
-    organizationSupport,
-    setorganizationSupport,
+    currentStudy,
+     setCurrentStudy
   } = useContext(GlobalContext);
-
-  console.log("organizationSupport", organizationSupport);
 
   const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
   const [filteredCities, setFilteredCities] = useState([]);
@@ -120,6 +111,14 @@ const Application = () => {
                                 <select
                                   class="form-control step6Class"
                                   id="txt6scLevelOfCourse"
+                                  name="currentStudy.currentlyStudingIn"
+                                  value={currentStudy.currentlyStudingIn}
+                                  onChange={(e) => {
+                                    setCurrentStudy((state) => {
+                                      state.currentlyStudingIn = e.target.value;
+                                      return JSON.parse(JSON.stringify(state))
+                                    })
+                                  }}
                                 >
                                   <option selected="selected" value="0">
                                     --select--
@@ -206,6 +205,16 @@ const Application = () => {
                                   class="form-control"
                                   id="txtSpecialCase_Step6"
                                   placeholder="Special Case"
+
+
+                                  name="currentStudy.currentSpecialCase"
+                                  value={currentStudy.currentSpecialCase}
+                                  onChange={(e) => {
+                                    setCurrentStudy((state) => {
+                                      state.currentSpecialCase = e.target.value;
+                                      return JSON.parse(JSON.stringify(state))
+                                    })
+                                  }}
                                 />
                               </div>
                               <div class="col-sm-3 topMargin" id="txtDegree">
@@ -213,12 +222,20 @@ const Application = () => {
                                   Course Name
                                   <span style={{ color: "red" }}></span>
                                 </label>
-                                <select id="txt6scDegree" class="form-control">
-                                  <option selected="selected" value="select">
-                                    --select--
-                                  </option>
-                                  <option value="0">Other</option>
-                                </select>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="currentlyCourseName"
+                                  placeholder="Special Case"
+                                  name="currentStudy.currentlyCourseName"
+                                  value={currentStudy.currentlyCourseName}
+                                  onChange={(e) => {
+                                    setCurrentStudy((state) => {
+                                      state.currentlyCourseName = e.target.value;
+                                      return JSON.parse(JSON.stringify(state))
+                                    })
+                                  }}
+                                />
                               </div>
                               <div
                                 class="col-sm-3 topMargin"

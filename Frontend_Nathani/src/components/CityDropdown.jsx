@@ -14,18 +14,7 @@ function CityDropdown({ state,onChange,value,name }) {
       class="form-control"
       name={name}
       value={value}
-      // name={`othertrustSupport.trustDetails.${index}.trustCity`}
-      // value={
-      //   studentInformation
-      //     .othertrustSupport
-      //     .trustDetails.length > 0
-      //     ? studentInformation
-      //         .othertrustSupport
-      //         .trustDetails[index]
-      //         .trustCity
-      //     : trust.trustCity
-      // }
-      onChange={onChange}
+        onChange={onChange}
     >
       <option value="">--select--</option>
       {cities?.map((state) => (
