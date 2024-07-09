@@ -166,7 +166,7 @@ const StudentProfile = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8088/api/v1/user/upload",
+        "url/upload",
         DATA,
         {
           headers: {
@@ -417,7 +417,7 @@ const StudentProfile = () => {
         } else {
           setLoading(true);
           let result = await axios.post(
-            "http://localhost:8088/api/v1/user/add_Student_data",
+            "url/add_Student_data",
             mergedData
           );
           // console.log("result", result);
@@ -438,7 +438,7 @@ const StudentProfile = () => {
         const data = modifiedData;
         setLoading(true);
         let res = await axios.post(
-          "http://localhost:8088/api/v1/user/add_Student_data",
+          "url/add_Student_data",
           data
         );
         if (res && res.data.status) {

@@ -1,6 +1,12 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
-const baseUrl = "http://localhost:8088/api/v1/user/";
+// const baseUrl = "http://localhost:8088";
+const baseUrl = "http://37.60.243.233:8088"
+const ApiEndPoint = "/api/v1/user";
+
+const url = baseUrl + ApiEndPoint;
+
+console.log("uuurrrlll", url)
 
 const GlobalContext = createContext();
 
@@ -252,10 +258,8 @@ const GlobalProvider = ({ children }) => {
     };
     try {
       setIsLoading(true);
-      const res = await axios.post(
-        "http://localhost:8088/api/v1/user/get_Student_data",
-        data
-      );
+      console.log("sdsdsd", `${url}/get_Student_data`)
+      const res = await axios.post(`${url}/get_Student_data`,data);
       console.log("res_data_existStudent", res?.data?.existStudent);
       if (res && res.data.status && userType === "Student") {
         localStorage.setItem("id", res?.data?.existStudent?._id);
@@ -374,7 +378,7 @@ const GlobalProvider = ({ children }) => {
   //     };
   //     console.log("data", data);
   //     let res = await axios.post(
-  //       `http://localhost:8088/api/v1/user/add_family/${aadharNo}`,
+  //       `url/add_family/${aadharNo}`,
   //       data
   //     );
   //     if (res & res.status) {
@@ -405,7 +409,7 @@ const GlobalProvider = ({ children }) => {
           };
           console.log("data", data);
           let res = await axios.post(
-            `http://localhost:8088/api/v1/user/add_family/${aadharNo}`,
+            `url/add_family/${aadharNo}`,
             data
           );
           if (res && res.status) {
@@ -467,6 +471,7 @@ const GlobalProvider = ({ children }) => {
            setDeclarationFamily,
            currentStudy, 
            setCurrentStudy,
+           url
       }}
     >
       {children}
