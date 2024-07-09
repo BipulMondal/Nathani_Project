@@ -45,6 +45,8 @@ const StudentProfile = () => {
     setTrustDetails,
     declarationFamily,
     setDeclarationFamily,
+    baseUrl,
+    url
   } = useContext(GlobalContext);
   const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
   const [filteredCities, setFilteredCities] = useState([]);
@@ -58,7 +60,7 @@ const StudentProfile = () => {
   const userType = localStorage.getItem("userType");
   const [buttonShow, setbuttonSchow] = useState(false);
 
-  console.log("academicDetails", academicDetails);
+  console.log( "sdsdsd", `${url}/add_Student_data`)
 
   useEffect(() => {
     if (userType === "Student") {
@@ -166,7 +168,7 @@ const StudentProfile = () => {
 
     try {
       const response = await axios.post(
-        "url/upload",
+        `${url}/upload`,
         DATA,
         {
           headers: {
@@ -438,7 +440,7 @@ const StudentProfile = () => {
         const data = modifiedData;
         setLoading(true);
         let res = await axios.post(
-          "url/add_Student_data",
+          `${url}/add_Student_data`,
           data
         );
         if (res && res.data.status) {
@@ -1096,7 +1098,7 @@ const StudentProfile = () => {
                                 <div className="col-lg-2">
                                   <img
                                     id="physically_challanged_chacertificate_prev"
-                                    src={`http://localhost:8088${studentDetails.physicalChallangeImg}`}
+                                    src={`${baseUrl}${studentDetails.physicalChallangeImg}`}
                                     alt="Your Certificate Preview"
                                     style={{ height: "100px", width: "100px" }}
                                   />
@@ -1147,7 +1149,7 @@ const StudentProfile = () => {
                                 <div className="col-lg-2">
                                   <img
                                     id="parent_death_chacertificate_prev"
-                                    src={`http://localhost:8088${studentDetails.parentDeathCertificateImg}`}
+                                    src={`${baseUrl}${studentDetails.parentDeathCertificateImg}`}
                                     alt="Parent Death Certificate"
                                     style={{ height: "100px", width: "100px" }}
                                   />
@@ -1175,7 +1177,7 @@ const StudentProfile = () => {
                             <div className="col-lg-3">
                               <img
                                 id="aadhar_card_front_prev"
-                                src={`http://localhost:8088${studentDetails.addaharFrontImg}`}
+                                src={`${baseUrl}${studentDetails.addaharFrontImg}`}
                                 alt="Your Aadhar Card Front Photo Preview"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1197,7 +1199,7 @@ const StudentProfile = () => {
                             <div className="col-lg-3">
                               <img
                                 id="aadhar_card_back_prev"
-                                src={`http://localhost:8088${studentDetails.aadharBackImg}`}
+                                src={`${baseUrl}${studentDetails.aadharBackImg}`}
                                 alt="Your Aadhar Card Back Photo Preview"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1224,7 +1226,7 @@ const StudentProfile = () => {
                             <div className="col-lg-3">
                               <img
                                 id="ration_card_first_prev"
-                                src={`http://localhost:8088${studentDetails.rationFrontImg}`}
+                                src={`${baseUrl}${studentDetails.rationFrontImg}`}
                                 alt="Upload Ration Card First Page Photo"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1247,7 +1249,7 @@ const StudentProfile = () => {
                             <div className="col-lg-3">
                               <img
                                 id="ration_card_last_prev"
-                                src={`http://localhost:8088${studentDetails.rationBackImg}`}
+                                src={`${baseUrl}${studentDetails.rationBackImg}`}
                                 alt="Upload Ration Card Last Page Photo"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1275,7 +1277,7 @@ const StudentProfile = () => {
                             <div className="col-lg-3">
                               <img
                                 id="electricity_bill_prev"
-                                src={`http://localhost:8088${studentDetails.electricityBillImg}`}
+                                src={`${baseUrl}${studentDetails.electricityBillImg}`}
                                 alt="Upload Electricity Bill Photo"
                                 style={{ height: "100px", width: "100px" }}
                               />
@@ -1450,7 +1452,7 @@ const StudentProfile = () => {
                                       <div class="col-lg-3">
                                         <img
                                           id={`parent_status_file_one_prev_${index}`}
-                                          src={`http://localhost:8088${member.parentStatusOneImg}`}
+                                          src={`${baseUrl}${member.parentStatusOneImg}`}
                                           alt="Upload Parent Status File One"
                                           style={{
                                             height: "100px",
@@ -1481,7 +1483,7 @@ const StudentProfile = () => {
                                       <div class="col-lg-3">
                                         <img
                                           id={`parent_status_file_one_prev_${index}`}
-                                          src={`http://localhost:8088${member.parentStatusTwoImg}`}
+                                          src={`${baseUrl}${member.parentStatusTwoImg}`}
                                           alt="Upload Parent Status File One"
                                           style={{
                                             height: "100px",
@@ -1922,7 +1924,7 @@ const StudentProfile = () => {
                                     <div className="col-lg-3">
                                       <img
                                         id="income_file_front_prev"
-                                        src={`http://localhost:8088${member.incomeFileFrontImg}`}
+                                        src={`${baseUrl}${member.incomeFileFrontImg}`}
                                         alt="Upload Income File Front"
                                         style={{
                                           height: "100px",
@@ -1948,7 +1950,7 @@ const StudentProfile = () => {
                                     <div className="col-lg-3">
                                       <img
                                         id="income_file_back_prev"
-                                        src={`http://localhost:8088${member.incomeFileBackImg}`}
+                                        src={`${baseUrl}${member.incomeFileBackImg}`}
                                         alt="Upload Income File Back"
                                         style={{
                                           height: "100px",
@@ -2013,7 +2015,7 @@ const StudentProfile = () => {
                                         <div className="col-lg-2">
                                           <img
                                             id="handicapped_file_one_prev"
-                                            src={`http://localhost:8088${member.handiCapFileOneImg}`}
+                                            src={`${baseUrl}${member.handiCapFileOneImg}`}
                                             alt="Handicapped File 1"
                                             style={{
                                               height: "100px",
@@ -2045,7 +2047,7 @@ const StudentProfile = () => {
                                         <div className="col-lg-2">
                                           <img
                                             id="handicapped_file_two_prev"
-                                            src={`http://localhost:8088${member.handiCapFileTwoImg}`}
+                                            src={`${baseUrl}${member.handiCapFileTwoImg}`}
                                             alt="Handicapped File 2"
                                             style={{
                                               height: "100px",
@@ -2233,7 +2235,7 @@ const StudentProfile = () => {
                                 <div class="col-lg-3">
                                   <img
                                     id="jamat_letter_one_prev"
-                                    src={`http://localhost:8088${jamatDetails.memonJamatLetterOne}`}
+                                    src={`${baseUrl}${jamatDetails.memonJamatLetterOne}`}
                                     alt="Memon Jamat Letter 1"
                                     style={{ height: "100px", width: "100px" }}
                                   />
@@ -2258,7 +2260,7 @@ const StudentProfile = () => {
                                 <div class="col-lg-3">
                                   <img
                                     id="jamat_letter_two_prev"
-                                    src={`http://localhost:8088${jamatDetails.memonJamatLetterTwo}`}
+                                    src={`${baseUrl}${jamatDetails.memonJamatLetterTwo}`}
                                     alt="Memon Jamat Letter 2"
                                     style={{ height: "100px", width: "100px" }}
                                   />
@@ -2801,7 +2803,7 @@ const StudentProfile = () => {
                                               <div class="col-lg-2">
                                                 <img
                                                   id="jamat_letter_two_prev"
-                                                  src={`http://localhost:8088${academic.lastYearResultImg}`}
+                                                  src={`${baseUrl}${academic.lastYearResultImg}`}
                                                   alt="last year result"
                                                   style={{
                                                     height: "100px",
@@ -2842,7 +2844,7 @@ const StudentProfile = () => {
                                               <div class="col-lg-2">
                                                 <img
                                                   id="jamat_letter_two_prev"
-                                                  src={`http://localhost:8088${academic.lastTwoYearResultImg}`}
+                                                  src={`${baseUrl}${academic.lastTwoYearResultImg}`}
                                                   alt="last to last year result"
                                                   style={{
                                                     height: "100px",
@@ -2882,7 +2884,7 @@ const StudentProfile = () => {
                                               <div class="col-lg-2">
                                                 <img
                                                   id="jamat_letter_two_prev"
-                                                  src={`http://localhost:8088${academic.TwoYearBackResultImg}`}
+                                                  src={`${baseUrl}${academic.TwoYearBackResultImg}`}
                                                   alt="2 year back result"
                                                   style={{
                                                     height: "100px",
@@ -4059,7 +4061,7 @@ const StudentProfile = () => {
                                           <div class="col-lg-2">
                                             <img
                                               id="jamat_letter_two_prev"
-                                              src={`http://localhost:8088${academic.bonafideCertificateFrontImg}`}
+                                              src={`${baseUrl}${academic.bonafideCertificateFrontImg}`}
                                               alt="bonafide Certificate Front Image"
                                               style={{
                                                 height: "100px",
@@ -4090,7 +4092,7 @@ const StudentProfile = () => {
                                           <div class="col-lg-3">
                                             <img
                                               id="bonafied_back_prev"
-                                              src={`http://localhost:8088${academic.bonafideCertificateBackImg}`}
+                                              src={`${baseUrl}${academic.bonafideCertificateBackImg}`}
                                               alt="Bonafide Certificate Backside"
                                               style={{
                                                 height: "100px",
@@ -5707,7 +5709,7 @@ const StudentProfile = () => {
                                   class="img-circle"
                                   style={{ height: "120px", width: "120px" }}
                                   id="imgPhoto"
-                                  src={`http://localhost:8088${declarationFamily.studentPhoto}`}
+                                  src={`${baseUrl}${declarationFamily.studentPhoto}`}
                                   alt="Photo"
                                 />
                               </div>
@@ -5751,7 +5753,7 @@ const StudentProfile = () => {
                                   class="img-bordered-sm"
                                   style={{ height: "120px", width: "120px" }}
                                   id="imgSign"
-                                  src={`http://localhost:8088${declarationFamily.studentSign}`}
+                                  src={`${baseUrl}${declarationFamily.studentSign}`}
                                   alt="Sign"
                                 />
                               </div>
@@ -5798,7 +5800,7 @@ const StudentProfile = () => {
                                   class="img-bordered-sm"
                                   style={{ height: "120px", width: "120px" }}
                                   id="parentSign"
-                                  src={`http://localhost:8088${declarationFamily.parentSign}`}
+                                  src={`${baseUrl}${declarationFamily.parentSign}`}
                                   alt="Sign"
                                 />
                               </div>

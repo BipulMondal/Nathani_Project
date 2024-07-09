@@ -6,8 +6,6 @@ const ApiEndPoint = "/api/v1/user";
 
 const url = baseUrl + ApiEndPoint;
 
-console.log("uuurrrlll", url)
-
 const GlobalContext = createContext();
 
 const GlobalProvider = ({ children }) => {
@@ -471,7 +469,8 @@ const GlobalProvider = ({ children }) => {
            setDeclarationFamily,
            currentStudy, 
            setCurrentStudy,
-           url
+           url,
+           baseUrl
       }}
     >
       {children}
