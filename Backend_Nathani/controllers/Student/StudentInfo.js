@@ -1,18 +1,18 @@
 const mongoose = require("mongoose");
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const path = require('path');
-const multer = require('multer');
+const path = require("path");
+const multer = require("multer");
 const studentModal = require("../../models/StudentInfo");
 
 const addStudentDetails = async (req, res) => {
   try {
-    let AadharNo =  req.body.aadharNo;
+    console.log("wewew", req.body);
     const check = await studentModal.findOne({
       _id: new mongoose.Types.ObjectId(req.body._id),
       saveAsDraft: true,
     });
-    console.log("check", check)
+    console.log("check", check);
 
     if (check) {
       await studentModal.findOneAndUpdate(
@@ -27,7 +27,7 @@ const addStudentDetails = async (req, res) => {
       });
     } else {
       // Generate a new student code
-    
+
       let studentCode = "";
       const code = await studentModal
         .findOne({}, { studentCode: 1 })
@@ -44,14 +44,14 @@ const addStudentDetails = async (req, res) => {
 
       // Check if the Aadhar number already exists
       const existsStudent = await studentModal.findOne({
-        "studentInfo.aadharNo": AadharNo,
+        "studentInfo.aadharNo": req.body.studentInfo.aadharNo,
         isDeleted: false,
       });
 
-      // console.log("fuck", AadharNo, existsStudent)
+      console.log("existsStudent", existsStudent);
 
       if (existsStudent) {
-        return res.status(401).json({
+        return res.status(400).json({
           status: false,
           message: "Aadhar No already exists",
         });
@@ -83,159 +83,84 @@ const addStudentDetails = async (req, res) => {
 
 const getSingleStudentData = async (req, res) => {
   try {
-    const { aadharNo } = req.body;
-
-    // Query the nested field using dot notation
-    const existStudent = await studentModal.findOne({ "studentInfo.aadharNo": aadharNo });
-    // console.log("asdasd", existStudent, aadharNo, req.body);
-  
-
+    const existStudent = await studentModal.findOne({
+      _id: req.params.id,
+    });
     if (!existStudent) {
       return res.status(200).json({
         status: false,
-        message: "No Student Found"
+        message: "No Student Found",
       });
     } else {
       return res.status(200).json({
         status: true,
         message: "Student Data fetched successfully",
-        existStudent
+        existStudent,
       });
     }
   } catch (error) {
     return res.status(500).json({
       status: false,
       message: "server error occurred",
-      error: error.message
+      error: error.message,
     });
   }
 };
 
 const getStudentsDetailsAddedBy = async (req, res) => {
-try {
-  const {aadharNo, addedBy} = req.body;
-  let allData = await studentModal.find({ addedBy : addedBy, isDeleted: false});
-  console.log("cccc", addedBy)
-  if(!allData){
-    return res.status(401).json({
+  try {
+    let allData = await studentModal.find({
+      addedBy: req.body.addedBy,
+      isDeleted: false,
+    });
+    if (!allData) {
+      return res.status(401).json({
+        status: false,
+        message: "no students details found",
+      });
+    } else {
+      return res.status(200).json({
+        status: true,
+        message: "Students Data gets Successfully",
+        allData,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
       status: false,
-      message: "no students details found"
-    })
+      message: "server error occurred",
+      error: error.message,
+    });
   }
-  else{
-    return res.status(200).json({
-      status: true,
-      message: "Students Data gets Successfully",
-      allData
-    })
-  }
-} catch (error) {
-  return res.status(500).json({
-    status: false,
-    message: "server error occurred",
-    error: error.message
-  });
-}
-
-}
-
-// const addNewStudentDetails = async (req, res) => {
-//   try {
-//     let AadharNo =  req.body.aadharNo;
-//     const check = await studentDetailsModal.findOne({
-//       _id: new mongoose.Types.ObjectId(req.body._id),
-//       saveAsDraft: true,
-//     });
-
-//     if (check) {
-//       await studentDetailsModal.findOneAndUpdate(
-//         { _id: check._id },
-//         { ...req.body, updatedStatus: true },
-//         { new: true } // Ensure the updated document is returned
-//       );
-
-//       return res.status(200).json({
-//         status: true,
-//         message: "Student details updated successfully",
-//       });
-//     } else {
-//       // Generate a new student code
-    
-//       let studentCode = "";
-//       const code = await studentDetailsModal
-//         .findOne({}, { studentCode: 1 })
-//         .sort({ createdOn: -1 })
-//         .exec();
-
-//       const inputString = "S000001";
-//       if (!code || !code.studentCode) {
-//         studentCode = inputString;
-//       } else {
-//         const substring = Number(code.studentCode.slice(1)) + 1;
-//         studentCode = "S" + String(substring).padStart(6, "0");
-//       }
-
-//       // Check if the Aadhar number already exists
-//       const existsStudent = await studentDetailsModal.findOne({
-//         aadharNo: AadharNo,
-//         isDeleted: false,
-//       });
-
-//       if (existsStudent) {
-//         return res.status(401).json({
-//           status: false,
-//           message: "Aadhar No already exists",
-//         });
-//       } else {
-//         // Create new student details
-//         const studentDetailsData = {
-//           ...req.body,
-//           studentCode: studentCode,
-//           saveAsDraft: req.body.saveAsDraft || false,
-//         };
-
-//         const studentDetails = new studentDetailsModal(studentDetailsData);
-//         await studentDetails.save();
-
-//         return res.status(200).json({
-//           status: true,
-//           message: "Student details added successfully",
-//         });
-//       }
-//     }
-//   } catch (error) {
-//     return res.status(500).json({
-//       status: false,
-//       message: "An error occurred",
-//       error: error.message,
-//     });
-//   }
-// };
+};
 
 const addFamilyDetails = async (req, res) => {
   try {
     const { aadharNo, familyDetail } = req.body;
-    console.log("wewewewe", req.body, aadharNo)
+    console.log("wewewewe", req.body, aadharNo);
 
     // Find the student document by aadharNo
-    const student = await studentModal.findOne({ "studentInfo.aadharNo": aadharNo });
+    const student = await studentModal.findOne({
+      "studentInfo.aadharNo": aadharNo,
+    });
 
     if (!student) {
       return res.status(404).json({
         status: false,
-        message: "Student not found"
+        message: "Student not found",
       });
     }
 
     // Check if the family member already exists
     const existsMember = student.familyDetails.find(
-      (detail) => detail.relationPersonAadhar === familyDetail.relationPersonAadhar
+      (detail) =>
+        detail.relationPersonAadhar === familyDetail.relationPersonAadhar
     );
 
     if (existsMember) {
       return res.status(401).json({
         status: false,
-        message: "Member aadhar already exists"
+        message: "Member aadhar already exists",
       });
     }
 
@@ -248,14 +173,14 @@ const addFamilyDetails = async (req, res) => {
     res.status(200).json({
       status: true,
       message: "Family detail added successfully",
-      familyDetails: student.familyDetails
+      familyDetails: student.familyDetails,
     });
   } catch (error) {
     console.error("Error adding family detail:", error);
     res.status(500).json({
       status: false,
       message: "An error occurred while adding family detail",
-      error
+      error,
     });
   }
 };
@@ -264,16 +189,18 @@ const addFamilyMember = async (req, res) => {
   const { aadharNo } = req.params;
   const { _id, ...familyMemberData } = req.body;
 
-  console.log("aadhar", aadharNo, req.body)
+  console.log("aadhar", aadharNo, req.body);
 
   // Convert the family member data from the object format to an array of values
   const familyMember = Object.values(familyMemberData)[0];
 
   try {
-    const student = await studentModal.findOne({ 'studentInfo.aadharNo': aadharNo });
-    console.log("student", student)
+    const student = await studentModal.findOne({
+      "studentInfo.aadharNo": aadharNo,
+    });
+    console.log("student", student);
     if (!student) {
-      return res.status(404).send('Student not found');
+      return res.status(404).send("Student not found");
     }
 
     if (_id) {
@@ -281,8 +208,8 @@ const addFamilyMember = async (req, res) => {
       const familyMemberId = mongoose.Types.ObjectId(_id);
 
       // Update existing family member
-      const existingMemberIndex = student.familyDetails.findIndex(
-        member => member._id.equals(familyMemberId)
+      const existingMemberIndex = student.familyDetails.findIndex((member) =>
+        member._id.equals(familyMemberId)
       );
 
       if (existingMemberIndex !== -1) {
@@ -291,7 +218,7 @@ const addFamilyMember = async (req, res) => {
           ...familyMember,
         };
       } else {
-        return res.status(404).send('Family member not found');
+        return res.status(404).send("Family member not found");
       }
     } else {
       // Add new family member
@@ -305,10 +232,36 @@ const addFamilyMember = async (req, res) => {
   }
 };
 
+const deleteStudent = async (req, res) => {
+  try {
+    const updatedStudents = await studentModal.findByIdAndDelete({
+      _id: req.params.id,
+    });
 
+    if (updatedStudents) {
+      return res.status(200).json({
+        status: true,
+        message: "Student deleted successfully",
+      });
+    } else {
+      return res.status(400).json({
+        status: false,
+        message: "Student deleted failed ",
+      });
+    }
+  } catch (error) {
+    return res.status(501).json({
+      status: false,
+      message: "Internal server error ",
+    });
+  }
+};
 
-
-
-
-
-module.exports = { addStudentDetails, getSingleStudentData, getStudentsDetailsAddedBy, addFamilyDetails, addFamilyMember };
+module.exports = {
+  addStudentDetails,
+  getSingleStudentData,
+  getStudentsDetailsAddedBy,
+  addFamilyDetails,
+  addFamilyMember,
+  deleteStudent,
+};

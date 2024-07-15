@@ -46,33 +46,17 @@ const StudentProfile = () => {
     declarationFamily,
     setDeclarationFamily,
     baseUrl,
-    url
+    url,
+    imageHandler,
+    id,
+    getSingleStudentData
   } = useContext(GlobalContext);
-  const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
-  const [filteredCities, setFilteredCities] = useState([]);
-  const [memonCities, setMemonCities] = useState([]);
-  const [academicCity, setAcademicCity] = useState([]);
-  const [otherTrustCity, setOthertrustCity] = useState([]);
-  const [otherContributionCity, setOtherContributionCity] = useState([]);
+
   const [currentTab, setCurrentTab] = useState("student_info");
   const [loading, setLoading] = useState(false);
   const aadharNo = localStorage.getItem("aadharNO");
   const userType = localStorage.getItem("userType");
   const [buttonShow, setbuttonSchow] = useState(false);
-
-  console.log( "sdsdsd", `${url}/add_Student_data`)
-
-  useEffect(() => {
-    if (userType === "Student") {
-      setModifiedData((prevState) => ({
-        ...prevState,
-        studentDetails: {
-          ...prevState.studentDetails,
-          aadharNo: localStorage.getItem("aadharNO"),
-        },
-      }));
-    }
-  }, []);
 
   const tabs = [
     "student_info",
@@ -108,6 +92,9 @@ const StudentProfile = () => {
   };
 
   const handleNext = () => {
+    if(studentDetails.aadharNo.length < 12 || studentDetails.aadharNo.length > 12){
+      return false
+    }
     const currentIndex = tabs.indexOf(currentTab);
     if (currentIndex < tabs.length - 1) {
       const nextTab = tabs[currentIndex + 1];
@@ -117,122 +104,18 @@ const StudentProfile = () => {
     }
   };
 
-  const imageHandler = async (e, state, index = null) => {
-    console.log("eee", e, state);
-    if (e.target.files.length === 0) return;
-
-    const DATA = new FormData();
-    DATA.append("image", e.target.files[0]);
-
-    const stateToKeyMap = {
-      isPhysical: { section: "studentInfo", key: "physicalChallangeImg" },
-      parentDeath: { section: "studentInfo", key: "parentDeathCertificateImg" },
-      aadharFront: { section: "studentInfo", key: "addaharFrontImg" },
-      aadharBack: { section: "studentInfo", key: "aadharBackImg" },
-      rationFront: { section: "studentInfo", key: "rationFrontImg" },
-      rationBack: { section: "studentInfo", key: "rationBackImg" },
-      electricityBill: { section: "studentInfo", key: "electricityBillImg" },
-      parentStatusOne: { section: "familyDetails", key: "parentStatusOneImg" },
-      parentStatusTwo: { section: "familyDetails", key: "parentStatusTwoImg" },
-      incomeFront: { section: "familyDetails", key: "incomeFileFrontImg" },
-      incomeBack: { section: "familyDetails", key: "incomeFileBackImg" },
-      handicapedFront: { section: "familyDetails", key: "handiCapFileOneImg" },
-      handicapedBack: { section: "familyDetails", key: "handiCapFileTwoImg" },
-      jamatLetterOne: { section: "jamatInfo", key: "memonJamatLetterOne" },
-      jamatLetterTwo: { section: "jamatInfo", key: "memonJamatLetterTwo" },
-      lastYearResultImg: {
-        section: "prevAcademicInfo",
-        key: "lastYearResultImg",
-      },
-      lastTwoYearResultImg: {
-        section: "prevAcademicInfo",
-        key: "lastTwoYearResultImg",
-      },
-      TwoYearBackResultImg: {
-        section: "prevAcademicInfo",
-        key: "TwoYearBackResultImg",
-      },
-      bonafideCertificateFrontImg: {
-        section: "prevAcademicInfo",
-        key: "bonafideCertificateFrontImg",
-      },
-      bonafideCertificateBackImg: {
-        section: "prevAcademicInfo",
-        key: "bonafideCertificateBackImg",
-      },
-      studentPhoto: { section: "familyDeclaration", key: "studentPhoto" },
-      studentSign: { section: "familyDeclaration", key: "studentSign" },
-      studentGuardianSign: { section: "familyDeclaration", key: "parentSign" },
-      // Add other mappings as needed
-    };
-
-    try {
-      const response = await axios.post(
-        `${url}/upload`,
-        DATA,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      console.log("response", response);
-
-      if (response && response.data.status && stateToKeyMap[state]) {
-        const uploadedFilePath = response.data.file;
-        const { section, key } = stateToKeyMap[state];
-
-        if (section === "studentInfo") {
-          setStudentDetails((prevState) => ({
-            ...prevState,
-            [key]: uploadedFilePath,
-          }));
-        } else if (section === "familyDetails" && index !== null) {
-          setFamilyData((prevState) => {
-            const newState = [...prevState];
-            newState[index][key] = uploadedFilePath;
-            return newState;
-          });
-        } else if (section === "jamatInfo") {
-          setJamatDetails((prevState) => ({
-            ...prevState,
-            [key]: uploadedFilePath,
-          }));
-        } else if (section === "prevAcademicInfo" && index !== null) {
-          setAcademicdetails((prevState) => {
-            const newState = [...prevState];
-            newState[index][key] = uploadedFilePath;
-            return newState;
-          });
-        } else if (section === "familyDeclaration") {
-          setDeclarationFamily((prevState) => ({
-            ...prevState,
-            [key]: uploadedFilePath,
-          }))}
-        }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
-  };
+  
 
   const handleAddressCopy = (e) => {
-    setCopyPermantAddress(e.target.checked);
     if (e.target.checked) {
-      setStudentInformation((prevState) => ({
-        ...prevState,
-        studentInfo: {
-          ...prevState.studentInfo,
-          currentAddress: prevState.studentInfo.parmanentAddress,
-        },
+      setStudentDetails((prev) => ({
+        ...prev,
+        currentAddress: prev.parmanentAddress,
       }));
     } else {
-      setStudentInformation((prevState) => ({
-        ...prevState,
-        studentInfo: {
-          ...prevState.studentInfo,
-          currentAddress: "",
-        },
+      setStudentDetails((prev) => ({
+        ...prev,
+        currentAddress: "",
       }));
     }
   };
@@ -402,10 +285,9 @@ const StudentProfile = () => {
           prevAcademicInfo: academicDetails,
           othertrustSupport: trustDetails,
           organizationSupportFamily: organizationSupport,
-          familyDeclaration:declarationFamily,
+          familyDeclaration: declarationFamily,
           saveAsDraft: true,
-          aadharNo: localStorage.getItem("aadharNO"),
-          _id: localStorage.getItem("id"),
+          _id: id ? id : localStorage.getItem("id"),
           addedBy: localStorage.getItem("addedBy"),
         };
 
@@ -413,18 +295,16 @@ const StudentProfile = () => {
         if (!studentDetails.aadharNo) {
           toast.error("Aadhar no is required");
           return false;
-        } else if (studentDetails.aadharNo.length < 16) {
-          toast.error("Aadhar no must be 16 digit long");
+        } else if (studentDetails.aadharNo.length < 12 || studentDetails.aadharNo.length > 12) {
+          toast.error("Aadhar no must be 12 digit long");
           return false;
         } else {
           setLoading(true);
-          let result = await axios.post(
-            "url/add_Student_data",
-            mergedData
-          );
-          // console.log("result", result);
+          let result = await axios.post(`${url}/add_Student_data`, mergedData);
+          console.log("result", result);
           if (result && result.data.status) {
-            getStudentData();
+            // getStudentData();
+            getSingleStudentData();
             toast.success(result.data.message);
             setLoading(false);
             // setStudentInformation(initialState);
@@ -436,15 +316,24 @@ const StudentProfile = () => {
       }
     } else {
       if (handleValidation()) {
-        // const data = studentInformation;
-        const data = modifiedData;
+        const mergedData = {
+          ...originalData,
+          ...modifiedData,
+          studentInfo: studentDetails,
+          familyDetails: familyData,
+          jamatInfo: jamatDetails,
+          prevAcademicInfo: academicDetails,
+          othertrustSupport: trustDetails,
+          organizationSupportFamily: organizationSupport,
+          familyDeclaration: declarationFamily,
+          saveAsDraft: true,
+          _id: localStorage.getItem("id"),
+          addedBy: localStorage.getItem("addedBy"),
+        };
         setLoading(true);
-        let res = await axios.post(
-          `${url}/add_Student_data`,
-          data
-        );
+        let res = await axios.post(`${url}/add_Student_data`, mergedData);
         if (res && res.data.status) {
-          // getStudentData();
+          getStudentData();
           toast.success(res.data.message);
           setLoading(false);
           // setStudentInformation(initialState);
@@ -453,10 +342,7 @@ const StudentProfile = () => {
     }
   };
 
-
   const handleStore = (e, item, state) => {
-    console.log("sdsdsdsdsdsd", item, state);
-
     setStudentInformation((prev) => ({
       ...prev,
       familyDetails: prev.familyDetails.map((detail, index) =>
@@ -527,11 +413,7 @@ const StudentProfile = () => {
                                 name="studentDetails.aadharNo"
                                 className="form-control"
                                 placeholder="Enter Aadhar No"
-                                value={
-                                  studentDetails.aadharNo
-                                    ? studentDetails.aadharNo
-                                    : aadharNo
-                                }
+                                value={studentDetails.aadharNo}
                                 onChange={(e) => {
                                   setStudentDetails((state) => {
                                     state.aadharNo = e.target.value;
@@ -4382,7 +4264,11 @@ const StudentProfile = () => {
                                                   onClick={() => {
                                                     setTrustDetails((prev) => ({
                                                       ...prev,
-                                                      trustDetails: prev.trustDetails.filter((item, i) => i !== index),
+                                                      trustDetails:
+                                                        prev.trustDetails.filter(
+                                                          (item, i) =>
+                                                            i !== index
+                                                        ),
                                                     }));
                                                   }}
                                                 >
@@ -4437,21 +4323,25 @@ const StudentProfile = () => {
 
                                               // Get the last trust detail
                                               const lastTrust =
-                                              updatedOtherSupportDetails
+                                                updatedOtherSupportDetails
                                                   .otherContribution[
-                                                    updatedOtherSupportDetails
-                                                    .otherContribution.length - 1
+                                                  updatedOtherSupportDetails
+                                                    .otherContribution.length -
+                                                    1
                                                 ];
 
                                               // Validation checks
-                                              if (!lastTrust.contributionSource) {
+                                              if (
+                                                !lastTrust.contributionSource
+                                              ) {
                                                 toast.error(
                                                   "Contribution score is required"
                                                 );
                                                 return;
                                               }
                                               if (
-                                                lastTrust.contributionCurrentyearAmunt <= 0
+                                                lastTrust.contributionCurrentyearAmunt <=
+                                                0
                                               ) {
                                                 toast.error(
                                                   "Current year amount is required"
@@ -4459,14 +4349,17 @@ const StudentProfile = () => {
                                                 return;
                                               }
                                               if (
-                                                lastTrust.contributionLastyearAmunt <= 0
+                                                lastTrust.contributionLastyearAmunt <=
+                                                0
                                               ) {
                                                 toast.error(
                                                   "Last year amount is required"
                                                 );
                                                 return;
                                               }
-                                              if (!lastTrust.contributionState) {
+                                              if (
+                                                !lastTrust.contributionState
+                                              ) {
                                                 toast.error(
                                                   "State is required"
                                                 );
@@ -4499,8 +4392,8 @@ const StudentProfile = () => {
                                       </tr>
                                       {trustDetails.otherContribution.map(
                                         (contribution, index) => {
-                                            return (
-                                              <tr key={index}>
+                                          return (
+                                            <tr key={index}>
                                               <td>{index + 1}</td>
                                               <td>
                                                 <input
@@ -4508,14 +4401,17 @@ const StudentProfile = () => {
                                                   className="form-control"
                                                   placeholder="Name Of The Trust"
                                                   name={`contributionSource_${index}`}
-                                                  value={contribution.contributionSource}
+                                                  value={
+                                                    contribution.contributionSource
+                                                  }
                                                   onChange={(e) => {
                                                     const newTrustDetails = [
                                                       ...trustDetails.otherContribution,
                                                     ];
                                                     newTrustDetails[index] = {
                                                       ...newTrustDetails[index],
-                                                      contributionSource: e.target.value,
+                                                      contributionSource:
+                                                        e.target.value,
                                                     };
                                                     setTrustDetails({
                                                       ...trustDetails,
@@ -4531,14 +4427,17 @@ const StudentProfile = () => {
                                                   class="form-control amount allownumericwithdecimal"
                                                   placeholder="Amount received current year"
                                                   name={`contributionCurrentyearAmunt_${index}`}
-                                                  value={contribution.contributionCurrentyearAmunt}
+                                                  value={
+                                                    contribution.contributionCurrentyearAmunt
+                                                  }
                                                   onChange={(e) => {
                                                     const newTrustDetails = [
                                                       ...trustDetails.otherContribution,
                                                     ];
                                                     newTrustDetails[index] = {
                                                       ...newTrustDetails[index],
-                                                      contributionCurrentyearAmunt: e.target.value,
+                                                      contributionCurrentyearAmunt:
+                                                        e.target.value,
                                                     };
                                                     setTrustDetails({
                                                       ...trustDetails,
@@ -4555,14 +4454,17 @@ const StudentProfile = () => {
                                                   id="txt8amt_received_yr_1"
                                                   placeholder="Amount received last year"
                                                   name={`contributionLastyearAmunt_${index}`}
-                                                  value={contribution.contributionLastyearAmunt}
+                                                  value={
+                                                    contribution.contributionLastyearAmunt
+                                                  }
                                                   onChange={(e) => {
                                                     const newTrustDetails = [
                                                       ...trustDetails.otherContribution,
                                                     ];
                                                     newTrustDetails[index] = {
                                                       ...newTrustDetails[index],
-                                                      contributionLastyearAmunt: e.target.value,
+                                                      contributionLastyearAmunt:
+                                                        e.target.value,
                                                     };
                                                     setTrustDetails({
                                                       ...trustDetails,
@@ -4576,14 +4478,17 @@ const StudentProfile = () => {
                                                 <select
                                                   class="form-control"
                                                   name={`contributionState_${index}`}
-                                                  value={contribution.contributionState}
+                                                  value={
+                                                    contribution.contributionState
+                                                  }
                                                   onChange={(e) => {
                                                     const newTrustDetails = [
                                                       ...trustDetails.otherContribution,
                                                     ];
                                                     newTrustDetails[index] = {
                                                       ...newTrustDetails[index],
-                                                      contributionState: e.target.value,
+                                                      contributionState:
+                                                        e.target.value,
                                                     };
                                                     setTrustDetails({
                                                       ...trustDetails,
@@ -4623,9 +4528,7 @@ const StudentProfile = () => {
                                                       index
                                                     ].contributionCity =
                                                       e.target.value;
-                                                    setTrustDetails(
-                                                      updated
-                                                    );
+                                                    setTrustDetails(updated);
                                                   }}
                                                 />
                                               </td>
@@ -4639,7 +4542,11 @@ const StudentProfile = () => {
                                                       setTrustDetails(
                                                         (prev) => ({
                                                           ...prev,
-                                                            otherContribution: prev.otherContribution.filter((item, i) => i !== index),
+                                                          otherContribution:
+                                                            prev.otherContribution.filter(
+                                                              (item, i) =>
+                                                                i !== index
+                                                            ),
                                                         })
                                                       )
                                                     }
@@ -4649,7 +4556,7 @@ const StudentProfile = () => {
                                                 )}
                                               </td>
                                             </tr>
-                                            )
+                                          );
                                         }
                                       )}
                                     </tbody>
@@ -4681,8 +4588,8 @@ const StudentProfile = () => {
                                 onChange={(e) => {
                                   setTrustDetails((state) => {
                                     state.govtScholarshipApply = e.target.value;
-                                    return JSON.parse(JSON.stringify(state))
-                                  })
+                                    return JSON.parse(JSON.stringify(state));
+                                  });
                                 }}
                               />
                               Yes &nbsp;&nbsp;
@@ -4693,8 +4600,8 @@ const StudentProfile = () => {
                                 onChange={(e) => {
                                   setTrustDetails((state) => {
                                     state.govtScholarshipApply = e.target.value;
-                                    return JSON.parse(JSON.stringify(state))
-                                  })
+                                    return JSON.parse(JSON.stringify(state));
+                                  });
                                 }}
                               />
                               No
@@ -4720,8 +4627,10 @@ const StudentProfile = () => {
                                     onChange={(e) => {
                                       setTrustDetails((state) => {
                                         state.scholarAmount = e.target.value;
-                                        return JSON.parse(JSON.stringify(state))
-                                      })
+                                        return JSON.parse(
+                                          JSON.stringify(state)
+                                        );
+                                      });
                                     }}
                                   />
                                 </div>
@@ -4739,8 +4648,10 @@ const StudentProfile = () => {
                                     onChange={(e) => {
                                       setTrustDetails((state) => {
                                         state.scholarYear = e.target.value;
-                                        return JSON.parse(JSON.stringify(state))
-                                      })
+                                        return JSON.parse(
+                                          JSON.stringify(state)
+                                        );
+                                      });
                                     }}
                                   />
                                 </div>
@@ -4759,8 +4670,10 @@ const StudentProfile = () => {
                                     onChange={(e) => {
                                       setTrustDetails((state) => {
                                         state.scholarName = e.target.value;
-                                        return JSON.parse(JSON.stringify(state))
-                                      })
+                                        return JSON.parse(
+                                          JSON.stringify(state)
+                                        );
+                                      });
                                     }}
                                   />
                                 </div>
@@ -4779,8 +4692,10 @@ const StudentProfile = () => {
                                     onChange={(e) => {
                                       setTrustDetails((state) => {
                                         state.applicationId = e.target.value;
-                                        return JSON.parse(JSON.stringify(state))
-                                      })
+                                        return JSON.parse(
+                                          JSON.stringify(state)
+                                        );
+                                      });
                                     }}
                                   />
                                 </div>
@@ -4799,8 +4714,10 @@ const StudentProfile = () => {
                                     onChange={(e) => {
                                       setTrustDetails((state) => {
                                         state.applicationPass = e.target.value;
-                                        return JSON.parse(JSON.stringify(state))
-                                      })
+                                        return JSON.parse(
+                                          JSON.stringify(state)
+                                        );
+                                      });
                                     }}
                                   />
                                 </div>
@@ -5638,9 +5555,7 @@ const StudentProfile = () => {
                               placeholder="Name of applicant"
                               readonly=""
                               disabled
-                              value={
-                           `${studentDetails.firstName} ${studentDetails.lastName}`
-                              }
+                              value={`${studentDetails.firstName} ${studentDetails.lastName}`}
                             />
                           </div>
                           {/* Name of Parent/Guardian */}
@@ -5654,10 +5569,8 @@ const StudentProfile = () => {
                               class="form-control"
                               placeholder="Name of Parent/Guardian"
                               readonly=""
-                              name="familyDetails.relationPersonName"
-                              value={
-                                studentInformation.familyDetails.relationPersonName
-                              }
+                              name="familyData.relationPersonName"
+                              value={familyData[0]?.relationPersonName}
                               disabled
                             />
                           </div>
@@ -5688,7 +5601,7 @@ const StudentProfile = () => {
                               name="familyDeclaration.date"
                               // value={declarationFamily.date}
                               value={new Date().toISOString().slice(0, 10)}
-                             disabled
+                              disabled
                               readonly=""
                             />
                           </div>
@@ -7158,15 +7071,27 @@ const StudentProfile = () => {
                     )}
                   </form>
                   <div className="center">
-                    <button
-                      type="submit"
-                      id="submit-btn"
-                      className="btn btn-default"
-                      onClick={(e) => handleSubmit(e, "saveAsDraft")}
-                      style={{ display: buttonShow ? "none" : "block" }}
-                    >
-                      Save
-                    </button>
+                    {tab === "confirmation" ? (
+                      <button
+                        type="submit"
+                        id="submit-btn"
+                        className="btn btn-default"
+                        onClick={(e) => handleSubmit(e, "saveAsDraft")}
+                        style={{ display: buttonShow ? "none" : "block" }}
+                      >
+                        Submit
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        id="submit-btn"
+                        className="btn btn-default"
+                        onClick={(e) => handleSubmit(e, "saveAsDraft")}
+                        style={{ display: buttonShow ? "none" : "block" }}
+                      >
+                        Save
+                      </button>
+                    )}
 
                     {tab === "family_details" && (
                       <button

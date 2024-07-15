@@ -20,7 +20,7 @@ export default function Table(props) {
 
   return (
     <>
-      <div className="main-card mb-3 card table-hover">
+      <div className="main-card mb-3 table-hover container">
         <div className="text-center fs-2">{tableTitle}</div>
         {isSearchable && <div
           style={{

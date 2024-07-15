@@ -10,7 +10,7 @@ const Login = () => {
     email: "",
     password: "",
   };
-const {getStudentData} = useContext(GlobalContext)
+  const { getStudentData, setStudentDetails, getSingleStudentData } = useContext(GlobalContext);
   const [loginData, setLoginData] = useState(initial);
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
@@ -24,7 +24,6 @@ const {getStudentData} = useContext(GlobalContext)
       [e.target.name]: e.target.value,
     }));
   };
-
 
   const handleValidation = () => {
     if (!loginData.email) {
@@ -55,21 +54,28 @@ const {getStudentData} = useContext(GlobalContext)
     try {
       if (handleValidation()) {
         const data = loginData;
-        const res = await axios.post("http://localhost:8088/api/v1/user/login", data);
-        console.log("loginData", res.data)
+        const res = await axios.post(
+          "http://localhost:4025/api/v1/user/login",
+          data
+        );
+        console.log("loginData", res.data);
         if (res && res.data.status) {
           toast.success(res.data.message);
-          getStudentData()
+          // getStudentData();
+          getSingleStudentData()
           localStorage.setItem("Authorization", res.data.token);
           localStorage.setItem("userType", res.data.userType);
-          localStorage.setItem("aadharNO" , res.data.data.aadharNo )
-          localStorage.setItem("addedBy", res.data.data.id)
+          localStorage.setItem("aadharNO", res.data.data.aadharNo);
+          localStorage.setItem("addedBy", res.data.data.id);
           setLoading(false);
           setLoginData(initial);
-          if(res.data.userType === "Student"){
+          if (res.data.userType === "Student") {
+            setStudentDetails((prev) => ({
+              ...prev,
+              aadharNo: res.data.data.aadharNo,
+            }));
             navigate("/studentProfile");
-          }
-          else{
+          } else {
             navigate("/");
           }
         } else {
@@ -81,7 +87,9 @@ const {getStudentData} = useContext(GlobalContext)
       if (error.response) {
         // Server responded with a status other than 2xx
         console.error("Error Response:", error.response.data);
-        toast.error(error.response.data.message || "Login failed. Please try again.");
+        toast.error(
+          error.response.data.message || "Login failed. Please try again."
+        );
       } else if (error.request) {
         // Request was made but no response received
         console.error("Error Request:", error.request);
@@ -94,7 +102,6 @@ const {getStudentData} = useContext(GlobalContext)
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="container login_container">

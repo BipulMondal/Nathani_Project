@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
-// const baseUrl = "http://localhost:8088";
-const baseUrl = "http://37.60.243.233:8088"
+const baseUrl = "http://localhost:4025";
+// const baseUrl = "http://37.60.243.233:4025"
 const ApiEndPoint = "/api/v1/user";
 
 const url = baseUrl + ApiEndPoint;
@@ -17,9 +17,9 @@ const GlobalProvider = ({ children }) => {
     othertrustSupport: {},
     organizationSupportFamily: {},
     familyDeclaration: {},
-    currentAcademicDetails:{},
-    feesInformation:{},
-    bankDetails:{},
+    currentAcademicDetails: {},
+    feesInformation: {},
+    bankDetails: {},
     studentCode: "",
     isConfirm: false,
   };
@@ -27,11 +27,11 @@ const GlobalProvider = ({ children }) => {
   const [studentInformation, setStudentInformation] = useState(initialState);
   const [modifiedData, setModifiedData] = useState({});
   const [originalData, setOriginalData] = useState({});
-  // console.log("globalstudentInformation", studentInformation)
   const [openModal, setOpenModal] = useState(false);
   const [allFamilyDetails, setAllFamilyDetails] = useState(null);
   const [academicInfo, setAcademicInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [id, setId] = useState(null);
   const [studentDetails, setStudentDetails] = useState({
     aadharNo: "",
     lastName: "",
@@ -67,7 +67,7 @@ const GlobalProvider = ({ children }) => {
     zakatFund: 0,
     refferedBy: "",
     refMobileNo: "",
-  })
+  });
   const [familyData, setFamilyData] = useState([
     {
       parentStatus: "",
@@ -114,44 +114,46 @@ const GlobalProvider = ({ children }) => {
     courseName: "",
     madrashaName: "",
     anyOtherCourse: "",
-  })
-  const [academicDetails, setAcademicdetails] = useState([{
-    prevYearResult: "",
-    lastYearResultImg: "",
-    lastTwoYearResultImg: "",
-    TwoYearBackResultImg: "",
-    currentStudy: "",
-    specialCase: "",
-    courseName: "",
-    levelOfCourse: "",
-    otherCourseOne: "",
-    otherLevelOfCourse: "",
-    otherField: "",
-    field: "",
-    duration: "",
-    instructionMedium: "",
-    coursePattern: "",
-    otherDurationCourse: "",
-    otherCourseTwo: "",
-    otherMedium: "",
-    instituteName: "",
-    boardName: "",
-    instituteType: "",
-    ifPrivate: "",
-    instituteAddress: "",
-    instituteCity: "",
-    institutePin: "",
-    instituteDistrict: "",
-    instituteState: "",
-    instituteCountry: "",
-    instituteEmail: "",
-    instituteWebsite: "",
-    instituteLandLineNo: "",
-    instituteContactNo: "",
-    instituteMobileNo: "",
-    bonafideCertificateFrontImg: "",
-    bonafideCertificateBackImg: "",
-  }])
+  });
+  const [academicDetails, setAcademicdetails] = useState([
+    {
+      prevYearResult: "",
+      lastYearResultImg: "",
+      lastTwoYearResultImg: "",
+      TwoYearBackResultImg: "",
+      currentStudy: "",
+      specialCase: "",
+      courseName: "",
+      levelOfCourse: "",
+      otherCourseOne: "",
+      otherLevelOfCourse: "",
+      otherField: "",
+      field: "",
+      duration: "",
+      instructionMedium: "",
+      coursePattern: "",
+      otherDurationCourse: "",
+      otherCourseTwo: "",
+      otherMedium: "",
+      instituteName: "",
+      boardName: "",
+      instituteType: "",
+      ifPrivate: "",
+      instituteAddress: "",
+      instituteCity: "",
+      institutePin: "",
+      instituteDistrict: "",
+      instituteState: "",
+      instituteCountry: "",
+      instituteEmail: "",
+      instituteWebsite: "",
+      instituteLandLineNo: "",
+      instituteContactNo: "",
+      instituteMobileNo: "",
+      bonafideCertificateFrontImg: "",
+      bonafideCertificateBackImg: "",
+    },
+  ]);
   const [trustDetails, setTrustDetails] = useState({
     otherTrustSupport: "",
     trustDetails: [
@@ -178,7 +180,7 @@ const GlobalProvider = ({ children }) => {
     scholarName: "",
     applicationId: "",
     applicationPass: "",
-  })
+  });
   const [organizationSupport, setOrganizationSupport] = useState({
     receivedSupport: "",
     supportFamilyDetails: [
@@ -201,7 +203,7 @@ const GlobalProvider = ({ children }) => {
         financialYear: "",
       },
     ],
-  })
+  });
   const [declarationFamily, setDeclarationFamily] = useState({
     courseName: "",
     applicantName: "",
@@ -211,7 +213,7 @@ const GlobalProvider = ({ children }) => {
     studentPhoto: "",
     studentSign: "",
     parentSign: "",
-  })
+  });
   const [currentStudy, setCurrentStudy] = useState({
     currentlyStudingIn: "",
     currentSpecialCase: "",
@@ -239,12 +241,41 @@ const GlobalProvider = ({ children }) => {
     currentlyInstitutionContact: "",
     currentlyInstitutionContact: "",
     currentlyInstitutionMobile: "",
-  })
+  });
+  const [feesDetails, setFeesDetails] = useState({
+    termFees: "",
+    tutionFees: "",
+    otherFees: "",
+    totalFees: "",
+    coachingFees: "",
+    hostelFees: "",
+    meesFees: "",
+    conveance: "",
+    bookStationary: "",
+    projectInstrument: "",
+    anyOther: "",
+    totalExpences: "",
+    totalABC: "",
+    ownContribute: "",
+    totalABCD: "",
+  });
+
+  const [bankDetails, setBankDetails] = useState({
+    nameAsPassBook: "",
+    AcountNO: "",
+    BankName: "",
+    otherBank: "",
+    Branch: "",
+    ifsc: "",
+    passBookFrontImg: "",
+    passBookBackImg: "",
+  });
+  const [allStudents, setAllStudents] = useState([]);
   const aadharNo = localStorage.getItem("aadharNO");
   const userType = localStorage.getItem("userType");
   const token = localStorage.getItem("Authorization");
 
-  console.log("trustDetails", trustDetails)
+  console.log("bankDetails", bankDetails);
 
   const updateModal = () => {
     setOpenModal(false);
@@ -256,22 +287,42 @@ const GlobalProvider = ({ children }) => {
     };
     try {
       setIsLoading(true);
-      console.log("sdsdsd", `${url}/get_Student_data`)
-      const res = await axios.post(`${url}/get_Student_data`,data);
+      console.log("sdsdsd", `${url}/get_Student_data`);
+      const res = await axios.post(`${url}/get_Student_data`, data);
       console.log("res_data_existStudent", res?.data?.existStudent);
       if (res && res.data.status && userType === "Student") {
         localStorage.setItem("id", res?.data?.existStudent?._id);
-         setStudentDetails(res?.data?.existStudent.studentInfo)
-        setFamilyData(res?.data?.existStudent?.familyDetails)
-        setJamatDetails(res?.data?.existStudent.jamatInfo)
-        setAcademicdetails(res?.data?.existStudent?.prevAcademicInfo)
-        setTrustDetails(res?.data?.existStudent?.othertrustSupport)
-        setOrganizationSupport(res?.data?.existStudent?.organizationSupportFamily)
-        setDeclarationFamily(res?.data?.existStudent?.familyDeclaration)
+        setStudentDetails(res?.data?.existStudent.studentInfo);
+        setFamilyData(res?.data?.existStudent?.familyDetails);
+        setJamatDetails(res?.data?.existStudent.jamatInfo);
+        setAcademicdetails(res?.data?.existStudent?.prevAcademicInfo);
+        setTrustDetails(res?.data?.existStudent?.othertrustSupport);
+        setOrganizationSupport(
+          res?.data?.existStudent?.organizationSupportFamily
+        );
+        setDeclarationFamily(res?.data?.existStudent?.familyDeclaration);
         setIsLoading(false);
       }
     } catch (error) {
       console.error("Error fetching student data:", error);
+      setIsLoading(false);
+    }
+  };
+
+  const getAllStudentdata = async () => {
+    try {
+      setIsLoading(true);
+      const data = {
+        addedBy: localStorage.getItem("addedBy"),
+      };
+      let res = await axios.post(`${url}/get_student_addedBy`, data);
+      console.log("allStudentData", res?.data?.allData);
+      if (res && res.status) {
+        setAllStudents(res.data?.allData);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
       setIsLoading(false);
     }
   };
@@ -321,70 +372,6 @@ const GlobalProvider = ({ children }) => {
     }
   };
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   const keys = name.split(".");
-
-  //   const updateNestedObject = (object, keys, value) => {
-  //     const newObject = { ...object };
-  //     let nestedObject = newObject;
-  //     for (let i = 0; i < keys.length - 1; i++) {
-  //       const key = keys[i];
-  //       if (Array.isArray(nestedObject[key])) {
-  //         const index = parseInt(keys[i + 1], 10);
-  //         nestedObject[key] = [...nestedObject[key]];
-  //         nestedObject = nestedObject[key][index];
-  //         i++;
-  //       } else {
-  //         nestedObject[key] = { ...nestedObject[key] };
-  //         nestedObject = nestedObject[key];
-  //       }
-  //     }
-  //     nestedObject[keys[keys.length - 1]] = value;
-  //     return newObject;
-  //   };
-
-  //   if (keys.length === 1) {
-  //     setStudentInformation((prevState) => ({
-  //       ...prevState,
-  //       [name]: value,
-  //     }));
-  //     setModifiedData((prevState) => ({
-  //       ...prevState,
-  //       [name]: value,
-  //     }));
-  //   } else {
-  //     setStudentInformation((prevState) =>
-  //       updateNestedObject(prevState, keys, value)
-  //     );
-  //     setModifiedData((prevState) =>
-  //       updateNestedObject(prevState, keys, value)
-  //     );
-  //   }
-  // };
-
-  // const addFamilyMember = async () => {
-  //   setStudentInformation((prevState) => ({
-  //     ...prevState,
-  //     familyDetails: [...prevState.familyDetails, { ...initialState.familyDetails[0] }],
-  //   }));
-
-  //   try {
-  //     const data = {
-  //       ...studentInformation.familyDetails,
-  //       _id: localStorage.getItem("id"),
-  //     };
-  //     console.log("data", data);
-  //     let res = await axios.post(
-  //       `url/add_family/${aadharNo}`,
-  //       data
-  //     );
-  //     if (res & res.status) {
-  //       console.log("ressssss", res);
-  //     }
-  //   } catch (error) {}
-  // };
-
   const addFamilyMember = async () => {
     // Update the state with the new family member
     setStudentInformation((prevState) => {
@@ -406,10 +393,7 @@ const GlobalProvider = ({ children }) => {
             _id: localStorage.getItem("id"),
           };
           console.log("data", data);
-          let res = await axios.post(
-            `url/add_family/${aadharNo}`,
-            data
-          );
+          let res = await axios.post(`url/add_family/${aadharNo}`, data);
           if (res && res.status) {
             console.log("ressssss", res);
           }
@@ -422,16 +406,159 @@ const GlobalProvider = ({ children }) => {
     });
   };
 
+  const imageHandler = async (e, state, index = null) => {
+    console.log("eee", e, state);
+    if (e.target.files.length === 0) return;
+
+    const DATA = new FormData();
+    DATA.append("image", e.target.files[0]);
+
+    const stateToKeyMap = {
+      isPhysical: { section: "studentInfo", key: "physicalChallangeImg" },
+      parentDeath: { section: "studentInfo", key: "parentDeathCertificateImg" },
+      aadharFront: { section: "studentInfo", key: "addaharFrontImg" },
+      aadharBack: { section: "studentInfo", key: "aadharBackImg" },
+      rationFront: { section: "studentInfo", key: "rationFrontImg" },
+      rationBack: { section: "studentInfo", key: "rationBackImg" },
+      electricityBill: { section: "studentInfo", key: "electricityBillImg" },
+      parentStatusOne: { section: "familyDetails", key: "parentStatusOneImg" },
+      parentStatusTwo: { section: "familyDetails", key: "parentStatusTwoImg" },
+      incomeFront: { section: "familyDetails", key: "incomeFileFrontImg" },
+      incomeBack: { section: "familyDetails", key: "incomeFileBackImg" },
+      handicapedFront: { section: "familyDetails", key: "handiCapFileOneImg" },
+      handicapedBack: { section: "familyDetails", key: "handiCapFileTwoImg" },
+      jamatLetterOne: { section: "jamatInfo", key: "memonJamatLetterOne" },
+      jamatLetterTwo: { section: "jamatInfo", key: "memonJamatLetterTwo" },
+      lastYearResultImg: {
+        section: "prevAcademicInfo",
+        key: "lastYearResultImg",
+      },
+      lastTwoYearResultImg: {
+        section: "prevAcademicInfo",
+        key: "lastTwoYearResultImg",
+      },
+      TwoYearBackResultImg: {
+        section: "prevAcademicInfo",
+        key: "TwoYearBackResultImg",
+      },
+      bonafideCertificateFrontImg: {
+        section: "prevAcademicInfo",
+        key: "bonafideCertificateFrontImg",
+      },
+      bonafideCertificateBackImg: {
+        section: "prevAcademicInfo",
+        key: "bonafideCertificateBackImg",
+      },
+      studentPhoto: { section: "familyDeclaration", key: "studentPhoto" },
+      studentSign: { section: "familyDeclaration", key: "studentSign" },
+      studentGuardianSign: { section: "familyDeclaration", key: "parentSign" },
+      studingBonafiedFront: {
+        section: "currentStudy",
+        key: "currentlyInstitutionBonafidfrontImg",
+      },
+      studingBonafiedBack: {
+        section: "currentStudy",
+        key: "currentlyInstitutionBonafidBackImg",
+      },
+      passbookFront: { section: "bankDetails", key: "passBookFrontImg" },
+      passbookBack: { section: "bankDetails", key: "passBookBackImg" },
+    };
+
+    try {
+      setIsLoading(true);
+      const response = await axios.post(`${url}/upload`, DATA, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("response", response);
+
+      if (response && response.data.status && stateToKeyMap[state]) {
+        setIsLoading(false);
+        const uploadedFilePath = response.data.file;
+        const { section, key } = stateToKeyMap[state];
+
+        if (section === "studentInfo") {
+          setStudentDetails((prevState) => ({
+            ...prevState,
+            [key]: uploadedFilePath,
+          }));
+        } else if (section === "familyDetails" && index !== null) {
+          setFamilyData((prevState) => {
+            const newState = [...prevState];
+            newState[index][key] = uploadedFilePath;
+            return newState;
+          });
+        } else if (section === "jamatInfo") {
+          setJamatDetails((prevState) => ({
+            ...prevState,
+            [key]: uploadedFilePath,
+          }));
+        } else if (section === "prevAcademicInfo" && index !== null) {
+          setAcademicdetails((prevState) => {
+            const newState = [...prevState];
+            newState[index][key] = uploadedFilePath;
+            return newState;
+          });
+        } else if (section === "familyDeclaration") {
+          setDeclarationFamily((prevState) => ({
+            ...prevState,
+            [key]: uploadedFilePath,
+          }));
+        } else if (section === "currentStudy") {
+          setCurrentStudy((prevState) => ({
+            ...prevState,
+            [key]: uploadedFilePath,
+          }));
+        } else if (section === "bankDetails") {
+          setBankDetails((prevState) => ({
+            ...prevState,
+            [key]: uploadedFilePath,
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (token && userType === "Student") {
       getStudentData();
-      const aadharNo = localStorage.getItem("aadharNO");
-      setStudentDetails((prev) => ({
-        ...prev,
-        aadharNo: aadharNo
-      }))
+    } else {
+      getAllStudentdata();
     }
   }, [token]);
+
+  const getSingleStudentData = async (id) => {
+    try {
+      setIsLoading(true);
+      const res = await axios.post(`${url}/get_Single_Student/${id}`);
+      console.log("singleStudents", res?.data?.existStudent);
+      if (res && res.data.status) {
+        setStudentDetails(res?.data?.existStudent.studentInfo);
+        setFamilyData(res?.data?.existStudent?.familyDetails);
+        setJamatDetails(res?.data?.existStudent.jamatInfo);
+        setAcademicdetails(res?.data?.existStudent?.prevAcademicInfo);
+        setTrustDetails(res?.data?.existStudent?.othertrustSupport);
+        setOrganizationSupport(
+          res?.data?.existStudent?.organizationSupportFamily
+        );
+        setDeclarationFamily(res?.data?.existStudent?.familyDeclaration);
+        setCurrentStudy(res?.data?.existStudent?.currentAcademicDetails);
+        setFeesDetails(res?.data?.existStudent?.feesInformation);
+        setBankDetails(res?.data?.existStudent?.bankDetails);
+        setId(res?.data?.existStudent?._id);
+
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching student data:", error);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <GlobalContext.Provider
@@ -455,22 +582,31 @@ const GlobalProvider = ({ children }) => {
         setOriginalData,
         handleChange,
         addFamilyMember,
-        familyData, 
+        familyData,
         setFamilyData,
         studentDetails,
-         setStudentDetails,
-         jamatDetails,
-         setJamatDetails,
-         academicDetails, 
-         setAcademicdetails,
-         trustDetails,
-          setTrustDetails,
-          declarationFamily,
-           setDeclarationFamily,
-           currentStudy, 
-           setCurrentStudy,
-           url,
-           baseUrl
+        setStudentDetails,
+        jamatDetails,
+        setJamatDetails,
+        academicDetails,
+        setAcademicdetails,
+        trustDetails,
+        setTrustDetails,
+        declarationFamily,
+        setDeclarationFamily,
+        currentStudy,
+        setCurrentStudy,
+        url,
+        baseUrl,
+        allStudents,
+        getAllStudentdata,
+        feesDetails,
+        setFeesDetails,
+        bankDetails,
+        setBankDetails,
+        imageHandler,
+        getSingleStudentData,
+        id,
       }}
     >
       {children}

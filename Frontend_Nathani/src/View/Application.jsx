@@ -4,6 +4,8 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import queryString from "query-string";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import AllStatedata from "../constant/config.json";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Application = () => {
   const location = useLocation();
@@ -12,18 +14,35 @@ const Application = () => {
   const navigate = useNavigate();
   const stateNames = Object.keys(AllStatedata);
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const token = localStorage.getItem("Authorization");
 
   const {
+    getStudentData,
+    organizationSupport,
+    modifiedData,
+    originalData,
+    familyData,
+    studentDetails,
+    jamatDetails,
+    academicDetails,
+    trustDetails,
+    declarationFamily,
+    baseUrl,
+    url,
     currentStudy,
-     setCurrentStudy
+    setCurrentStudy,
+    feesDetails,
+    setFeesDetails,
+    bankDetails,
+    setBankDetails,
+    imageHandler,
+    id,
+    getAllStudentdata,
+    getSingleStudentData
   } = useContext(GlobalContext);
 
-  const [copyParmanantAddress, setCopyPermantAddress] = useState(false);
-  const [filteredCities, setFilteredCities] = useState([]);
-  const [memonCities, setMemonCities] = useState([]);
-  const [academicCity, setAcademicCity] = useState([]);
-  const [otherTrustCity, setOthertrustCity] = useState([]);
-  const [otherContributionCity, setOtherContributionCity] = useState([]);
+  console.log("currentStudy", id);
+
   const [currentTab, setCurrentTab] = useState("current_academic_details");
   const [loading, setLoading] = useState(false);
   const aadharNo = localStorage.getItem("aadharNO");
@@ -39,14 +58,13 @@ const Application = () => {
 
   const handlePrev = () => {
     const currentIndex = tabs.indexOf(currentTab);
-    console.log("currentIndex", currentIndex)
+    console.log("currentIndex", currentIndex);
     if (currentIndex > 0) {
       setCurrentTab(tabs[currentIndex - 1]);
       navigate(`/application?tab=${tabs[currentIndex - 1]}`);
-    }else{
-      navigate(`/studentProfile?tab=confirmation`)
+    } else {
+      navigate(`/studentProfile?tab=confirmation`);
     }
-    
   };
 
   const handleNext = () => {
@@ -59,7 +77,87 @@ const Application = () => {
     }
   };
 
-  const handleSubmit = () => {};
+  const handleValidation = () => {};
+
+  const handleSubmit = async (e, state) => {
+    e.preventDefault();
+    if (state === "saveAsDraft") {
+      try {
+        const mergedData = {
+          ...originalData,
+          ...modifiedData,
+          studentInfo: studentDetails,
+          familyDetails: familyData,
+          jamatInfo: jamatDetails,
+          prevAcademicInfo: academicDetails,
+          othertrustSupport: trustDetails,
+          organizationSupportFamily: organizationSupport,
+          familyDeclaration: declarationFamily,
+          currentAcademicDetails: currentStudy,
+          feesInformation: feesDetails,
+          bankDetails: bankDetails,
+          saveAsDraft: true,
+          _id: id ? id : localStorage.getItem("id"),
+          addedBy: localStorage.getItem("addedBy"),
+        };
+
+        console.log("mergedData", mergedData);
+        if (!studentDetails.aadharNo) {
+          toast.error("Aadhar no is required");
+          return false;
+        } else if (
+          studentDetails.aadharNo.length < 12 ||
+          studentDetails.aadharNo.length > 12
+        ) {
+          toast.error("Aadhar no must be 12 digit long");
+          return false;
+        } else {
+          setLoading(true);
+          let result = await axios.post(`${url}/add_Student_data`, mergedData);
+          console.log("result", result);
+          if (result && result.data.status) {
+            toast.success(result.data.message);
+            setLoading(false);
+
+            if (token && userType === "Student") {
+              // getStudentData();
+              getSingleStudentData()
+            } else {
+              getAllStudentdata();
+            }
+          }
+        }
+      } catch (error) {
+        toast.error(error.response.data.message);
+        setLoading(false);
+      }
+    } else {
+      if (handleValidation()) {
+        const mergedData = {
+          ...originalData,
+          ...modifiedData,
+          studentInfo: studentDetails,
+          familyDetails: familyData,
+          jamatInfo: jamatDetails,
+          prevAcademicInfo: academicDetails,
+          othertrustSupport: trustDetails,
+          organizationSupportFamily: organizationSupport,
+          familyDeclaration: declarationFamily,
+          saveAsDraft: true,
+          _id: localStorage.getItem("id"),
+          addedBy: localStorage.getItem("addedBy"),
+        };
+        setLoading(true);
+        let res = await axios.post(`${url}/add_Student_data`, mergedData);
+        if (res && res.data.status) {
+          getStudentData();
+          toast.success(res.data.message);
+          setLoading(false);
+          // setStudentInformation(initialState);
+        }
+      }
+    }
+  };
 
   return (
     <>
@@ -116,8 +214,8 @@ const Application = () => {
                                   onChange={(e) => {
                                     setCurrentStudy((state) => {
                                       state.currentlyStudingIn = e.target.value;
-                                      return JSON.parse(JSON.stringify(state))
-                                    })
+                                      return JSON.parse(JSON.stringify(state));
+                                    });
                                   }}
                                 >
                                   <option selected="selected" value="0">
@@ -205,15 +303,13 @@ const Application = () => {
                                   class="form-control"
                                   id="txtSpecialCase_Step6"
                                   placeholder="Special Case"
-
-
                                   name="currentStudy.currentSpecialCase"
                                   value={currentStudy.currentSpecialCase}
                                   onChange={(e) => {
                                     setCurrentStudy((state) => {
                                       state.currentSpecialCase = e.target.value;
-                                      return JSON.parse(JSON.stringify(state))
-                                    })
+                                      return JSON.parse(JSON.stringify(state));
+                                    });
                                   }}
                                 />
                               </div>
@@ -231,9 +327,10 @@ const Application = () => {
                                   value={currentStudy.currentlyCourseName}
                                   onChange={(e) => {
                                     setCurrentStudy((state) => {
-                                      state.currentlyCourseName = e.target.value;
-                                      return JSON.parse(JSON.stringify(state))
-                                    })
+                                      state.currentlyCourseName =
+                                        e.target.value;
+                                      return JSON.parse(JSON.stringify(state));
+                                    });
                                   }}
                                 />
                               </div>
@@ -722,14 +819,17 @@ const Application = () => {
                                 <input
                                   type="file"
                                   class="form-control"
-                                  name="bonafied_certificate"
-                                  id="bonafied_certificate"
+                                  name="currentStudy.currentlyInstitutionBonafidfrontImg"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    imageHandler(e, "studingBonafiedFront")
+                                  }
                                 />
                               </div>
                               <div class="col-lg-3">
                                 <img
-                                  id="bonafied_certificate_prev"
-                                  src="#"
+                                  id="currentlyInstitutionBonafidfrontImg"
+                                  src={`${baseUrl}${currentStudy.currentlyInstitutionBonafidfrontImg}`}
                                   alt="Bonafide Certificate Front"
                                   style={{ height: "100px", width: "100px" }}
                                 />
@@ -739,14 +839,18 @@ const Application = () => {
                                 <input
                                   type="file"
                                   class="form-control"
-                                  name="bonafied_back"
+                                  name="currentStudy.currentlyInstitutionBonafidBackImg"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    imageHandler(e, "studingBonafiedBack")
+                                  }
                                   id="bonafied_back"
                                 />
                               </div>
                               <div class="col-lg-3">
                                 <img
                                   id="bonafied_back_prev"
-                                  src="#"
+                                  src={`${baseUrl}${currentStudy.currentlyInstitutionBonafidBackImg}`}
                                   alt="Bonafide Certificate Backside"
                                   style={{ height: "100px", width: "100px" }}
                                 />
@@ -797,6 +901,16 @@ const Application = () => {
                                         id="txt7feeTermFees"
                                         min="0"
                                         placeholder="Term fees"
+                                        name="feesDetails.termFees"
+                                        value={feesDetails.termFees}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.termFees = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -818,6 +932,16 @@ const Application = () => {
                                         id="txt7feeTutionFees"
                                         min="0"
                                         placeholder="School/College tution fees"
+                                        name="feesDetails.tutionFees"
+                                        value={feesDetails.tutionFees}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.tutionFees = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -839,6 +963,16 @@ const Application = () => {
                                         id="txt7feeOtherFees"
                                         min="0"
                                         placeholder="School/College Other Fees"
+                                        name="feesDetails.otherFees"
+                                        value={feesDetails.otherFees}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.otherFees = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -861,6 +995,17 @@ const Application = () => {
                                         min="0"
                                         placeholder="Total fees"
                                         readonly=""
+                                        name="feesDetails.totalFees"
+                                        value={feesDetails.totalFees}
+                                        disabled
+                                        // onChange={(e) => {
+                                        //   setFeesDetails((state) => {
+                                        //     state.totalFees = e.target.value;
+                                        //     return JSON.parse(
+                                        //       JSON.stringify(state)
+                                        //     );
+                                        //   });
+                                        // }}
                                       />
                                     </td>
                                   </tr>
@@ -882,6 +1027,16 @@ const Application = () => {
                                         id="txt7feeClassesFees"
                                         min="0"
                                         placeholder="Tuition/Coaching classes fees"
+                                        name="feesDetails.coachingFees"
+                                        value={feesDetails.coachingFees}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.coachingFees = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -908,6 +1063,16 @@ const Application = () => {
                                         id="txt7feeHostalFees"
                                         min="0"
                                         placeholder="Hostel Fees"
+                                        name="feesDetails.hostelFees"
+                                        value={feesDetails.hostelFees}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.hostelFees = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -929,6 +1094,16 @@ const Application = () => {
                                         id="txt7feeMessFees"
                                         min="0"
                                         placeholder="Mess Fees"
+                                        name="feesDetails.meesFees"
+                                        value={feesDetails.meesFees}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.meesFees = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -950,6 +1125,16 @@ const Application = () => {
                                         id="txt7feeConveyance"
                                         min="0"
                                         placeholder="Conveyance"
+                                        name="feesDetails.conveance"
+                                        value={feesDetails.conveance}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.conveance = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -971,6 +1156,17 @@ const Application = () => {
                                         id="txt7feeStationary"
                                         min="0"
                                         placeholder="Books &amp; Stationary"
+                                        name="feesDetails.bookStationary"
+                                        value={feesDetails.bookStationary}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.bookStationary =
+                                              e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -992,6 +1188,17 @@ const Application = () => {
                                         id="txt7feeProjectInstrument"
                                         min="0"
                                         placeholder="Project &amp; Instrument"
+                                        name="feesDetails.projectInstrument"
+                                        value={feesDetails.projectInstrument}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.projectInstrument =
+                                              e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -1013,6 +1220,16 @@ const Application = () => {
                                         id="txt7feeAnyOther"
                                         min="0"
                                         placeholder="Any Other(please specify)"
+                                        name="feesDetails.anyOther"
+                                        value={feesDetails.anyOther}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.anyOther = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -1034,6 +1251,18 @@ const Application = () => {
                                         id="txt7feeTotalExpenses"
                                         min="0"
                                         placeholder="Total Expenses"
+                                        name="feesDetails.totalExpences"
+                                        value={feesDetails.totalExpences}
+                                        disabled
+                                        // onChange={(e) => {
+                                        //   setFeesDetails((state) => {
+                                        //     state.totalExpences =
+                                        //       e.target.value;
+                                        //     return JSON.parse(
+                                        //       JSON.stringify(state)
+                                        //     );
+                                        //   });
+                                        // }}
                                       />
                                     </td>
                                   </tr>
@@ -1056,6 +1285,16 @@ const Application = () => {
                                         min="0"
                                         placeholder="Total fees(A+B+C)"
                                         readonly=""
+                                        name="feesDetails.totalABC"
+                                        value={feesDetails.totalABC}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.totalABC = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -1077,6 +1316,17 @@ const Application = () => {
                                         id="txt7feeOwnContribution"
                                         min="0"
                                         placeholder="Own contribution"
+                                        name="feesDetails.ownContribute"
+                                        value={feesDetails.ownContribute}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.ownContribute =
+                                              e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -1099,6 +1349,16 @@ const Application = () => {
                                         min="0"
                                         placeholder="Total Fees"
                                         readonly=""
+                                        name="feesDetails.totalABCD"
+                                        value={feesDetails.totalABCD}
+                                        onChange={(e) => {
+                                          setFeesDetails((state) => {
+                                            state.totalABCD = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </td>
                                   </tr>
@@ -1142,6 +1402,17 @@ const Application = () => {
                                         class="form-control"
                                         id="txt10bdName"
                                         placeholder="Name(as passbook)"
+                                        name="bankDetails.nameAsPassBook"
+                                        value={bankDetails.nameAsPassBook}
+                                        onChange={(e) => {
+                                          setBankDetails((state) => {
+                                            state.nameAsPassBook =
+                                              e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </div>
                                     <div class="col-sm-4 topMargin">
@@ -1154,6 +1425,16 @@ const Application = () => {
                                         class="form-control numberValidation"
                                         id="txt10bdAccountNumber"
                                         placeholder="Account no"
+                                        name="bankDetails.AcountNO"
+                                        value={bankDetails.AcountNO}
+                                        onChange={(e) => {
+                                          setBankDetails((state) => {
+                                            state.AcountNO = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </div>
                                     <div class="col-sm-4 topMargin">
@@ -1171,6 +1452,16 @@ const Application = () => {
                                         <select
                                           id="txt10bdBankName"
                                           class="form-control"
+                                          name="bankDetails.BankName"
+                                          value={bankDetails.BankName}
+                                          onChange={(e) => {
+                                            setBankDetails((state) => {
+                                              state.BankName = e.target.value;
+                                              return JSON.parse(
+                                                JSON.stringify(state)
+                                              );
+                                            });
+                                          }}
                                         >
                                           <option
                                             selected="selected"
@@ -1769,6 +2060,16 @@ const Application = () => {
                                         class="form-control"
                                         id="txt10OtherBank"
                                         placeholder="Other Bank"
+                                        name="bankDetails.otherBank"
+                                        value={bankDetails.otherBank}
+                                        onChange={(e) => {
+                                          setBankDetails((state) => {
+                                            state.otherBank = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </div>
                                     <div class="col-sm-4 topMargin">
@@ -1781,6 +2082,16 @@ const Application = () => {
                                         class="form-control"
                                         id="txt10bdBranch"
                                         placeholder="Branch"
+                                        name="bankDetails.Branch"
+                                        value={bankDetails.Branch}
+                                        onChange={(e) => {
+                                          setBankDetails((state) => {
+                                            state.Branch = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </div>
                                     <div class="col-sm-4 topMargin">
@@ -1793,6 +2104,16 @@ const Application = () => {
                                         class="form-control AllLetterCapital"
                                         id="txt10bdIfscCode"
                                         placeholder="IFSC Code"
+                                        name="bankDetails.ifsc"
+                                        value={bankDetails.ifsc}
+                                        onChange={(e) => {
+                                          setBankDetails((state) => {
+                                            state.ifsc = e.target.value;
+                                            return JSON.parse(
+                                              JSON.stringify(state)
+                                            );
+                                          });
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -1806,6 +2127,10 @@ const Application = () => {
                                         type="file"
                                         class="form-control"
                                         id="txt10PassbookFile"
+                                        name="bankdetails.passBookFrontImg"
+                                        onChange={(e) =>
+                                          imageHandler(e, "passbookFront")
+                                        }
                                       />
                                     </div>
                                     <div class="col-sm-1 topMargin">
@@ -1813,29 +2138,15 @@ const Application = () => {
                                         <img
                                           mandatory="yes"
                                           class="img-rounded"
-                                          style={{
-                                            height: "35px",
-                                            width: "40px",
-                                            marginTop: "23px",
-                                            marginLeft: "-20px",
-                                          }}
                                           id="imgPassbookFileView"
-                                          src="../admission/PassbookFile/202026_PassbookFile.jpg"
-                                          alt="Photo"
+                                          src={`${baseUrl}${bankDetails.passBookFrontImg}`}
+                                          alt="Your Passbook Front Preview"
+                                          style={{
+                                            height: "100px",
+                                            width: "100px",
+                                          }}
                                         />
                                       </a>
-                                      <i
-                                        class="fa fa-close form-control clearFile"
-                                        style={{
-                                          padding: "0px",
-                                          height: "2px",
-                                          width: "2px",
-                                          fontWeight: "bold",
-                                          marginLeft: "0px",
-                                          marginTop: "0px",
-                                          color: "red",
-                                        }}
-                                      ></i>
                                     </div>
 
                                     <div class="col-sm-3 topMargin">
@@ -1844,6 +2155,10 @@ const Application = () => {
                                         type="file"
                                         class="form-control"
                                         id="txt10PassbookFileBackside"
+                                        name="bankdetails.passBookBackImg"
+                                        onChange={(e) =>
+                                          imageHandler(e, "passbookBack")
+                                        }
                                       />
                                     </div>
                                     <div class="col-sm-1 topMargin">
@@ -1851,41 +2166,26 @@ const Application = () => {
                                         <img
                                           mandatory="No"
                                           class="img-rounded"
+                                          src={`${baseUrl}${bankDetails.passBookBackImg}`}
+                                          alt="Your Passbook Back Preview"
                                           style={{
-                                            height: "35px",
-                                            width: "40px",
-                                            marginTop: "23px",
-                                            marginLeft: "-20px",
+                                            height: "100px",
+                                            width: "100px",
                                           }}
-                                          id="imgPassbookFileViewBackside"
-                                          src="../dist/img/edu_profile_blank.png"
-                                          alt="Photo"
                                         />
                                       </a>
-                                      <i
-                                        class="fa fa-close form-control clearFile"
-                                        style={{
-                                          padding: "0px",
-                                          height: "2px",
-                                          width: "2px",
-                                          fontWeight: "bold",
-                                          marginLeft: "0px",
-                                          marginTop: "0px",
-                                          color: "red",
-                                        }}
-                                      ></i>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
 
-                            <button type="submit" class="btn btn-default">
+                            {/* <button type="submit" class="btn btn-default">
                               Submit Button
                             </button>
                             <button type="reset" class="btn btn-default">
                               Reset Button
-                            </button>
+                            </button> */}
                           </form>
                         </div>
                       </>
