@@ -333,7 +333,8 @@ const StudentProfile = () => {
         setLoading(true);
         let res = await axios.post(`${url}/add_Student_data`, mergedData);
         if (res && res.data.status) {
-          getStudentData();
+          // getStudentData();
+          getSingleStudentData()
           toast.success(res.data.message);
           setLoading(false);
           // setStudentInformation(initialState);
