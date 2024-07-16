@@ -49,11 +49,14 @@ router.post('/upload', upload.single('image'), (req, res) => {
 router.post('/registration', userController.register);
 router.post('/login', userController.login);
 router.post('/add_Student_data', studentController.addStudentDetails);
+router.post('/get_Student_Data', studentController.getStudentData);
 router.post('/get_Single_Student/:id', studentController.getSingleStudentData);
 router.delete('/delete_Student/:id', studentController.deleteStudent);
 
 router.post('/get_student_addedBy', studentController.getStudentsDetailsAddedBy)
+
 router.post("/add_family/:id", studentController.addFamilyMember)
+router.put("/update_family/:id", studentController.updateFamilyMember)
 
 
 module.exports = router;

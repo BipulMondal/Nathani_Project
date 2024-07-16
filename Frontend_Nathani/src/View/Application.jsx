@@ -996,7 +996,10 @@ const Application = () => {
                                         placeholder="Total fees"
                                         readonly=""
                                         name="feesDetails.totalFees"
-                                        value={feesDetails.totalFees}
+                                        // value={feesDetails.totalFees}
+                                        value={ Number(feesDetails.termFees) +
+                                          Number(feesDetails.tutionFees) +
+                                          Number(feesDetails.otherFees)}
                                         disabled
                                         // onChange={(e) => {
                                         //   setFeesDetails((state) => {
@@ -1252,7 +1255,13 @@ const Application = () => {
                                         min="0"
                                         placeholder="Total Expenses"
                                         name="feesDetails.totalExpences"
-                                        value={feesDetails.totalExpences}
+                                        value={
+                                          Number(feesDetails.hostelFees) +
+                                          Number(feesDetails.meesFees)+
+                                          Number(feesDetails.conveance)+
+                                          Number(feesDetails.bookStationary)+
+                                          Number(feesDetails.projectInstrument)+
+                                          Number(feesDetails.anyOther)}
                                         disabled
                                         // onChange={(e) => {
                                         //   setFeesDetails((state) => {
@@ -1286,15 +1295,26 @@ const Application = () => {
                                         placeholder="Total fees(A+B+C)"
                                         readonly=""
                                         name="feesDetails.totalABC"
-                                        value={feesDetails.totalABC}
-                                        onChange={(e) => {
-                                          setFeesDetails((state) => {
-                                            state.totalABC = e.target.value;
-                                            return JSON.parse(
-                                              JSON.stringify(state)
-                                            );
-                                          });
-                                        }}
+                                        value={Number(feesDetails.termFees) +
+                                          Number(feesDetails.tutionFees) +
+                                          Number(feesDetails.otherFees)+
+                                          Number(feesDetails.coachingFees)+
+                                          Number(feesDetails.hostelFees) +
+                                          Number(feesDetails.meesFees)+
+                                          Number(feesDetails.conveance)+
+                                          Number(feesDetails.bookStationary)+
+                                          Number(feesDetails.projectInstrument)+
+                                          Number(feesDetails.anyOther)
+                                        
+                                        }
+                                        // onChange={(e) => {
+                                        //   setFeesDetails((state) => {
+                                        //     state.totalABC = e.target.value;
+                                        //     return JSON.parse(
+                                        //       JSON.stringify(state)
+                                        //     );
+                                        //   });
+                                        // }}
                                       />
                                     </td>
                                   </tr>
@@ -1350,15 +1370,26 @@ const Application = () => {
                                         placeholder="Total Fees"
                                         readonly=""
                                         name="feesDetails.totalABCD"
-                                        value={feesDetails.totalABCD}
-                                        onChange={(e) => {
-                                          setFeesDetails((state) => {
-                                            state.totalABCD = e.target.value;
-                                            return JSON.parse(
-                                              JSON.stringify(state)
-                                            );
-                                          });
-                                        }}
+                                        value={Number(feesDetails.termFees) +
+                                          Number(feesDetails.tutionFees) +
+                                          Number(feesDetails.otherFees)+
+                                          Number(feesDetails.coachingFees)+
+                                          Number(feesDetails.hostelFees) +
+                                          Number(feesDetails.meesFees)+
+                                          Number(feesDetails.conveance)+
+                                          Number(feesDetails.bookStationary)+
+                                          Number(feesDetails.projectInstrument)+
+                                          Number(feesDetails.anyOther)+
+                                          Number(feesDetails.ownContribute)
+                                        }
+                                        // onChange={(e) => {
+                                        //   setFeesDetails((state) => {
+                                        //     state.totalABCD = e.target.value;
+                                        //     return JSON.parse(
+                                        //       JSON.stringify(state)
+                                        //     );
+                                        //   });
+                                        // }}
                                       />
                                     </td>
                                   </tr>
