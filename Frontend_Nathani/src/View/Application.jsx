@@ -38,7 +38,8 @@ const Application = () => {
     imageHandler,
     id,
     getAllStudentdata,
-    getSingleStudentData
+    getSingleStudentData,
+    familyTableData,
   } = useContext(GlobalContext);
 
   console.log("currentStudy", id);
@@ -87,7 +88,7 @@ const Application = () => {
           ...originalData,
           ...modifiedData,
           studentInfo: studentDetails,
-          familyDetails: familyData,
+          familyDetails: familyTableData?.length > 0 ? familyTableData : familyData,
           jamatInfo: jamatDetails,
           prevAcademicInfo: academicDetails,
           othertrustSupport: trustDetails,
@@ -137,7 +138,7 @@ const Application = () => {
           ...originalData,
           ...modifiedData,
           studentInfo: studentDetails,
-          familyDetails: familyData,
+          familyDetails: familyTableData?.length > 0 ? familyTableData : familyData,
           jamatInfo: jamatDetails,
           prevAcademicInfo: academicDetails,
           othertrustSupport: trustDetails,

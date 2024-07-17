@@ -51,7 +51,7 @@ const StudentProfile = () => {
     id,
     getSingleStudentData,
     familyTableData,
-    updateFamilyMember
+    updateFamilyMember,
   } = useContext(GlobalContext);
 
   const [currentTab, setCurrentTab] = useState("student_info");
@@ -274,7 +274,7 @@ const StudentProfile = () => {
 
     return true;
   };
-
+console.log("familyTableData?.length", familyTableData.length)
   const handleSubmit = async (e, state) => {
     e.preventDefault();
     if (state === "saveAsDraft") {
@@ -283,8 +283,7 @@ const StudentProfile = () => {
           ...originalData,
           ...modifiedData,
           studentInfo: studentDetails,
-          // familyDetails: familyData,
-          familyDetails: familyData,
+          familyDetails: familyTableData?.length > 0 ? familyTableData : familyData,
           jamatInfo: jamatDetails,
           prevAcademicInfo: academicDetails,
           othertrustSupport: trustDetails,
@@ -327,7 +326,7 @@ const StudentProfile = () => {
           ...originalData,
           ...modifiedData,
           studentInfo: studentDetails,
-          familyDetails: familyData,
+          familyDetails: familyTableData?.length > 0 ? familyTableData : familyData,
           jamatInfo: jamatDetails,
           prevAcademicInfo: academicDetails,
           othertrustSupport: trustDetails,
@@ -7101,8 +7100,9 @@ const StudentProfile = () => {
                       </button>
                     )}
 
-                    {tab === "family_details" &&
-                      (buttonShow ? (
+                    {tab === "family_details" && (
+                      <>
+                      {familyTableData?.length > 0 ?
                         <button
                           type="submit"
                           id="submit-btn"
@@ -7110,17 +7110,19 @@ const StudentProfile = () => {
                           onClick={addFamilyMember}
                         >
                           Add member
-                        </button>
-                      ) : (
-                        <button
+                        </button> : ""
+                         }
+
+                        {/* <button
                           type="submit"
                           id="submit-btn"
                           className="btn btn-default"
                           onClick={updateFamilyMember}
                         >
                           Update member
-                        </button>
-                      ))}
+                        </button> */}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -7173,8 +7175,8 @@ const StudentProfile = () => {
                                       onClick={(e) =>
                                         handleStore(
                                           e,
-                                          item,
-                                          setbuttonSchow(true)
+                                          item
+                                          // setbuttonSchow(true)
                                         )
                                       }
                                     ></i>
@@ -7255,6 +7257,7 @@ const StudentProfile = () => {
               className={"btn btn-primary"}
               onClick={handlePrev}
               disabled={tabs.indexOf(currentTab) === 0}
+              
             >
               Previous
             </button>

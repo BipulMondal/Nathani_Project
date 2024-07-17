@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 const baseUrl = "http://localhost:4025";
 // const baseUrl = "http://37.60.243.233:4025"
 const ApiEndPoint = "/api/v1/user";
@@ -92,30 +93,7 @@ const GlobalProvider = ({ children }) => {
       personStudying: "",
     },
   ]);
-  const [familyTableData, setFamilyTableData] = useState([
-    {
-      parentStatus: "",
-      parentStatusOneImg: "",
-      parentStatusTwoImg: "",
-      relationWithStudent: "",
-      relationPersonName: "",
-      relationPersonMaritalStatus: "",
-      relationPersonDOB: "",
-      relationPersonGender: "",
-      relationPersonAadhar: "",
-      relationPersonEducation: "",
-      relationPersonOccupation: "",
-      relationPersonOccupationDetails: "",
-      relationPersonMonthlyIncome: 0,
-      incomeFileFrontImg: "",
-      incomeFileBackImg: "",
-      handiCapped: "",
-      handiCapFileOneImg: "",
-      handiCapFileTwoImg: "",
-      personCity: "",
-      personStudying: "",
-    },
-  ]);
+  const [familyTableData, setFamilyTableData] = useState([]);
   const [jamatDetails, setJamatDetails] = useState({
     ifMemon: "",
     ifMotherMomen: "",
@@ -357,9 +335,6 @@ const GlobalProvider = ({ children }) => {
   };
 
   const addFamilyMember = async () => {
-    alert("asd")
-    // Make the API call within the setState callback to ensure it uses the latest state
-    // const updateTable = familyData.concat(familyTableData);
     const updateTable = [...familyData, ...familyTableData]
     console.log("updtaed", studentDetails.aadharNo);
 
@@ -372,9 +347,12 @@ const GlobalProvider = ({ children }) => {
         let res = await axios.post(`${url}/add_family/${studentDetails.aadharNo}`, data);
         if (res && res.status) {
           console.log("ressssss", res);
+          toast.success(res?.data?.message)
+          getSingleStudentData(id)
         }
       } catch (error) {
         console.error("Error adding family member:", error);
+        toast.error(error)
       }
     })();
 
@@ -550,8 +528,6 @@ const GlobalProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
-
-  console.log("sdwesd", familyData, familyTableData);
 
   return (
     <GlobalContext.Provider
