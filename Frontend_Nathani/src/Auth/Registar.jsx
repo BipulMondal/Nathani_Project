@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import AllStatedata from "../constant/config.json";
-// import { GlobalContext } from "../GlobalContext/GlobalContext";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 
 const Registar = () => {
   const initial = {
@@ -30,7 +30,7 @@ const Registar = () => {
   const [loading, setLoading] = useState(false);
   const stateNames = Object.keys(AllStatedata);
   const [filteredCities, setFilteredCities] = useState([]);
-  // const {getCountryStateCity, countryState, isLoading} = useContext(GlobalContext)
+  const {getCountryStateCity, countryState, isLoading, baseUrl} = useContext(GlobalContext)
   console.log("registerData", registerData);
 
   const handleChange = (e) => {
@@ -169,7 +169,7 @@ const Registar = () => {
     try {
       if (handleValidation()) {
         let res = await axios.post(
-          "http://localhost:4025/api/v1/user/registration",
+          `${baseUrl}/api/v1/user/registration`,
           data
         );
         if (res && res.status) {

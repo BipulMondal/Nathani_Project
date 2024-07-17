@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
-const baseUrl = "http://localhost:4025";
-// const baseUrl = "http://37.60.243.233:4025"
+// const baseUrl = "http://localhost:4025";
+const baseUrl = "http://37.60.243.233:4025"
 const ApiEndPoint = "/api/v1/user";
 
 const url = baseUrl + ApiEndPoint;
@@ -526,7 +526,8 @@ const GlobalProvider = ({ children }) => {
 
   useEffect(() => {
     if (token && userType === "Student") {
-      getStudentData();
+      // getStudentData();
+      getSingleStudentData()
     } else {
       getAllStudentdata();
     }

@@ -10,7 +10,7 @@ const Login = () => {
     email: "",
     password: "",
   };
-  const { getStudentData, setStudentDetails, getSingleStudentData } = useContext(GlobalContext);
+  const { getStudentData, setStudentDetails, getSingleStudentData, baseUrl } = useContext(GlobalContext);
   const [loginData, setLoginData] = useState(initial);
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
@@ -55,7 +55,7 @@ const Login = () => {
       if (handleValidation()) {
         const data = loginData;
         const res = await axios.post(
-          "http://localhost:4025/api/v1/user/login",
+          `${baseUrl}/api/v1/user/login`,
           data
         );
         console.log("loginData", res.data);
