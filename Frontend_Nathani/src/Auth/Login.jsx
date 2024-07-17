@@ -62,7 +62,7 @@ const Login = () => {
         if (res && res.data.status) {
           toast.success(res.data.message);
           // getStudentData();
-          getSingleStudentData()
+          // getSingleStudentData()
           localStorage.setItem("Authorization", res.data.token);
           localStorage.setItem("userType", res.data.userType);
           localStorage.setItem("aadharNO", res.data.data.aadharNo);

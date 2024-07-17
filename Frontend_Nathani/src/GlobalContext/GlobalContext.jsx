@@ -92,6 +92,7 @@ const GlobalProvider = ({ children }) => {
       personStudying: "",
     },
   ]);
+  const [familyTableData, setFamilyTableData] = useState([]);
   const [jamatDetails, setJamatDetails] = useState({
     ifMemon: "",
     ifMotherMomen: "",
@@ -293,7 +294,8 @@ const GlobalProvider = ({ children }) => {
       if (res && res.data.status && userType === "Student") {
         localStorage.setItem("id", res?.data?.existStudent?._id);
         setStudentDetails(res?.data?.existStudent.studentInfo);
-        setFamilyData(res?.data?.existStudent?.familyDetails);
+        // setFamilyData(res?.data?.existStudent?.familyDetails);
+        setFamilyTableData(res?.data?.existStudent?.familyDetails);
         setJamatDetails(res?.data?.existStudent.jamatInfo);
         setAcademicdetails(res?.data?.existStudent?.prevAcademicInfo);
         setTrustDetails(res?.data?.existStudent?.othertrustSupport);
@@ -301,6 +303,10 @@ const GlobalProvider = ({ children }) => {
           res?.data?.existStudent?.organizationSupportFamily
         );
         setDeclarationFamily(res?.data?.existStudent?.familyDeclaration);
+        setCurrentStudy(res?.data?.existStudent?.currentAcademicDetails);
+        setFeesDetails(res?.data?.existStudent?.feesInformation);
+        setBankDetails(res?.data?.existStudent?.bankDetails);
+
         setIsLoading(false);
       }
     } catch (error) {
@@ -327,84 +333,45 @@ const GlobalProvider = ({ children }) => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const keys = name.split(".");
-
-    const updateNestedObject = (object, keys, value) => {
-      const newObject = { ...object };
-      let nestedObject = newObject;
-
-      for (let i = 0; i < keys.length - 1; i++) {
-        const key = keys[i];
-
-        if (Array.isArray(nestedObject[key])) {
-          const index = parseInt(keys[i + 1], 10);
-          nestedObject[key] = [...nestedObject[key]];
-          nestedObject = nestedObject[key][index];
-          i++; // Skip the next key since it's the index
-        } else {
-          nestedObject[key] = { ...nestedObject[key] };
-          nestedObject = nestedObject[key];
-        }
-      }
-
-      nestedObject[keys[keys.length - 1]] = value;
-      return newObject;
-    };
-
-    if (keys.length === 1) {
-      setStudentInformation((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-      setModifiedData((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    } else {
-      setStudentInformation((prevState) =>
-        updateNestedObject(prevState, keys, value)
-      );
-      setModifiedData((prevState) =>
-        updateNestedObject(prevState, keys, value)
-      );
-    }
-  };
-
   const addFamilyMember = async () => {
-    // Update the state with the new family member
-    setStudentInformation((prevState) => {
-      const updatedFamilyDetails = [
-        ...prevState.familyDetails,
-        { ...initialState.familyDetails[0] },
-      ];
+    const updateTable = [...familyData, ...familyTableData]
+    console.log("updtaed", studentDetails.aadharNo);
 
-      // Make the API call within the setState callback to ensure it uses the latest state
-      const updatedStudentInformation = {
-        ...prevState,
-        familyDetails: updatedFamilyDetails,
-      };
-
-      (async () => {
-        try {
-          const data = {
-            familyDetails: updatedFamilyDetails,
-            _id: localStorage.getItem("id"),
-          };
-          console.log("data", data);
-          let res = await axios.post(`url/add_family/${aadharNo}`, data);
-          if (res && res.status) {
-            console.log("ressssss", res);
-          }
-        } catch (error) {
-          console.error("Error adding family member:", error);
+    (async () => {
+      try {
+        const data = {
+          familyDetails: updateTable,
+        };
+        console.log("data", data);
+        let res = await axios.post(`${url}/add_family/${studentDetails.aadharNo}`, data);
+        if (res && res.status) {
+          console.log("ressssss", res);
+          toast.success(res?.data?.message)
+          getSingleStudentData(id)
         }
-      })();
+      } catch (error) {
+        console.error("Error adding family member:", error);
+        toast.error(error)
+      }
+    })();
 
-      return updatedStudentInformation;
-    });
+    return updateTable;
   };
+
+  const updateFamilyMember = async (id) => {
+    try {
+      const aadhar = studentDetails.aadharNo;
+      const data = {
+        familyDetails: familyData,
+        aadharNo: aadhar
+      }
+      let res = await axios.put(`${url}/update_family/${id}`, data);
+      console.log("res", res);
+
+    } catch (error) {
+      
+    }
+  }
 
   const imageHandler = async (e, state, index = null) => {
     console.log("eee", e, state);
@@ -540,7 +507,8 @@ const GlobalProvider = ({ children }) => {
       console.log("singleStudents", res?.data?.existStudent);
       if (res && res.data.status) {
         setStudentDetails(res?.data?.existStudent.studentInfo);
-        setFamilyData(res?.data?.existStudent?.familyDetails);
+        setFamilyTableData(res?.data?.existStudent?.familyDetails);
+        // setFamilyData(res?.data?.existStudent?.familyDetails);
         setJamatDetails(res?.data?.existStudent.jamatInfo);
         setAcademicdetails(res?.data?.existStudent?.prevAcademicInfo);
         setTrustDetails(res?.data?.existStudent?.othertrustSupport);
@@ -581,7 +549,7 @@ const GlobalProvider = ({ children }) => {
         setOrganizationSupport,
         originalData,
         setOriginalData,
-        handleChange,
+        // handleChange,
         addFamilyMember,
         familyData,
         setFamilyData,
@@ -608,6 +576,9 @@ const GlobalProvider = ({ children }) => {
         imageHandler,
         getSingleStudentData,
         id,
+        familyTableData,
+        setFamilyTableData,
+        updateFamilyMember
       }}
     >
       {children}

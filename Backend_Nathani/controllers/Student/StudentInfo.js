@@ -107,6 +107,32 @@ const getSingleStudentData = async (req, res) => {
   }
 };
 
+const getStudentData = async (req, res) => {
+  try {
+    const existStudent = await studentModal.findOne({
+      "studentInfo.aadharNo": req.body.aadharNo,
+    });
+    if (!existStudent) {
+      return res.status(200).json({
+        status: false,
+        message: "No Student Found",
+      });
+    } else {
+      return res.status(200).json({
+        status: true,
+        message: "Student Data fetched successfully",
+        existStudent,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "server error occurred",
+      error: error.message,
+    });
+  }
+};
+
 const getStudentsDetailsAddedBy = async (req, res) => {
   try {
     let allData = await studentModal.find({
@@ -186,49 +212,71 @@ const addFamilyDetails = async (req, res) => {
 };
 
 const addFamilyMember = async (req, res) => {
-  const { aadharNo } = req.params;
-  const { _id, ...familyMemberData } = req.body;
-
-  console.log("aadhar", aadharNo, req.body);
-
-  // Convert the family member data from the object format to an array of values
-  const familyMember = Object.values(familyMemberData)[0];
+  const { id } = req.params;
+  const { familyDetails } = req.body;
+  console.log("aadharNo", id, familyDetails);
 
   try {
+    // Find the student by ID and update the familyDetails array
+    const student = await studentModal.findOne({
+      "studentInfo.aadharNo": id,
+    });
+
+    if (!student) {
+      return res.status(404).json({
+        status: false,
+        message: "Student not found",
+      });
+    }
+
+    // Update the familyDetails array
+    student.familyDetails = familyDetails;
+
+    // Save the updated student document
+    await student.save();
+
+    res
+      .status(200)
+      .json({ message: "Family Member Added successfully", student });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding family member", error });
+  }
+};
+
+const updateFamilyMember = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { aadharNo, familyDetails } = req.body;
+
     const student = await studentModal.findOne({
       "studentInfo.aadharNo": aadharNo,
     });
-    console.log("student", student);
+
     if (!student) {
-      return res.status(404).send("Student not found");
+      return res.status(400).json({
+        status: false,
+        message: "Student not found",
+      });
     }
 
-    if (_id) {
-      // Convert _id to ObjectId
-      const familyMemberId = mongoose.Types.ObjectId(_id);
-
-      // Update existing family member
-      const existingMemberIndex = student.familyDetails.findIndex((member) =>
-        member._id.equals(familyMemberId)
-      );
-
-      if (existingMemberIndex !== -1) {
-        student.familyDetails[existingMemberIndex] = {
-          ...student.familyDetails[existingMemberIndex]._doc,
-          ...familyMember,
-        };
-      } else {
-        return res.status(404).send("Family member not found");
-      }
-    } else {
-      // Add new family member
-      student.familyDetails.push(familyMember);
+    const family = student.familyDetails.findById({ _id: id });
+    if (!family) {
+      return res.status(400).json({
+        status: false,
+        message: "Member Not Found",
+      });
     }
 
-    await student.save();
-    res.status(200).json(student);
+    // Update the familyDetails array
+    family = familyDetails;
+
+    // Save the updated student family document
+    await family.save();
+    res
+      .status(200)
+      .json({ message: "Family Member Updated successfully", family });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: "Error updating family member", error });
   }
 };
 
@@ -263,5 +311,7 @@ module.exports = {
   getStudentsDetailsAddedBy,
   addFamilyDetails,
   addFamilyMember,
+  updateFamilyMember,
   deleteStudent,
+  getStudentData,
 };

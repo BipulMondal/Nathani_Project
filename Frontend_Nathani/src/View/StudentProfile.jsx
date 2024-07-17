@@ -49,7 +49,9 @@ const StudentProfile = () => {
     url,
     imageHandler,
     id,
-    getSingleStudentData
+    getSingleStudentData,
+    familyTableData,
+    updateFamilyMember,
   } = useContext(GlobalContext);
 
   const [currentTab, setCurrentTab] = useState("student_info");
@@ -92,8 +94,11 @@ const StudentProfile = () => {
   };
 
   const handleNext = () => {
-    if(studentDetails.aadharNo.length < 12 || studentDetails.aadharNo.length > 12){
-      return false
+    if (
+      studentDetails.aadharNo.length < 12 ||
+      studentDetails.aadharNo.length > 12
+    ) {
+      return false;
     }
     const currentIndex = tabs.indexOf(currentTab);
     if (currentIndex < tabs.length - 1) {
@@ -103,8 +108,6 @@ const StudentProfile = () => {
       navigate(`/studentProfile?tab=${nextTab}`);
     }
   };
-
-  
 
   const handleAddressCopy = (e) => {
     if (e.target.checked) {
@@ -271,7 +274,7 @@ const StudentProfile = () => {
 
     return true;
   };
-
+console.log("familyTableData?.length", familyTableData.length)
   const handleSubmit = async (e, state) => {
     e.preventDefault();
     if (state === "saveAsDraft") {
@@ -280,7 +283,7 @@ const StudentProfile = () => {
           ...originalData,
           ...modifiedData,
           studentInfo: studentDetails,
-          familyDetails: familyData,
+          familyDetails: familyTableData?.length > 0 ? familyTableData : familyData,
           jamatInfo: jamatDetails,
           prevAcademicInfo: academicDetails,
           othertrustSupport: trustDetails,
@@ -295,7 +298,10 @@ const StudentProfile = () => {
         if (!studentDetails.aadharNo) {
           toast.error("Aadhar no is required");
           return false;
-        } else if (studentDetails.aadharNo.length < 12 || studentDetails.aadharNo.length > 12) {
+        } else if (
+          studentDetails.aadharNo.length < 12 ||
+          studentDetails.aadharNo.length > 12
+        ) {
           toast.error("Aadhar no must be 12 digit long");
           return false;
         } else {
@@ -320,7 +326,7 @@ const StudentProfile = () => {
           ...originalData,
           ...modifiedData,
           studentInfo: studentDetails,
-          familyDetails: familyData,
+          familyDetails: familyTableData?.length > 0 ? familyTableData : familyData,
           jamatInfo: jamatDetails,
           prevAcademicInfo: academicDetails,
           othertrustSupport: trustDetails,
@@ -334,7 +340,7 @@ const StudentProfile = () => {
         let res = await axios.post(`${url}/add_Student_data`, mergedData);
         if (res && res.data.status) {
           // getStudentData();
-          getSingleStudentData()
+          getSingleStudentData();
           toast.success(res.data.message);
           setLoading(false);
           // setStudentInformation(initialState);
@@ -7095,15 +7101,27 @@ const StudentProfile = () => {
                     )}
 
                     {tab === "family_details" && (
-                      <button
-                        type="submit"
-                        id="submit-btn"
-                        className="btn btn-default"
-                        // onClick={(e) => handleAddFamilyMember(e)}
-                        onClick={addFamilyMember}
-                      >
-                        {buttonShow ? "Update" : "Add"} member
-                      </button>
+                      <>
+                      {familyTableData?.length > 0 ?
+                        <button
+                          type="submit"
+                          id="submit-btn"
+                          className="btn btn-default"
+                          onClick={addFamilyMember}
+                        >
+                          Add member
+                        </button> : ""
+                         }
+
+                        {/* <button
+                          type="submit"
+                          id="submit-btn"
+                          className="btn btn-default"
+                          onClick={updateFamilyMember}
+                        >
+                          Update member
+                        </button> */}
+                      </>
                     )}
                   </div>
                 </div>
@@ -7138,8 +7156,8 @@ const StudentProfile = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {allFamilyDetails &&
-                            allFamilyDetails?.map((item, index) => {
+                          {familyTableData &&
+                            familyTableData?.map((item, index) => {
                               console.log("familyDetailsAddress", item);
                               return (
                                 <tr className="odd gradeX" key={index}>
@@ -7157,8 +7175,8 @@ const StudentProfile = () => {
                                       onClick={(e) =>
                                         handleStore(
                                           e,
-                                          item,
-                                          setbuttonSchow(true)
+                                          item
+                                          // setbuttonSchow(true)
                                         )
                                       }
                                     ></i>
@@ -7239,6 +7257,7 @@ const StudentProfile = () => {
               className={"btn btn-primary"}
               onClick={handlePrev}
               disabled={tabs.indexOf(currentTab) === 0}
+              
             >
               Previous
             </button>
