@@ -191,7 +191,6 @@ const Dashboard = () => {
           data={tableData}
           onSearch={(val) => setsearchText(val)}
         />
-        Dashboard
       </div>
     </>
   );
