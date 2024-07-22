@@ -83,9 +83,19 @@ const addStudentDetails = async (req, res) => {
 
 const getSingleStudentData = async (req, res) => {
   try {
-    const existStudent = await studentModal.findOne({
-      _id: req.params.id,
-    });
+    const { userType } = req.body;
+    console.log("userTye", userType);
+    let existStudent = [];
+    if (userType === "Trusty") {
+      existStudent = await studentModal.findOne({
+        _id: req.params.id,
+      });
+    }else {
+      existStudent = await studentModal.findOne({
+        addedBy: req.params.id,
+      });
+    }
+    
     if (!existStudent) {
       return res.status(200).json({
         status: false,

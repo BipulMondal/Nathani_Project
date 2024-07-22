@@ -75,6 +75,7 @@ const Login = () => {
               aadharNo: res.data.data.aadharNo,
             }));
             navigate("/studentProfile");
+            getSingleStudentData(res.data.data.id)
           } else {
             navigate("/");
           }

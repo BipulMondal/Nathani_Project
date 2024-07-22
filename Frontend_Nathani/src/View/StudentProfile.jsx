@@ -10,6 +10,7 @@ import { GlobalContext } from "../GlobalContext/GlobalContext";
 import CityDropdown from "../components/CityDropdown";
 
 const StudentProfile = () => {
+  const [change, setChange] = useState(false);
   const location = useLocation();
   const query = queryString.parse(location.search);
   const tab = query.tab || "student_info";
@@ -274,7 +275,7 @@ const StudentProfile = () => {
 
     return true;
   };
-console.log("familyTableData?.length", familyTableData.length)
+
   const handleSubmit = async (e, state) => {
     e.preventDefault();
     if (state === "saveAsDraft") {
@@ -283,7 +284,8 @@ console.log("familyTableData?.length", familyTableData.length)
           ...originalData,
           ...modifiedData,
           studentInfo: studentDetails,
-          familyDetails: familyTableData?.length > 0 ? familyTableData : familyData,
+          familyDetails:
+            familyTableData?.length > 0 ? familyTableData : familyData,
           jamatInfo: jamatDetails,
           prevAcademicInfo: academicDetails,
           othertrustSupport: trustDetails,
@@ -326,7 +328,8 @@ console.log("familyTableData?.length", familyTableData.length)
           ...originalData,
           ...modifiedData,
           studentInfo: studentDetails,
-          familyDetails: familyTableData?.length > 0 ? familyTableData : familyData,
+          familyDetails:
+            familyTableData?.length > 0 ? familyTableData : familyData,
           jamatInfo: jamatDetails,
           prevAcademicInfo: academicDetails,
           othertrustSupport: trustDetails,
@@ -350,13 +353,18 @@ console.log("familyTableData?.length", familyTableData.length)
   };
 
   const handleStore = (e, item, state) => {
-    setStudentInformation((prev) => ({
-      ...prev,
-      familyDetails: prev.familyDetails.map((detail, index) =>
-        index === 0 ? { ...detail, ...item } : detail
-      ),
-    }));
+    console.log("www", item);
+    setFamilyData([item]);
+    setChange(true);
   };
+  console.log("swsw", familyData);
+
+  // setStudentInformation((prev) => ({
+  //   ...prev,
+  //   familyDetails: prev.familyDetails.map((detail, index) =>
+  //     index === 0 ? { ...detail, ...item } : detail
+  //   ),
+  // }));
 
   return (
     <>
@@ -7102,25 +7110,29 @@ console.log("familyTableData?.length", familyTableData.length)
 
                     {tab === "family_details" && (
                       <>
-                      {familyTableData?.length > 0 ?
-                        <button
-                          type="submit"
-                          id="submit-btn"
-                          className="btn btn-default"
-                          onClick={addFamilyMember}
-                        >
-                          Add member
-                        </button> : ""
-                         }
-
-                        {/* <button
-                          type="submit"
-                          id="submit-btn"
-                          className="btn btn-default"
-                          onClick={updateFamilyMember}
-                        >
-                          Update member
-                        </button> */}
+                        {!change ? (
+                          // {familyTableData?.length > 0 ? (
+                          <button
+                            type="submit"
+                            id="submit-btn"
+                            className="btn btn-default"
+                            onClick={addFamilyMember}
+                          >
+                            Add member
+                          </button>
+                        ) : (
+                          // ) : (
+                          //   ""
+                          // )}
+                          <button
+                            type="submit"
+                            id="submit-btn"
+                            className="btn btn-default"
+                            onClick={updateFamilyMember}
+                          >
+                            Update member
+                          </button>
+                        )}
                       </>
                     )}
                   </div>
@@ -7257,7 +7269,6 @@ console.log("familyTableData?.length", familyTableData.length)
               className={"btn btn-primary"}
               onClick={handlePrev}
               disabled={tabs.indexOf(currentTab) === 0}
-              
             >
               Previous
             </button>
