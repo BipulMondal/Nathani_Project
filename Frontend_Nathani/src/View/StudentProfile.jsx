@@ -359,12 +359,22 @@ const StudentProfile = () => {
   };
   console.log("swsw", familyData);
 
-  // setStudentInformation((prev) => ({
-  //   ...prev,
-  //   familyDetails: prev.familyDetails.map((detail, index) =>
-  //     index === 0 ? { ...detail, ...item } : detail
-  //   ),
-  // }));
+  const deleteFamilyMenber = async (id) => {
+    console.log("iidd", id);
+    try {
+      const data = {
+        studentId: localStorage.getItem("studentId"),
+      };
+      console.log("ddaata", data);
+      const res = await axios.delete(`${url}/delete_family/${id}`, data);
+      console.log("rreess", res);
+      if (res && res.status) {
+        toast.success(res.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <>
@@ -7086,27 +7096,28 @@ const StudentProfile = () => {
                     )}
                   </form>
                   <div className="center">
-                    {tab === "confirmation" ? (
-                      <button
-                        type="submit"
-                        id="submit-btn"
-                        className="btn btn-default"
-                        onClick={(e) => handleSubmit(e, "saveAsDraft")}
-                        style={{ display: buttonShow ? "none" : "block" }}
-                      >
-                        Submit
-                      </button>
-                    ) : (
-                      <button
-                        type="submit"
-                        id="submit-btn"
-                        className="btn btn-default"
-                        onClick={(e) => handleSubmit(e, "saveAsDraft")}
-                        style={{ display: buttonShow ? "none" : "block" }}
-                      >
-                        Save
-                      </button>
-                    )}
+                    {tab !== "family_details" &&
+                      (tab === "confirmation" ? (
+                        <button
+                          type="submit"
+                          id="submit-btn"
+                          className="btn btn-default"
+                          onClick={(e) => handleSubmit(e, "saveAsDraft")}
+                          style={{ display: buttonShow ? "none" : "block" }}
+                        >
+                          Submit
+                        </button>
+                      ) : (
+                        <button
+                          type="submit"
+                          id="submit-btn"
+                          className="btn btn-default"
+                          onClick={(e) => handleSubmit(e, "saveAsDraft")}
+                          style={{ display: buttonShow ? "none" : "block" }}
+                        >
+                          Save
+                        </button>
+                      ))}
 
                     {tab === "family_details" && (
                       <>
@@ -7192,7 +7203,12 @@ const StudentProfile = () => {
                                         )
                                       }
                                     ></i>
-                                    <i className="fa-solid fa-trash table_delete_icon"></i>
+                                    <i
+                                      className="fa-solid fa-trash table_delete_icon"
+                                      onClick={(e) =>
+                                        deleteFamilyMenber(item._id)
+                                      }
+                                    ></i>
                                   </td>
                                 </tr>
                               );

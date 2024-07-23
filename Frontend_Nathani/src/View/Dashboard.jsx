@@ -10,8 +10,13 @@ import Swal from "sweetalert2";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [searchText, setsearchText] = useState("");
-  const { allStudents, getAllStudentdata, url, isLoading, getSingleStudentData } =
-    useContext(GlobalContext);
+  const {
+    allStudents,
+    getAllStudentdata,
+    url,
+    isLoading,
+    getSingleStudentData,
+  } = useContext(GlobalContext);
   const token = localStorage.getItem("Authorization");
 
   console.log("allStudents", allStudents);
@@ -126,8 +131,9 @@ const Dashboard = () => {
                     <button
                       className="me-2 btn-icon btn-icon-only btn btn-outline-success"
                       onClick={() => {
-                        getSingleStudentData(item?._id)
-                        navigate("/studentProfile")
+                        getSingleStudentData(item?._id);
+                        localStorage.setItem("studentId", item?._id);
+                        navigate("/studentProfile");
                       }}
                     >
                       <i class="fa-regular fa-pen-to-square"></i>

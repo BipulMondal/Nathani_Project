@@ -170,6 +170,31 @@ const getStudentsDetailsAddedBy = async (req, res) => {
   }
 };
 
+const deleteStudent = async (req, res) => {
+  try {
+    const updatedStudents = await studentModal.findByIdAndDelete({
+      _id: req.params.id,
+    });
+
+    if (updatedStudents) {
+      return res.status(200).json({
+        status: true,
+        message: "Student deleted successfully",
+      });
+    } else {
+      return res.status(400).json({
+        status: false,
+        message: "Student deleted failed ",
+      });
+    }
+  } catch (error) {
+    return res.status(501).json({
+      status: false,
+      message: "Internal server error ",
+    });
+  }
+};
+
 const addFamilyDetails = async (req, res) => {
   try {
     const { aadharNo, familyDetail } = req.body;
@@ -290,30 +315,41 @@ const updateFamilyMember = async (req, res) => {
   }
 };
 
-const deleteStudent = async (req, res) => {
+const deleteFamilyMember = async (req, res) => {
+  console.log("Family_Member_ID:", req.params.id);
+  
   try {
-    const updatedStudents = await studentModal.findByIdAndDelete({
-      _id: req.params.id,
-    });
+    const studentId = req.body.studentId; // Assuming you are passing studentId in the request body
+    const familyMemberId = req.params.id;
 
-    if (updatedStudents) {
-      return res.status(200).json({
-        status: true,
-        message: "Student deleted successfully",
-      });
-    } else {
+    const student = await studentModal.findOneAndUpdate(
+      { "familyDetails._id": familyMemberId },
+      { $pull: { familyDetails: { _id: familyMemberId } } },
+      { new: true }
+    );
+
+    if (!student) {
       return res.status(400).json({
         status: false,
-        message: "Student deleted failed ",
+        message: 'Member delete failed'
       });
     }
+
+    return res.status(200).json({
+      status: true,
+      message: 'Member deleted successfully'
+    });
   } catch (error) {
-    return res.status(501).json({
+    console.error("Error:", error);
+    return res.status(500).json({
       status: false,
-      message: "Internal server error ",
+      message: 'Something went wrong, please try again later'
     });
   }
 };
+
+
+
 
 module.exports = {
   addStudentDetails,
@@ -324,4 +360,5 @@ module.exports = {
   updateFamilyMember,
   deleteStudent,
   getStudentData,
+  deleteFamilyMember
 };

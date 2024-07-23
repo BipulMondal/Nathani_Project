@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-// const baseUrl = "http://localhost:4025";
-const baseUrl = "http://37.60.243.233:4025"
+const baseUrl = "http://localhost:4025";
+// const baseUrl = "http://37.60.243.233:4025"
 const ApiEndPoint = "/api/v1/user";
 
 const url = baseUrl + ApiEndPoint;
@@ -241,7 +241,6 @@ const GlobalProvider = ({ children }) => {
     currentlyInstitutionBonafidBackImg: "",
     currentlyInstitutionlandLine: "",
     currentlyInstitutionContact: "",
-    currentlyInstitutionContact: "",
     currentlyInstitutionMobile: "",
   });
   const [feesDetails, setFeesDetails] = useState({
@@ -335,8 +334,8 @@ const GlobalProvider = ({ children }) => {
   };
 
   const addFamilyMember = async () => {
-    const updateTable = [...familyData, ...familyTableData]
-    console.log("updtaed", studentDetails.aadharNo);
+    const updateTable = [...familyData, ...familyTableData];
+    console.log("updtaed", studentDetails);
 
     (async () => {
       try {
@@ -344,35 +343,62 @@ const GlobalProvider = ({ children }) => {
           familyDetails: updateTable,
         };
         console.log("data", data);
-        let res = await axios.post(`${url}/add_family/${studentDetails.aadharNo}`, data);
+        let res = await axios.post(
+          `${url}/add_family/${studentDetails.aadharNo}`,
+          data
+        );
         if (res && res.status) {
           console.log("ressssss", res);
-          toast.success(res?.data?.message)
-          getSingleStudentData(id)
+          toast.success(res?.data?.message);
+          setFamilyData([
+            {
+              parentStatus: "",
+              parentStatusOneImg: "",
+              parentStatusTwoImg: "",
+              relationWithStudent: "",
+              relationPersonName: "",
+              relationPersonMaritalStatus: "",
+              relationPersonDOB: "",
+              relationPersonGender: "",
+              relationPersonAadhar: "",
+              relationPersonEducation: "",
+              relationPersonOccupation: "",
+              relationPersonOccupationDetails: "",
+              relationPersonMonthlyIncome: 0,
+              incomeFileFrontImg: "",
+              incomeFileBackImg: "",
+              handiCapped: "",
+              handiCapFileOneImg: "",
+              handiCapFileTwoImg: "",
+              personCity: "",
+              personStudying: "",
+            },
+          ]);
+          getSingleStudentData(id);
         }
       } catch (error) {
         console.error("Error adding family member:", error);
-        toast.error(error)
+        toast.error(error);
       }
     })();
 
     return updateTable;
   };
 
-  const updateFamilyMember = async (id) => {
+  const updateFamilyMember = async () => {
     try {
       const aadhar = studentDetails.aadharNo;
       const data = {
         familyDetails: familyData,
-        aadharNo: aadhar
-      }
-      let res = await axios.put(`${url}/update_family/${id}`, data);
+        aadharNo: aadhar,
+      };
+      let res = await axios.put(
+        `${url}/update_family/${studentDetails.aadharNo}`,
+        data
+      );
       console.log("res", res);
-
-    } catch (error) {
-      
-    }
-  }
+    } catch (error) {}
+  };
 
   const imageHandler = async (e, state, index = null) => {
     console.log("eee", e, state);
@@ -495,16 +521,19 @@ const GlobalProvider = ({ children }) => {
   useEffect(() => {
     if (token && userType === "Student") {
       // getStudentData();
-      getSingleStudentData()
+      getSingleStudentData();
     } else {
       getAllStudentdata();
     }
-  }, [token]);
+  }, [token, userType]);
 
   const getSingleStudentData = async (id) => {
     try {
       setIsLoading(true);
-      const res = await axios.post(`${url}/get_Single_Student/${id}`);
+      const data = {
+        userType: localStorage.getItem("userType"),
+      };
+      const res = await axios.post(`${url}/get_Single_Student/${id}`, data);
       console.log("singleStudents", res?.data?.existStudent);
       if (res && res.data.status) {
         setStudentDetails(res?.data?.existStudent.studentInfo);
@@ -579,7 +608,7 @@ const GlobalProvider = ({ children }) => {
         id,
         familyTableData,
         setFamilyTableData,
-        updateFamilyMember
+        updateFamilyMember,
       }}
     >
       {children}

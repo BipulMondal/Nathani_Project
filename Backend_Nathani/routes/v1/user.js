@@ -57,6 +57,7 @@ router.post('/get_student_addedBy', studentController.getStudentsDetailsAddedBy)
 
 router.post("/add_family/:id", studentController.addFamilyMember)
 router.put("/update_family/:id", studentController.updateFamilyMember)
+router.delete("/delete_family/:id", studentController.deleteFamilyMember)
 
 
 module.exports = router;
