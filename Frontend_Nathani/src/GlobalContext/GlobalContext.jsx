@@ -94,6 +94,7 @@ const GlobalProvider = ({ children }) => {
     },
   ]);
   const [familyTableData, setFamilyTableData] = useState([]);
+  
   const [jamatDetails, setJamatDetails] = useState({
     ifMemon: "",
     ifMotherMomen: "",
@@ -521,7 +522,7 @@ const GlobalProvider = ({ children }) => {
   useEffect(() => {
     if (token && userType === "Student") {
       // getStudentData();
-      getSingleStudentData();
+      getSingleStudentData(localStorage.getItem("addedBy"));
     } else {
       getAllStudentdata();
     }

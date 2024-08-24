@@ -353,7 +353,9 @@ const StudentProfile = () => {
   };
 
   const handleStore = (e, item, state) => {
+
     console.log("www", item);
+    navigate(`/studentProfile?tab=family_details?${item._id}`)
     setFamilyData([item]);
     setChange(true);
   };

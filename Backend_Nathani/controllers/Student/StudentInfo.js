@@ -84,7 +84,6 @@ const addStudentDetails = async (req, res) => {
 const getSingleStudentData = async (req, res) => {
   try {
     const { userType } = req.body;
-    console.log("userTye", userType);
     let existStudent = [];
     if (userType === "Trusty") {
       existStudent = await studentModal.findOne({
