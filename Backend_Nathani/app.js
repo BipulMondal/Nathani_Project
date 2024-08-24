@@ -13,8 +13,8 @@ const indexRouter = require('./routes/index');
 const app = express();
 
 app.use(cors({
-  origin: '*',
-  // origin: 'http://37.60.243.233:3000',
+  // origin: '*',
+  origin: 'http://37.60.243.233:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Auth-Token']
 }));

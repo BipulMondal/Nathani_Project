@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-const baseUrl = "http://localhost:4025";
-// const baseUrl = "http://37.60.243.233:4025"
+// const baseUrl = "http://localhost:4025";
+const baseUrl = "http://37.60.243.233:4025"
 const ApiEndPoint = "/api/v1/user";
 
 const url = baseUrl + ApiEndPoint;
